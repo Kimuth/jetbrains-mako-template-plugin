@@ -9,32 +9,34 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 
 ## Current Position
 
-Phase: 1 of 8 (Language Foundation) — COMPLETE
-Plan: 2 of 2 in phase (phase complete — advance to Phase 2)
-Status: Phase 1 complete
-Last activity: 2026-02-19 — Plan 02 complete (MakoLanguage + MakoFileType registered, build passes)
+Phase: 2 of 8 (Lexer) — In Progress
+Plan: 1 of 2 complete (advance to Plan 02)
+Status: Phase 2 Plan 01 complete
+Last activity: 2026-02-19 — Plan 01 complete (MakoTokenTypes, MakoLexer.flex, _MakoLexer.java generated, full build passes)
 
-Progress: [██░░░░░░░░] 13%
+Progress: [███░░░░░░░] 19%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 5.5 min
-- Total execution time: 0.18 hours
+- Total plans completed: 3
+- Average duration: 4.3 min
+- Total execution time: 0.23 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-language-foundation | 2 | 11 min | 5.5 min |
+| 02-lexer | 1 | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 9 min, 2 min
+- Last 5 plans: 9 min, 2 min, 3 min
 - Trend: accelerating
 
 *Updated after each plan completion*
 | Phase 01-language-foundation P02 | 2 | 2 tasks | 5 files |
+| Phase 02-lexer P01 | 3 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -58,6 +60,9 @@ Recent decisions affecting current work:
 - [Phase 01-02]: MakoLanguage implements TemplateLanguage (not plain Language) — enables Phase 4 TemplateDataLanguage integration; architecture lock-in completed
 - [Phase 01-02]: fieldName=INSTANCE in plugin.xml fileType — correct for Kotlin object singletons which expose synthetic INSTANCE field to Java
 - [Phase 01-02]: compound extension .html.mako uses patterns= not extensions= — glob matching required for multi-dot extensions in fileType registration
+- [Phase 02-01]: MakoLexer.flex placed in src/main/grammars/ (not src/main/kotlin/lang/) — cleaner convention separating grammar files from Kotlin sources
+- [Phase 02-01]: CONTROL_LINE uses single token for entire % line — sufficient for Phase 2 restart anchors; Phase 3 parser can split if needed
+- [Phase 02-01]: Only generateMakoLexer activated in Phase 2 — generateMakoParser stays commented, no .bnf file exists until Phase 3
 
 ### Pending Todos
 
@@ -65,11 +70,11 @@ None.
 
 ### Blockers/Concerns
 
-- [Research]: JFlex filter expression handling (`${x | h,trim}`) needs a lexer design spike in Phase 2 — `|` disambiguation from Python bitwise OR not fully resolved
+- [RESOLVED - Phase 02-01]: JFlex filter expression handling `|` disambiguation — resolved using EXPRESSION state; `FILTER_SEP` only emitted inside EXPRESSION state, `||` returns `EXPR_CONTENT`
 - [Research]: TemplateDataLanguageConfigurable exact API for platform build 252 needs verification against current documentation before Phase 4
 
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 01-language-foundation/01-02-PLAN.md (Phase 1 complete)
-Resume file: .planning/phases/02-lexer-parser/ (Phase 2 plans)
+Stopped at: Completed 02-lexer/02-01-PLAN.md (Phase 2 Plan 1 complete)
+Resume file: .planning/phases/02-lexer/02-02-PLAN.md

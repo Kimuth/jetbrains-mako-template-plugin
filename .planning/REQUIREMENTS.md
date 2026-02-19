@@ -15,9 +15,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Lexer & Parsing
 
-- [ ] **PARS-01**: JFlex-generated lexer tokenizes all Mako constructs (`${...}`, `% control`, `<%def>`, `<%block>`, `<%inherit>`, `<%include>`, `<%namespace>`, `<%page>`, `<%! %>`, `<% %>`, `<%doc>`, `##`)
-- [ ] **PARS-02**: Lexer correctly handles nested constructs (Python expressions inside `${...}`)
-- [ ] **PARS-03**: Lexer state is serializable for incremental re-lexing (restart from mid-file)
+- [x] **PARS-01**: JFlex-generated lexer tokenizes all Mako constructs (`${...}`, `% control`, `<%def>`, `<%block>`, `<%inherit>`, `<%include>`, `<%namespace>`, `<%page>`, `<%! %>`, `<% %>`, `<%doc>`, `##`)
+- [x] **PARS-02**: Lexer correctly handles nested constructs (Python expressions inside `${...}`)
+- [x] **PARS-03**: Lexer state is serializable for incremental re-lexing (restart from mid-file)
 - [ ] **PARS-04**: GrammarKit-generated parser builds PSI tree with typed nodes for each Mako construct
 - [ ] **PARS-05**: Parser recovers gracefully from malformed Mako (partial parses, not full failure)
 
@@ -94,9 +94,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LANG-01 | Phase 1 | Complete |
 | LANG-02 | Phase 1 | Complete |
 | LANG-03 | Phase 1 | Complete |
-| PARS-01 | Phase 2 | Pending |
-| PARS-02 | Phase 2 | Pending |
-| PARS-03 | Phase 2 | Pending |
+| PARS-01 | Phase 2 | Complete |
+| PARS-02 | Phase 2 | Complete |
+| PARS-03 | Phase 2 | Complete |
 | PARS-04 | Phase 3 | Pending |
 | PARS-05 | Phase 3 | Pending |
 | SYNX-01 | Phase 4 | Pending |
