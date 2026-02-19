@@ -1,5 +1,7 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
+import org.jetbrains.grammarkit.tasks.GenerateLexerTask
+import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
@@ -9,6 +11,7 @@ plugins {
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
+    alias(libs.plugins.grammarkit) // GrammarKit Plugin
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -29,6 +32,15 @@ repositories {
     }
 }
 
+// Generated source directory for GrammarKit lexer/parser output (Phase 2)
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/gen")
+        }
+    }
+}
+
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/version_catalogs.html
 dependencies {
     testImplementation(libs.junit)
@@ -36,7 +48,7 @@ dependencies {
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
-        intellijIdea(providers.gradleProperty("platformVersion"))
+        pycharmCommunity(providers.gradleProperty("platformVersion"))
 
         // Plugin Dependencies. Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
@@ -135,6 +147,24 @@ tasks {
     publishPlugin {
         dependsOn(patchChangelog)
     }
+
+    // GrammarKit generation tasks — activated in Phase 2 when .flex and .bnf files are created
+    // Uncomment and configure in Phase 2:
+    // val generateMakoLexer = register<GenerateLexerTask>("generateMakoLexer") {
+    //     sourceFile.set(file("src/main/kotlin/com/github/kimuth/jetbrainsmakotemplateplugin/lang/MakoLexer.flex"))
+    //     targetOutputDir.set(file("src/main/gen/com/github/kimuth/jetbrainsmakotemplateplugin/lang"))
+    //     purgeOldFiles.set(true)
+    // }
+    // val generateMakoParser = register<GenerateParserTask>("generateMakoParser") {
+    //     sourceFile.set(file("src/main/kotlin/com/github/kimuth/jetbrainsmakotemplateplugin/lang/Mako.bnf"))
+    //     targetRootOutputDir.set(file("src/main/gen"))
+    //     pathToParser.set("com/github/kimuth/jetbrainsmakotemplateplugin/lang/parser/MakoParser.java")
+    //     pathToPsiRoot.set("com/github/kimuth/jetbrainsmakotemplateplugin/lang/psi")
+    //     purgeOldFiles.set(true)
+    // }
+    // compileKotlin {
+    //     dependsOn(generateMakoLexer, generateMakoParser)
+    // }
 }
 
 intellijPlatformTesting {
