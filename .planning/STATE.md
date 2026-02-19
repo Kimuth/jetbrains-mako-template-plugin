@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 
 ## Current Position
 
-Phase: 2 of 8 (Lexer) — Complete
-Plan: 3 of 3 complete (Phase 2 fully done including gap closure)
-Status: Phase 2 complete — lexer pipeline fully wired, ParserDefinition stubs replaced with working implementations, no exceptions on .mako file open
-Last activity: 2026-02-19 — Plan 03 complete (gap closure: no-op PsiParser + ASTWrapperPsiElement, build passes)
+Phase: 3 of 8 (Parser) — In Progress
+Plan: 1 of 3 complete
+Status: Phase 3 Plan 1 complete — per-tag lexer token types, Mako.bnf grammar with error recovery, MakoParser.java and typed PSI interfaces generated
+Last activity: 2026-02-19 — Plan 01 complete (per-tag TOKEN_OPEN types, Mako.bnf BNF grammar, generateMakoParser activated)
 
-Progress: [████░░░░░░] 25%
+Progress: [████░░░░░░] 28%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: 3 min
-- Total execution time: 0.25 hours
+- Total execution time: 0.27 hours
 
 **By Phase:**
 
@@ -29,16 +29,18 @@ Progress: [████░░░░░░] 25%
 |-------|-------|-------|----------|
 | 01-language-foundation | 2 | 11 min | 5.5 min |
 | 02-lexer | 3 | 7 min | 2.3 min |
+| 03-parser | 1 | 4 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 2 min, 3 min, 3 min, 1 min
-- Trend: stable at ~2 min/plan
+- Last 5 plans: 2 min, 3 min, 3 min, 1 min, 4 min
+- Trend: stable at ~2-4 min/plan
 
 *Updated after each plan completion*
 | Phase 01-language-foundation P02 | 2 | 2 tasks | 5 files |
 | Phase 02-lexer P01 | 3 | 2 tasks | 6 files |
 | Phase 02-lexer P02 | 3 | 2 tasks | 6 files |
 | Phase 02-lexer P03 | 1 | 1 task | 1 file |
+| Phase 03-parser P01 | 4 | 2 tasks | 28 files |
 
 ## Accumulated Context
 
@@ -70,6 +72,11 @@ Recent decisions affecting current work:
 - [Phase 02-02]: TAG_ATTRS > close rule added to MakoLexer.flex — named block tags (<%def name='foo'>) end with > not %>
 - [Phase 02-03]: No-op parser wraps all tokens in single root marker — sufficient for file-open pipeline; Phase 3 replaces with GrammarKit-generated parser
 - [Phase 02-03]: ASTWrapperPsiElement used as createElement() fallback — generic PSI wrapper until Phase 3 generates typed PSI node factory
+- [Phase 03-01]: Per-tag token types (TAG_OPEN_DEF..TAG_OPEN_PAGE) replace generic TAG_OPEN — distinct token types required for GrammarKit to produce distinct PSI node types per Mako tag (PARS-04)
+- [Phase 03-01]: generateTokens=false in BNF header prevents silent parse failures from duplicate token constants (research Pitfall 2)
+- [Phase 03-01]: No yypushback in per-tag flex rules — tag keyword fully consumed in TAG_OPEN_xxx, TAG_ATTRS reads first attribute name directly
+- [Phase 03-01]: line_comment_rule name avoids BNF rule/token name collision with LINE_COMMENT token
+- [Phase 03-01]: def_tag and block_tag have mixin+implements in BNF — mixin classes created in Plan 02
 
 ### Pending Todos
 
@@ -79,10 +86,11 @@ None.
 
 - [RESOLVED - Phase 02-01]: JFlex filter expression handling `|` disambiguation — resolved using EXPRESSION state; `FILTER_SEP` only emitted inside EXPRESSION state, `||` returns `EXPR_CONTENT`
 - [RESOLVED - Phase 02-02]: TAG_ATTRS state missing `>` close rule — added `">"` rule returning TAG_CLOSE; named block tags now tokenize correctly
+- [Expected - Phase 03-01]: `./gradlew build` fails until Plan 02 creates MakoDefTagMixin and MakoBlockTagMixin — by design, build will pass after Plan 02
 - [Research]: TemplateDataLanguageConfigurable exact API for platform build 252 needs verification against current documentation before Phase 4
 
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 02-lexer/02-03-PLAN.md (Phase 2 complete — all 3 plans done including gap closure)
-Resume file: .planning/phases/03-parser/03-01-PLAN.md
+Stopped at: Completed 03-parser/03-01-PLAN.md (per-tag lexer tokens, Mako.bnf grammar, MakoParser.java generated)
+Resume file: .planning/phases/03-parser/03-02-PLAN.md

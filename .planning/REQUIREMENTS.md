@@ -18,8 +18,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **PARS-01**: JFlex-generated lexer tokenizes all Mako constructs (`${...}`, `% control`, `<%def>`, `<%block>`, `<%inherit>`, `<%include>`, `<%namespace>`, `<%page>`, `<%! %>`, `<% %>`, `<%doc>`, `##`)
 - [x] **PARS-02**: Lexer correctly handles nested constructs (Python expressions inside `${...}`)
 - [x] **PARS-03**: Lexer state is serializable for incremental re-lexing (restart from mid-file)
-- [ ] **PARS-04**: GrammarKit-generated parser builds PSI tree with typed nodes for each Mako construct
-- [ ] **PARS-05**: Parser recovers gracefully from malformed Mako (partial parses, not full failure)
+- [x] **PARS-04**: GrammarKit-generated parser builds PSI tree with typed nodes for each Mako construct
+- [x] **PARS-05**: Parser recovers gracefully from malformed Mako (partial parses, not full failure)
 
 ### Syntax & Visual
 
@@ -97,8 +97,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PARS-01 | Phase 2 | Complete |
 | PARS-02 | Phase 2 | Complete |
 | PARS-03 | Phase 2 | Complete |
-| PARS-04 | Phase 3 | Pending |
-| PARS-05 | Phase 3 | Pending |
+| PARS-04 | Phase 3 | Complete |
+| PARS-05 | Phase 3 | Complete |
 | SYNX-01 | Phase 4 | Pending |
 | SYNX-02 | Phase 4 | Pending |
 | SYNX-03 | Phase 4 | Pending |
@@ -120,4 +120,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-19*
-*Last updated: 2026-02-19 after roadmap creation — all 21 requirements mapped*
+*Last updated: 2026-02-19 after Phase 3 Plan 1 — PARS-04 and PARS-05 marked complete*

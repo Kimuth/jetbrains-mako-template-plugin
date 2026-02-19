@@ -63,7 +63,7 @@ Plans:
   4. The `MakoParserDefinition` wires the lexer, parser, and PSI node factory together so opening any `.mako` file does not throw exceptions in the IDE log
 **Plans**: 2 plans
 Plans:
-- [ ] 03-01-PLAN.md — Split TAG_OPEN into per-tag token types, create Mako.bnf grammar with error recovery, activate GenerateParserTask
+- [x] 03-01-PLAN.md — Split TAG_OPEN into per-tag token types, create Mako.bnf grammar with error recovery, activate GenerateParserTask
 - [ ] 03-02-PLAN.md — Create PsiNamedElement mixins, wire MakoParserDefinition to generated parser, add parsing tests
 
 ### Phase 4: Syntax Highlighting and Comment Support
@@ -129,7 +129,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. Language Foundation | 2/2 | Complete    | 2026-02-19 |
 | 2. Lexer | 3/3 | Complete   | 2026-02-19 |
-| 3. Parser and PSI Tree | 0/2 | Not started | - |
+| 3. Parser and PSI Tree | 1/2 | In Progress | - |
 | 4. Syntax Highlighting and Comment Support | 0/TBD | Not started | - |
 | 5. Structural Features | 0/TBD | Not started | - |
 | 6. Python Language Injection | 0/TBD | Not started | - |
