@@ -11,6 +11,7 @@ import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
+import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.psi.tree.TokenSet
 
 class MakoParserDefinition : ParserDefinition {
@@ -26,13 +27,18 @@ class MakoParserDefinition : ParserDefinition {
 
     override fun getStringLiteralElements(): TokenSet = TokenSet.EMPTY
 
-    override fun createParser(project: Project): PsiParser =
-        throw UnsupportedOperationException("MakoParser not yet implemented - Phase 3")
+    override fun createParser(project: Project): PsiParser = PsiParser { root, builder ->
+        val marker = builder.mark()
+        while (builder.tokenType != null) {
+            builder.advanceLexer()
+        }
+        marker.done(root)
+        builder.treeBuilt
+    }
 
     override fun getFileNodeType(): IFileElementType = FILE
 
     override fun createFile(viewProvider: FileViewProvider): PsiFile = MakoFile(viewProvider)
 
-    override fun createElement(node: ASTNode): PsiElement =
-        throw UnsupportedOperationException("MakoElement factory not yet implemented - Phase 3")
+    override fun createElement(node: ASTNode): PsiElement = ASTWrapperPsiElement(node)
 }
