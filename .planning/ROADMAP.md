@@ -12,7 +12,7 @@ Starting from an existing Kotlin/Gradle/IntelliJ Platform scaffold, this roadmap
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Language Foundation** - Register Mako as a language and `.mako` as a recognized file type
+- [x] **Phase 1: Language Foundation** - Register Mako as a language and `.mako` as a recognized file type
 - [ ] **Phase 2: Lexer** - JFlex-generated lexer that correctly tokenizes all Mako constructs with restart-state semantics
 - [ ] **Phase 3: Parser and PSI Tree** - GrammarKit-generated parser with distinct typed PSI nodes for every Mako construct
 - [ ] **Phase 4: Syntax Highlighting and Comment Support** - Distinct colors for all Mako constructs, brace matching, comment toggling, and color scheme settings
@@ -34,8 +34,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The boilerplate tool window, service, and startup activity from the original scaffold are removed
 **Plans**: 2 plans
 Plans:
-- [ ] 01-01-PLAN.md — Remove scaffold boilerplate, configure build for PyCharm Community + GrammarKit
-- [ ] 01-02-PLAN.md — Create MakoLanguage, MakoFileType, MakoIcons, and register fileType in plugin.xml
+- [x] 01-01-PLAN.md — Remove scaffold boilerplate, configure build for PyCharm Community + GrammarKit
+- [x] 01-02-PLAN.md — Create MakoLanguage, MakoFileType, MakoIcons, and register fileType in plugin.xml
 
 ### Phase 2: Lexer
 **Goal**: Every character in a `.mako` file is assigned the correct token type, and the lexer can correctly resume from any mid-file offset
@@ -120,7 +120,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Language Foundation | 1/2 | In Progress | - |
+| 1. Language Foundation | 2/2 | Complete | 2026-02-19 |
 | 2. Lexer | 0/TBD | Not started | - |
 | 3. Parser and PSI Tree | 0/TBD | Not started | - |
 | 4. Syntax Highlighting and Comment Support | 0/TBD | Not started | - |

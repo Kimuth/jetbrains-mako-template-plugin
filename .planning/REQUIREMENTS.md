@@ -9,8 +9,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Language Foundation
 
-- [ ] **LANG-01**: Plugin registers `.mako` as a recognized file type in PyCharm
-- [ ] **LANG-02**: `.mako` files display a Mako-specific icon in the project tree
+- [x] **LANG-01**: Plugin registers `.mako` as a recognized file type in PyCharm
+- [x] **LANG-02**: `.mako` files display a Mako-specific icon in the project tree
 - [x] **LANG-03**: Mako language is registered as a `TemplateLanguage` subclass with the IntelliJ Platform
 
 ### Lexer & Parsing
@@ -91,8 +91,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LANG-01 | Phase 1 | Pending |
-| LANG-02 | Phase 1 | Pending |
+| LANG-01 | Phase 1 | Complete |
+| LANG-02 | Phase 1 | Complete |
 | LANG-03 | Phase 1 | Complete |
 | PARS-01 | Phase 2 | Pending |
 | PARS-02 | Phase 2 | Pending |

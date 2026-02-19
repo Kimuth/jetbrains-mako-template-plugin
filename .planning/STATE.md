@@ -5,35 +5,36 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 1 - Language Foundation
+**Current focus:** Phase 2 - Lexer and Parser
 
 ## Current Position
 
-Phase: 1 of 8 (Language Foundation)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-19 — Plan 01 complete (scaffold cleanup, PyCharm Community build config, GrammarKit)
+Phase: 1 of 8 (Language Foundation) — COMPLETE
+Plan: 2 of 2 in phase (phase complete — advance to Phase 2)
+Status: Phase 1 complete
+Last activity: 2026-02-19 — Plan 02 complete (MakoLanguage + MakoFileType registered, build passes)
 
-Progress: [█░░░░░░░░░] 6%
+Progress: [██░░░░░░░░] 13%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 9 min
-- Total execution time: 0.15 hours
+- Total plans completed: 2
+- Average duration: 5.5 min
+- Total execution time: 0.18 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-language-foundation | 1 | 9 min | 9 min |
+| 01-language-foundation | 2 | 11 min | 5.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 9 min
-- Trend: -
+- Last 5 plans: 9 min, 2 min
+- Trend: accelerating
 
 *Updated after each plan completion*
+| Phase 01-language-foundation P02 | 2 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -50,6 +51,13 @@ Recent decisions affecting current work:
 - [01-01]: org.gradle.java.home pinned to JDK 21 — IntelliJ Platform instrumentCode fails on Windows with JDK 25 (no Packages/ dir in MSI-installed JDK)
 - [01-01]: platformBundledPlugins = PythonCore for bundled Python support in PyCharm Community
 - [01-01]: plugin.xml name = Mako Template Support (marketplace branding)
+- [01-02]: MakoLanguage implements TemplateLanguage (not plain Language) — enables Phase 4 TemplateDataLanguage integration; this was the pre-Phase 1 architecture lock-in
+- [01-02]: fieldName=INSTANCE in plugin.xml fileType — correct for Kotlin object singletons (synthetic INSTANCE field)
+- [01-02]: compound extension .html.mako uses patterns= not extensions= — glob matching required for multi-dot extensions
+- [01-02]: Language ID "Mako Template" must match getName() and plugin.xml name/language attributes exactly — string identity contract enforced to prevent silent failures
+- [Phase 01-02]: MakoLanguage implements TemplateLanguage (not plain Language) — enables Phase 4 TemplateDataLanguage integration; architecture lock-in completed
+- [Phase 01-02]: fieldName=INSTANCE in plugin.xml fileType — correct for Kotlin object singletons which expose synthetic INSTANCE field to Java
+- [Phase 01-02]: compound extension .html.mako uses patterns= not extensions= — glob matching required for multi-dot extensions in fileType registration
 
 ### Pending Todos
 
@@ -63,5 +71,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 01-language-foundation/01-01-PLAN.md
-Resume file: .planning/phases/01-language-foundation/01-02-PLAN.md
+Stopped at: Completed 01-language-foundation/01-02-PLAN.md (Phase 1 complete)
+Resume file: .planning/phases/02-lexer-parser/ (Phase 2 plans)
