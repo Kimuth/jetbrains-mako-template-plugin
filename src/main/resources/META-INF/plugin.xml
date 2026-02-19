@@ -8,5 +8,12 @@
     <depends>com.intellij.modules.python</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <fileType
+            name="Mako Template"
+            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.MakoFileType"
+            fieldName="INSTANCE"
+            language="Mako Template"
+            extensions="mako;mak"
+            patterns="*.html.mako"/>
     </extensions>
 </idea-plugin>
