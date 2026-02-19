@@ -91,33 +91,33 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LANG-01 | — | Pending |
-| LANG-02 | — | Pending |
-| LANG-03 | — | Pending |
-| PARS-01 | — | Pending |
-| PARS-02 | — | Pending |
-| PARS-03 | — | Pending |
-| PARS-04 | — | Pending |
-| PARS-05 | — | Pending |
-| SYNX-01 | — | Pending |
-| SYNX-02 | — | Pending |
-| SYNX-03 | — | Pending |
-| SYNX-04 | — | Pending |
-| SYNX-05 | — | Pending |
-| SYNX-06 | — | Pending |
-| SYNX-07 | — | Pending |
-| EDIT-01 | — | Pending |
-| EDIT-02 | — | Pending |
-| EDIT-03 | — | Pending |
-| COMP-01 | — | Pending |
-| COMP-02 | — | Pending |
-| COMP-03 | — | Pending |
+| LANG-01 | Phase 1 | Pending |
+| LANG-02 | Phase 1 | Pending |
+| LANG-03 | Phase 1 | Pending |
+| PARS-01 | Phase 2 | Pending |
+| PARS-02 | Phase 2 | Pending |
+| PARS-03 | Phase 2 | Pending |
+| PARS-04 | Phase 3 | Pending |
+| PARS-05 | Phase 3 | Pending |
+| SYNX-01 | Phase 4 | Pending |
+| SYNX-02 | Phase 4 | Pending |
+| SYNX-03 | Phase 4 | Pending |
+| SYNX-04 | Phase 4 | Pending |
+| SYNX-05 | Phase 4 | Pending |
+| SYNX-06 | Phase 5 | Pending |
+| SYNX-07 | Phase 4 | Pending |
+| EDIT-01 | Phase 4 | Pending |
+| EDIT-02 | Phase 4 | Pending |
+| EDIT-03 | Phase 5 | Pending |
+| COMP-01 | Phase 7 | Pending |
+| COMP-02 | Phase 7 | Pending |
+| COMP-03 | Phase 8 | Pending |
 
 **Coverage:**
 - v1 requirements: 21 total
-- Mapped to phases: 0
-- Unmapped: 21
+- Mapped to phases: 21
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-19*
-*Last updated: 2026-02-19 after initial definition*
+*Last updated: 2026-02-19 after roadmap creation — all 21 requirements mapped*
