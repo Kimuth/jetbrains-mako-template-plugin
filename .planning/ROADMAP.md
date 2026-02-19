@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Language Foundation** - Register Mako as a language and `.mako` as a recognized file type
 - [x] **Phase 2: Lexer** - JFlex-generated lexer that correctly tokenizes all Mako constructs with restart-state semantics
 - [x] **Phase 3: Parser and PSI Tree** - GrammarKit-generated parser with distinct typed PSI nodes for every Mako construct (completed 2026-02-19)
-- [ ] **Phase 4: Syntax Highlighting and Comment Support** - Distinct colors for all Mako constructs, brace matching, comment toggling, and color scheme settings
+- [x] **Phase 4: Syntax Highlighting and Comment Support** - Distinct colors for all Mako constructs, brace matching, comment toggling, and color scheme settings (completed 2026-02-19)
 - [ ] **Phase 5: Structural Features** - Code folding and structure view panel for navigating defs and blocks
 - [ ] **Phase 6: Python Language Injection** - Inject Python into expression and code block regions via MultiHostInjector
 - [ ] **Phase 7: Completion** - Autocomplete for Mako tag names and tag attributes
@@ -134,7 +134,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 1. Language Foundation | 2/2 | Complete    | 2026-02-19 |
 | 2. Lexer | 3/3 | Complete   | 2026-02-19 |
 | 3. Parser and PSI Tree | 3/3 | Complete    | 2026-02-19 |
-| 4. Syntax Highlighting and Comment Support | 1/2 | In progress | - |
+| 4. Syntax Highlighting and Comment Support | 2/2 | Complete   | 2026-02-19 |
 | 5. Structural Features | 0/TBD | Not started | - |
 | 6. Python Language Injection | 0/TBD | Not started | - |
 | 7. Completion | 0/TBD | Not started | - |
