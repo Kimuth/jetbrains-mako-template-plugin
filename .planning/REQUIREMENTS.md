@@ -23,18 +23,18 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Syntax & Visual
 
-- [ ] **SYNX-01**: Mako directives (`<%def>`, `<%block>`, etc.) are highlighted with distinct colors
-- [ ] **SYNX-02**: Mako expressions (`${...}`) are highlighted distinctly from surrounding HTML
-- [ ] **SYNX-03**: Mako control lines (`% for`, `% if`, `% while`, `% endfor`, etc.) are highlighted
-- [ ] **SYNX-04**: Mako comments (`##` and `<%doc>`) are highlighted as comments
-- [ ] **SYNX-05**: Matching Mako tag pairs (`<%def>` / `</%def>`) are highlighted when cursor is on either
+- [x] **SYNX-01**: Mako directives (`<%def>`, `<%block>`, etc.) are highlighted with distinct colors
+- [x] **SYNX-02**: Mako expressions (`${...}`) are highlighted distinctly from surrounding HTML
+- [x] **SYNX-03**: Mako control lines (`% for`, `% if`, `% while`, `% endfor`, etc.) are highlighted
+- [x] **SYNX-04**: Mako comments (`##` and `<%doc>`) are highlighted as comments
+- [x] **SYNX-05**: Matching Mako tag pairs (`<%def>` / `</%def>`) are highlighted when cursor is on either
 - [ ] **SYNX-06**: User can fold/collapse `<%def>`, `<%block>`, and control flow blocks
-- [ ] **SYNX-07**: User can customize Mako-specific colors via Settings > Editor > Color Scheme
+- [x] **SYNX-07**: User can customize Mako-specific colors via Settings > Editor > Color Scheme
 
 ### Editing
 
-- [ ] **EDIT-01**: User can toggle line comments (`##`) with Ctrl+/
-- [ ] **EDIT-02**: User can toggle block comments (`<%doc>...</%doc>`) with Ctrl+Shift+/
+- [x] **EDIT-01**: User can toggle line comments (`##`) with Ctrl+/
+- [x] **EDIT-02**: User can toggle block comments (`<%doc>...</%doc>`) with Ctrl+Shift+/
 - [ ] **EDIT-03**: Structure view panel shows all `<%def>` and `<%block>` declarations as navigable nodes
 
 ### Completion & Errors
@@ -99,15 +99,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PARS-03 | Phase 2 | Complete |
 | PARS-04 | Phase 3 | Complete |
 | PARS-05 | Phase 3 | Complete |
-| SYNX-01 | Phase 4 | Pending |
-| SYNX-02 | Phase 4 | Pending |
-| SYNX-03 | Phase 4 | Pending |
-| SYNX-04 | Phase 4 | Pending |
-| SYNX-05 | Phase 4 | Pending |
+| SYNX-01 | Phase 4 | Complete |
+| SYNX-02 | Phase 4 | Complete |
+| SYNX-03 | Phase 4 | Complete |
+| SYNX-04 | Phase 4 | Complete |
+| SYNX-05 | Phase 4 | Complete |
 | SYNX-06 | Phase 5 | Pending |
-| SYNX-07 | Phase 4 | Pending |
-| EDIT-01 | Phase 4 | Pending |
-| EDIT-02 | Phase 4 | Pending |
+| SYNX-07 | Phase 4 | Complete |
+| EDIT-01 | Phase 4 | Complete |
+| EDIT-02 | Phase 4 | Complete |
 | EDIT-03 | Phase 5 | Pending |
 | COMP-01 | Phase 7 | Pending |
 | COMP-02 | Phase 7 | Pending |

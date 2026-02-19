@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 3 - Parser (GrammarKit BNF + MakoParser) — COMPLETE
+**Current focus:** Phase 4 - Syntax Highlighting and Comment Support — Plan 1 of 1 COMPLETE
 
 ## Current Position
 
-Phase: 3 of 8 (Parser) — Complete
-Plan: 3 of 3 complete
-Status: Phase 3 complete — GAP-01 closed (CONTROL_LINE name collision fixed), control lines produce CONTROL_LINE_STMT PSI nodes, all tests pass
-Last activity: 2026-02-19 — Plan 03 complete (CONTROL_LINE token/composite collision fixed, control_line_stmt BNF rule, test fixtures regenerated)
+Phase: 4 of 8 (Syntax Highlighting) — Complete
+Plan: 1 of 1 complete
+Status: Phase 4 complete — syntax highlighting, color settings, brace matching, and comment toggling implemented; full build passes with all 22 tests green
+Last activity: 2026-02-19 — Plan 01 complete (MakoSyntaxHighlighter + Factory + ColorSettingsPage + PairedBraceMatcher + Commenter; 4 extension points registered in plugin.xml)
 
-Progress: [█████░░░░░] 38%
+Progress: [██████░░░░] 50%
 
 ## Performance Metrics
 
@@ -30,9 +30,10 @@ Progress: [█████░░░░░] 38%
 | 01-language-foundation | 2 | 11 min | 5.5 min |
 | 02-lexer | 3 | 7 min | 2.3 min |
 | 03-parser | 3 | 15 min | 5 min |
+| 04-syntax-highlighting | 1 | 2 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 3 min, 3 min, 1 min, 4 min, 8 min
+- Last 5 plans: 2 min, 3 min, 3 min, 1 min, 4 min
 - Trend: stable at ~2-4 min/plan
 
 *Updated after each plan completion*
@@ -43,6 +44,7 @@ Progress: [█████░░░░░] 38%
 | Phase 03-parser P01 | 4 | 2 tasks | 28 files |
 | Phase 03-parser P02 | 8 | 2 tasks | 10 files |
 | Phase 03-parser P03 | 3 | 2 tasks | 8 files |
+| Phase 04-syntax-highlighting P01 | 2 | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -84,6 +86,10 @@ Recent decisions affecting current work:
 - [Phase 03-parser]: Mixin classes are abstract and extend ASTWrapperPsiElement; getNameIdentifier is PsiNameIdentifierOwner not PsiNamedElement -- omitted from mixin
 - [Phase 03-parser]: BNF rule renamed control_line -> control_line_stmt to fix CONTROL_LINE composite/token name collision (GAP-01): CONTROL_LINE is now exclusively a token delegate in MakoTypes.java, CONTROL_LINE_STMT is the composite
 - [Phase 03-parser]: purgeOldFiles=true in GrammarKit config automatically purges old PSI files when BNF rules are renamed -- MakoControlLine.java and MakoControlLineImpl.java were auto-deleted when control_line was renamed to control_line_stmt
+- [Phase 04-01]: structural=false for ALL BracePair entries — shared END_TAG token across <%def> and <%block> causes platform matching conflicts with structural=true
+- [Phase 04-01]: colorSettingsPage uses 'implementation' attribute (not 'implementationClass') and has no 'language' attribute — different from other language-scoped extensions
+- [Phase 04-01]: All MAKO_ TextAttributesKey constants prefixed with MAKO_ to avoid global name collisions with other language highlighters
+- [Phase 04-01]: TEMPLATE_TEXT and TAG_ATTR_EQ both return EMPTY_KEYS — HTML layer handles template text; TAG_ATTR_EQ is plain punctuation needing no special color
 
 ### Pending Todos
 
@@ -100,5 +106,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 03-parser/03-03-PLAN.md (GAP-01 closed: CONTROL_LINE name collision fixed, control_line_stmt BNF rule, MakoControlLineStmtImpl PSI nodes, all tests pass)
-Resume file: .planning/phases/04-template-language/ (Phase 4)
+Stopped at: Completed 04-syntax-highlighting-comment-support/04-01-PLAN.md (MakoSyntaxHighlighter + Factory + ColorSettingsPage + PairedBraceMatcher + Commenter; 4 extension points in plugin.xml; build green)
+Resume file: .planning/phases/05-template-language/ (Phase 5)
