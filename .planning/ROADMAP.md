@@ -46,10 +46,11 @@ Plans:
   2. Nested constructs such as a Python expression inside `${...}` are tokenized correctly (inner expression tokens are distinct from surrounding Mako delimiters)
   3. Editing a line in the middle of a large `.mako` file does not corrupt token coloring below the edit point (restart-state semantics work)
   4. Filter expressions (`${x | h,trim}`) tokenize the `|` as a Mako filter separator, not as Python bitwise OR
-**Plans**: 2 plans
+**Plans**: 3 plans
 Plans:
 - [x] 02-01-PLAN.md — JFlex lexer with multi-state tokenization, token types, Gradle generation wiring
 - [x] 02-02-PLAN.md — ParserDefinition stub, plugin.xml registration, lexer integration tests
+- [x] 02-03-PLAN.md — Gap closure: replace UnsupportedOperationException stubs with no-op parser and ASTWrapperPsiElement
 
 ### Phase 3: Parser and PSI Tree
 **Goal**: The parser builds a typed PSI tree where every Mako construct has a distinct node class that supports future reference resolution
