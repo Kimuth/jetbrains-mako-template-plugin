@@ -10,17 +10,17 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 2 of 8 (Lexer) — Complete
-Plan: 2 of 2 complete (Phase 2 fully done)
-Status: Phase 2 complete — lexer pipeline fully wired, all PARS-01/02/03 requirements verified
-Last activity: 2026-02-19 — Plan 02 complete (MakoParserDefinition, MakoFile, plugin.xml registered, 18 lexer tests passing)
+Plan: 3 of 3 complete (Phase 2 fully done including gap closure)
+Status: Phase 2 complete — lexer pipeline fully wired, ParserDefinition stubs replaced with working implementations, no exceptions on .mako file open
+Last activity: 2026-02-19 — Plan 03 complete (gap closure: no-op PsiParser + ASTWrapperPsiElement, build passes)
 
 Progress: [████░░░░░░] 25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 3.75 min
+- Total plans completed: 5
+- Average duration: 3 min
 - Total execution time: 0.25 hours
 
 **By Phase:**
@@ -28,16 +28,17 @@ Progress: [████░░░░░░] 25%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-language-foundation | 2 | 11 min | 5.5 min |
-| 02-lexer | 2 | 6 min | 3 min |
+| 02-lexer | 3 | 7 min | 2.3 min |
 
 **Recent Trend:**
-- Last 5 plans: 9 min, 2 min, 3 min, 3 min
-- Trend: stable at 3 min/plan
+- Last 5 plans: 2 min, 3 min, 3 min, 1 min
+- Trend: stable at ~2 min/plan
 
 *Updated after each plan completion*
 | Phase 01-language-foundation P02 | 2 | 2 tasks | 5 files |
 | Phase 02-lexer P01 | 3 | 2 tasks | 6 files |
 | Phase 02-lexer P02 | 3 | 2 tasks | 6 files |
+| Phase 02-lexer P03 | 1 | 1 task | 1 file |
 
 ## Accumulated Context
 
@@ -67,6 +68,8 @@ Recent decisions affecting current work:
 - [Phase 02-02]: createParser() and createElement() throw UnsupportedOperationException — Phase 3 stubs; platform never calls these during lexer-only operation
 - [Phase 02-02]: MakoFile stub delegates getFileType() only — Phase 3 extends with createElement factory when GrammarKit parser generates PSI nodes
 - [Phase 02-02]: TAG_ATTRS > close rule added to MakoLexer.flex — named block tags (<%def name='foo'>) end with > not %>
+- [Phase 02-03]: No-op parser wraps all tokens in single root marker — sufficient for file-open pipeline; Phase 3 replaces with GrammarKit-generated parser
+- [Phase 02-03]: ASTWrapperPsiElement used as createElement() fallback — generic PSI wrapper until Phase 3 generates typed PSI node factory
 
 ### Pending Todos
 
@@ -81,5 +84,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 02-lexer/02-02-PLAN.md (Phase 2 complete — all 2 plans done)
+Stopped at: Completed 02-lexer/02-03-PLAN.md (Phase 2 complete — all 3 plans done including gap closure)
 Resume file: .planning/phases/03-parser/03-01-PLAN.md
