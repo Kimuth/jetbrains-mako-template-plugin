@@ -15,5 +15,7 @@
             language="Mako Template"
             extensions="mako;mak"
             patterns="*.html.mako"/>
+        <lang.parserDefinition language="Mako Template"
+            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoParserDefinition"/>
     </extensions>
 </idea-plugin>
