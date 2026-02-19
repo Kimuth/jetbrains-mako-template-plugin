@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Language Foundation** - Register Mako as a language and `.mako` as a recognized file type
 - [x] **Phase 2: Lexer** - JFlex-generated lexer that correctly tokenizes all Mako constructs with restart-state semantics
-- [x] **Phase 3: Parser and PSI Tree** - GrammarKit-generated parser with distinct typed PSI nodes for every Mako construct (completed 2026-02-19)
+- [x] **Phase 3: Parser and PSI Tree** - GrammarKit-generated parser with distinct typed PSI nodes for every Mako construct (completed 2026-02-19)
 - [ ] **Phase 4: Syntax Highlighting and Comment Support** - Distinct colors for all Mako constructs, brace matching, comment toggling, and color scheme settings
 - [ ] **Phase 5: Structural Features** - Code folding and structure view panel for navigating defs and blocks
 - [ ] **Phase 6: Python Language Injection** - Inject Python into expression and code block regions via MultiHostInjector
@@ -65,7 +65,7 @@ Plans:
 Plans:
 - [x] 03-01-PLAN.md — Split TAG_OPEN into per-tag token types, create Mako.bnf grammar with error recovery, activate GenerateParserTask
 - [x] 03-02-PLAN.md — Create PsiNamedElement mixins, wire MakoParserDefinition to generated parser, add parsing tests
-- [ ] 03-03-PLAN.md — Gap closure: fix CONTROL_LINE token/composite name collision by renaming BNF rule to control_line_stmt
+- [x] 03-03-PLAN.md — Gap closure: fix CONTROL_LINE token/composite name collision by renaming BNF rule to control_line_stmt
 
 ### Phase 4: Syntax Highlighting and Comment Support
 **Goal**: Mako constructs are visually distinct from surrounding HTML content and users can comment/uncomment Mako lines with standard keybindings
@@ -77,7 +77,9 @@ Plans:
   3. Pressing Ctrl+/ on a line containing Mako code inserts a `##` line comment prefix; pressing again removes it
   4. Pressing Ctrl+Shift+/ wraps selected Mako content in `<%doc>...</%doc>` block comment tags; pressing again unwraps it
   5. Mako-specific colors appear as named entries in Settings > Editor > Color Scheme > Mako and can be customized by the user
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 04-01-PLAN.md — Create MakoSyntaxHighlighter, ColorSettingsPage, PairedBraceMatcher, Commenter and register in plugin.xml
 
 ### Phase 5: Structural Features
 **Goal**: Users can collapse large template sections and navigate directly to named defs and blocks without scrolling
@@ -130,8 +132,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 |-------|----------------|--------|-----------|
 | 1. Language Foundation | 2/2 | Complete    | 2026-02-19 |
 | 2. Lexer | 3/3 | Complete   | 2026-02-19 |
-| 3. Parser and PSI Tree | 2/3 | Complete    | 2026-02-19 |
-| 4. Syntax Highlighting and Comment Support | 0/TBD | Not started | - |
+| 3. Parser and PSI Tree | 3/3 | Complete    | 2026-02-19 |
+| 4. Syntax Highlighting and Comment Support | 0/1 | Not started | - |
 | 5. Structural Features | 0/TBD | Not started | - |
 | 6. Python Language Injection | 0/TBD | Not started | - |
 | 7. Completion | 0/TBD | Not started | - |
