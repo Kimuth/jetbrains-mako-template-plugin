@@ -17,5 +17,19 @@
             patterns="*.html.mako"/>
         <lang.parserDefinition language="Mako Template"
             implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoParserDefinition"/>
+
+        <!-- Phase 4: Syntax Highlighting -->
+        <lang.syntaxHighlighterFactory language="Mako Template"
+            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.highlighting.MakoSyntaxHighlighterFactory"/>
+        <colorSettingsPage
+            implementation="com.github.kimuth.jetbrainsmakotemplateplugin.lang.highlighting.MakoColorSettingsPage"/>
+
+        <!-- Phase 4: Tag Pair Matching -->
+        <lang.braceMatcher language="Mako Template"
+            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.highlighting.MakoPairedBraceMatcher"/>
+
+        <!-- Phase 4: Comment Toggling -->
+        <lang.commenter language="Mako Template"
+            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.editing.MakoCommenter"/>
     </extensions>
 </idea-plugin>
