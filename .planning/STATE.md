@@ -5,38 +5,39 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 2 - Lexer and Parser
+**Current focus:** Phase 3 - Parser (GrammarKit BNF + MakoParser)
 
 ## Current Position
 
-Phase: 2 of 8 (Lexer) — In Progress
-Plan: 1 of 2 complete (advance to Plan 02)
-Status: Phase 2 Plan 01 complete
-Last activity: 2026-02-19 — Plan 01 complete (MakoTokenTypes, MakoLexer.flex, _MakoLexer.java generated, full build passes)
+Phase: 2 of 8 (Lexer) — Complete
+Plan: 2 of 2 complete (Phase 2 fully done)
+Status: Phase 2 complete — lexer pipeline fully wired, all PARS-01/02/03 requirements verified
+Last activity: 2026-02-19 — Plan 02 complete (MakoParserDefinition, MakoFile, plugin.xml registered, 18 lexer tests passing)
 
-Progress: [███░░░░░░░] 19%
+Progress: [████░░░░░░] 25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 4.3 min
-- Total execution time: 0.23 hours
+- Total plans completed: 4
+- Average duration: 3.75 min
+- Total execution time: 0.25 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-language-foundation | 2 | 11 min | 5.5 min |
-| 02-lexer | 1 | 3 min | 3 min |
+| 02-lexer | 2 | 6 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 9 min, 2 min, 3 min
-- Trend: accelerating
+- Last 5 plans: 9 min, 2 min, 3 min, 3 min
+- Trend: stable at 3 min/plan
 
 *Updated after each plan completion*
 | Phase 01-language-foundation P02 | 2 | 2 tasks | 5 files |
 | Phase 02-lexer P01 | 3 | 2 tasks | 6 files |
+| Phase 02-lexer P02 | 3 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -63,6 +64,9 @@ Recent decisions affecting current work:
 - [Phase 02-01]: MakoLexer.flex placed in src/main/grammars/ (not src/main/kotlin/lang/) — cleaner convention separating grammar files from Kotlin sources
 - [Phase 02-01]: CONTROL_LINE uses single token for entire % line — sufficient for Phase 2 restart anchors; Phase 3 parser can split if needed
 - [Phase 02-01]: Only generateMakoLexer activated in Phase 2 — generateMakoParser stays commented, no .bnf file exists until Phase 3
+- [Phase 02-02]: createParser() and createElement() throw UnsupportedOperationException — Phase 3 stubs; platform never calls these during lexer-only operation
+- [Phase 02-02]: MakoFile stub delegates getFileType() only — Phase 3 extends with createElement factory when GrammarKit parser generates PSI nodes
+- [Phase 02-02]: TAG_ATTRS > close rule added to MakoLexer.flex — named block tags (<%def name='foo'>) end with > not %>
 
 ### Pending Todos
 
@@ -71,10 +75,11 @@ None.
 ### Blockers/Concerns
 
 - [RESOLVED - Phase 02-01]: JFlex filter expression handling `|` disambiguation — resolved using EXPRESSION state; `FILTER_SEP` only emitted inside EXPRESSION state, `||` returns `EXPR_CONTENT`
+- [RESOLVED - Phase 02-02]: TAG_ATTRS state missing `>` close rule — added `">"` rule returning TAG_CLOSE; named block tags now tokenize correctly
 - [Research]: TemplateDataLanguageConfigurable exact API for platform build 252 needs verification against current documentation before Phase 4
 
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 02-lexer/02-01-PLAN.md (Phase 2 Plan 1 complete)
-Resume file: .planning/phases/02-lexer/02-02-PLAN.md
+Stopped at: Completed 02-lexer/02-02-PLAN.md (Phase 2 complete — all 2 plans done)
+Resume file: .planning/phases/03-parser/03-01-PLAN.md

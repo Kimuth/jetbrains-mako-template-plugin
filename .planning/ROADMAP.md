@@ -13,7 +13,7 @@ Starting from an existing Kotlin/Gradle/IntelliJ Platform scaffold, this roadmap
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Language Foundation** - Register Mako as a language and `.mako` as a recognized file type
-- [ ] **Phase 2: Lexer** - JFlex-generated lexer that correctly tokenizes all Mako constructs with restart-state semantics
+- [x] **Phase 2: Lexer** - JFlex-generated lexer that correctly tokenizes all Mako constructs with restart-state semantics
 - [ ] **Phase 3: Parser and PSI Tree** - GrammarKit-generated parser with distinct typed PSI nodes for every Mako construct
 - [ ] **Phase 4: Syntax Highlighting and Comment Support** - Distinct colors for all Mako constructs, brace matching, comment toggling, and color scheme settings
 - [ ] **Phase 5: Structural Features** - Code folding and structure view panel for navigating defs and blocks
@@ -48,8 +48,8 @@ Plans:
   4. Filter expressions (`${x | h,trim}`) tokenize the `|` as a Mako filter separator, not as Python bitwise OR
 **Plans**: 2 plans
 Plans:
-- [ ] 02-01-PLAN.md — JFlex lexer with multi-state tokenization, token types, Gradle generation wiring
-- [ ] 02-02-PLAN.md — ParserDefinition stub, plugin.xml registration, lexer integration tests
+- [x] 02-01-PLAN.md — JFlex lexer with multi-state tokenization, token types, Gradle generation wiring
+- [x] 02-02-PLAN.md — ParserDefinition stub, plugin.xml registration, lexer integration tests
 
 ### Phase 3: Parser and PSI Tree
 **Goal**: The parser builds a typed PSI tree where every Mako construct has a distinct node class that supports future reference resolution
@@ -124,7 +124,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Language Foundation | 2/2 | Complete    | 2026-02-19 |
-| 2. Lexer | 0/2 | Not started | - |
+| 2. Lexer | 2/2 | Complete    | 2026-02-19 |
 | 3. Parser and PSI Tree | 0/TBD | Not started | - |
 | 4. Syntax Highlighting and Comment Support | 0/TBD | Not started | - |
 | 5. Structural Features | 0/TBD | Not started | - |
