@@ -23,6 +23,8 @@
             implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.highlighting.MakoSyntaxHighlighterFactory"/>
         <colorSettingsPage
             implementation="com.github.kimuth.jetbrainsmakotemplateplugin.lang.highlighting.MakoColorSettingsPage"/>
+        <additionalTextAttributes scheme="Default" file="colorSchemes/MakoDefault.xml"/>
+        <additionalTextAttributes scheme="Darcula" file="colorSchemes/MakoDarcula.xml"/>
 
         <!-- Phase 4: Tag Pair Matching -->
         <lang.braceMatcher language="Mako Template"
