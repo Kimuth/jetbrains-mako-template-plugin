@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 04-syntax-highlighting-comment-support
 source: [04-01-SUMMARY.md]
 started: 2026-02-20T00:00:00Z
@@ -50,6 +50,10 @@ skipped: 0
   reason: "User reported: `<%def name=\"foo()\">`, `% if x:`, `## comment` and `<%doc>` do have distinct colors from plain text (or HTML), but `${foo}` or `${\"foo\"}` just looks like plain text"
   severity: major
   test: 1
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "MAKO_EXPRESSION TextAttributesKey falls back to TEMPLATE_LANGUAGE_COLOR which inherits from HighlighterColors.TEXT (plain text color with no visible foreground)"
+  artifacts:
+    - path: "src/main/kotlin/com/github/kimuth/jetbrainsmakotemplateplugin/lang/highlighting/MakoSyntaxHighlighter.kt"
+      issue: "Line 22: MAKO_EXPRESSION fallback is TEMPLATE_LANGUAGE_COLOR which resolves to plain text"
+  missing:
+    - "Change MAKO_EXPRESSION fallback to a visually distinct color (e.g., MARKUP_TAG or NUMBER)"
+  debug_session: ".planning/debug/expr-highlight-issue.md"
