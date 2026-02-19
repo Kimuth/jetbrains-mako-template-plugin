@@ -72,8 +72,10 @@ class _MakoLexer implements FlexLexer {
     "\11\0\1\1\1\2\2\3\1\4\22\0\1\1\1\5"+
     "\1\6\1\7\1\10\1\11\1\0\1\12\7\0\1\13"+
     "\12\14\2\0\1\15\1\16\1\17\2\0\32\20\1\0"+
-    "\1\21\2\0\1\22\1\0\2\20\1\23\1\24\12\20"+
-    "\1\25\13\20\1\26\1\27\1\30\7\0\1\3\u01a2\0"+
+    "\1\21\2\0\1\22\1\0\1\23\1\24\1\25\1\26"+
+    "\1\27\1\30\1\31\1\32\1\33\1\20\1\34\1\35"+
+    "\1\36\1\37\1\40\1\41\1\20\1\42\1\43\1\44"+
+    "\1\45\5\20\1\46\1\47\1\50\7\0\1\3\u01a2\0"+
     "\2\3\326\0\u0100\3";
 
   private static int [] zzUnpackcmap_blocks() {
@@ -105,11 +107,13 @@ class _MakoLexer implements FlexLexer {
     "\1\7\1\2\3\7\1\10\1\11\1\12\1\0\1\13"+
     "\1\0\1\14\2\15\1\16\1\17\3\0\1\20\1\0"+
     "\1\3\3\0\1\21\1\0\1\22\1\0\2\23\1\24"+
-    "\2\25\1\26\1\0\1\26\1\0\3\27\1\30\2\31"+
-    "\1\0\1\32\5\0\1\33\1\0\1\34\1\0\1\35";
+    "\2\25\1\26\1\0\1\26\1\0\3\27\1\30\6\0"+
+    "\1\31\12\0\1\32\5\0\1\33\2\0\1\34\3\0"+
+    "\1\35\1\0\1\36\3\0\1\37\3\0\1\40\1\41"+
+    "\2\0\1\42";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[78];
+    int [] result = new int[109];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -134,19 +138,23 @@ class _MakoLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\31\0\62\0\113\0\144\0\175\0\226\0\257"+
-    "\0\310\0\341\0\372\0\u0113\0\310\0\u012c\0\u0145\0\u015e"+
-    "\0\u0177\0\u0190\0\u01a9\0\310\0\u01c2\0\310\0\310\0\u01db"+
-    "\0\u01f4\0\u020d\0\u0226\0\310\0\310\0\u023f\0\u0258\0\u0271"+
-    "\0\u028a\0\u02a3\0\u02bc\0\u02d5\0\u02ee\0\310\0\u0307\0\u0320"+
-    "\0\u015e\0\u0339\0\u0190\0\310\0\u0352\0\u01a9\0\u036b\0\310"+
-    "\0\u01f4\0\310\0\u0226\0\u0258\0\310\0\310\0\u028a\0\310"+
-    "\0\u02bc\0\u02bc\0\310\0\u0384\0\u039d\0\310\0\u03b6\0\310"+
-    "\0\310\0\u03cf\0\u03e8\0\310\0\u0401\0\u041a\0\u0433\0\u044c"+
-    "\0\u0465\0\310\0\u047e\0\310\0\u0497\0\310";
+    "\0\0\0\51\0\122\0\173\0\244\0\315\0\366\0\u011f"+
+    "\0\u0148\0\u0171\0\u019a\0\u01c3\0\u0148\0\u01ec\0\u0215\0\u023e"+
+    "\0\u0267\0\u0290\0\u02b9\0\u0148\0\u02e2\0\u0148\0\u0148\0\u030b"+
+    "\0\u0334\0\u035d\0\u0386\0\u0148\0\u0148\0\u03af\0\u03d8\0\u0401"+
+    "\0\u042a\0\u0453\0\u047c\0\u04a5\0\u04ce\0\u0148\0\u04f7\0\u0520"+
+    "\0\u023e\0\u0549\0\u0290\0\u0148\0\u0572\0\u02b9\0\u059b\0\u0148"+
+    "\0\u0334\0\u0148\0\u0386\0\u03d8\0\u0148\0\u0148\0\u042a\0\u0148"+
+    "\0\u047c\0\u047c\0\u0148\0\u05c4\0\u05ed\0\u0148\0\u0616\0\u0148"+
+    "\0\u063f\0\u0668\0\u0691\0\u06ba\0\u06e3\0\u070c\0\u0148\0\u0735"+
+    "\0\u075e\0\u0787\0\u07b0\0\u07d9\0\u0802\0\u082b\0\u0854\0\u087d"+
+    "\0\u08a6\0\u0148\0\u08cf\0\u08f8\0\u0921\0\u094a\0\u0973\0\u0148"+
+    "\0\u099c\0\u09c5\0\u0148\0\u09ee\0\u0a17\0\u0a40\0\u0148\0\u0a69"+
+    "\0\u0148\0\u0a92\0\u0abb\0\u0ae4\0\u0148\0\u0b0d\0\u0b36\0\u0b5f"+
+    "\0\u0148\0\u0148\0\u0b88\0\u0bb1\0\u0148";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[78];
+    int [] result = new int[109];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -170,36 +178,43 @@ class _MakoLexer implements FlexLexer {
 
   private static final String ZZ_TRANS_PACKED_0 =
     "\2\10\1\11\1\10\1\12\2\10\1\13\1\14\1\15"+
-    "\3\10\1\16\14\10\1\17\1\11\1\10\1\12\2\10"+
-    "\1\13\1\14\1\20\3\10\1\16\13\10\6\21\1\22"+
-    "\3\21\1\23\13\21\1\24\1\25\1\26\1\27\1\30"+
+    "\3\10\1\16\34\10\1\17\1\11\1\10\1\12\2\10"+
+    "\1\13\1\14\1\20\3\10\1\16\33\10\6\21\1\22"+
+    "\3\21\1\23\33\21\1\24\1\25\1\26\1\27\1\30"+
     "\1\11\1\0\1\12\1\27\1\31\2\27\1\32\1\33"+
-    "\1\32\2\27\1\34\1\35\1\36\1\27\4\36\3\27"+
-    "\11\37\1\40\17\37\11\41\1\42\17\41\15\43\1\44"+
-    "\13\43\2\10\1\0\1\10\1\0\2\10\3\0\3\10"+
-    "\1\0\13\10\33\0\1\11\35\0\1\45\47\0\1\46"+
-    "\13\0\1\47\1\0\1\50\15\0\1\10\1\17\1\0"+
-    "\1\10\1\0\2\10\2\0\1\51\3\10\1\0\13\10"+
-    "\2\52\1\0\1\52\1\0\4\52\1\15\17\52\6\21"+
-    "\1\0\3\21\1\0\13\21\3\0\6\53\1\54\12\53"+
-    "\1\55\7\53\12\56\1\54\6\56\1\57\7\56\27\60"+
-    "\1\54\1\60\1\0\1\30\27\0\6\61\1\62\22\61"+
-    "\17\0\1\35\11\0\12\63\1\62\16\63\14\0\1\36"+
-    "\3\0\1\36\1\0\4\36\3\0\11\64\1\65\5\64"+
-    "\1\37\11\64\17\65\1\66\11\65\11\67\1\70\5\67"+
-    "\1\41\11\67\17\70\1\66\11\70\13\71\1\72\1\71"+
-    "\1\73\13\71\13\73\1\74\15\73\2\45\1\0\1\45"+
-    "\1\0\24\45\1\0\1\75\1\76\1\0\1\77\1\100"+
-    "\12\0\1\101\2\0\1\101\1\102\1\101\14\0\1\103"+
-    "\17\0\2\52\1\0\1\52\1\0\24\52\2\53\3\0"+
-    "\24\53\2\56\3\0\24\56\11\104\1\105\17\104\1\0"+
-    "\1\75\31\0\1\76\53\0\1\106\23\0\1\107\2\0"+
-    "\3\107\27\0\1\110\27\0\1\111\24\0\1\112\1\107"+
-    "\2\0\3\107\30\0\1\113\22\0\1\114\34\0\1\115"+
-    "\24\0\1\116\11\0";
+    "\1\32\2\27\1\34\1\35\1\36\1\27\24\36\3\27"+
+    "\11\37\1\40\37\37\11\41\1\42\37\41\15\43\1\44"+
+    "\33\43\2\10\1\0\1\10\1\0\2\10\3\0\3\10"+
+    "\1\0\33\10\53\0\1\11\55\0\1\45\107\0\1\46"+
+    "\13\0\1\47\1\0\1\50\35\0\1\10\1\17\1\0"+
+    "\1\10\1\0\2\10\2\0\1\51\3\10\1\0\33\10"+
+    "\2\52\1\0\1\52\1\0\4\52\1\15\37\52\6\21"+
+    "\1\0\3\21\1\0\33\21\3\0\6\53\1\54\12\53"+
+    "\1\55\27\53\12\56\1\54\6\56\1\57\27\56\47\60"+
+    "\1\54\1\60\1\0\1\30\47\0\6\61\1\62\42\61"+
+    "\17\0\1\35\31\0\12\63\1\62\36\63\14\0\1\36"+
+    "\3\0\1\36\1\0\24\36\3\0\11\64\1\65\5\64"+
+    "\1\37\31\64\17\65\1\66\31\65\11\67\1\70\5\67"+
+    "\1\41\31\67\17\70\1\66\31\70\13\71\1\72\1\71"+
+    "\1\73\33\71\13\73\1\74\35\73\2\45\1\0\1\45"+
+    "\1\0\44\45\1\0\1\75\1\76\1\0\1\77\1\100"+
+    "\16\0\1\101\1\0\1\102\4\0\1\103\3\0\1\104"+
+    "\1\0\1\105\20\0\1\106\37\0\2\52\1\0\1\52"+
+    "\1\0\44\52\2\53\3\0\44\53\2\56\3\0\44\56"+
+    "\11\107\1\110\37\107\1\0\1\75\51\0\1\76\103\0"+
+    "\1\111\42\0\1\112\10\0\1\113\47\0\1\114\34\0"+
+    "\1\115\50\0\1\116\45\0\1\117\2\0\23\117\31\0"+
+    "\1\120\62\0\1\121\40\0\1\122\45\0\1\123\50\0"+
+    "\1\124\4\0\1\125\54\0\1\126\43\0\1\127\36\0"+
+    "\1\130\1\117\2\0\23\117\43\0\1\131\35\0\1\132"+
+    "\42\0\1\133\66\0\1\134\42\0\1\135\50\0\1\136"+
+    "\50\0\1\137\46\0\1\140\57\0\1\141\61\0\1\142"+
+    "\45\0\1\143\51\0\1\144\24\0\1\145\57\0\1\146"+
+    "\55\0\1\147\56\0\1\150\36\0\1\151\65\0\1\152"+
+    "\27\0\1\153\52\0\1\154\52\0\1\155\21\0";
 
   private static int [] zzUnpacktrans() {
-    int [] result = new int[1200];
+    int [] result = new int[3034];
     int offset = 0;
     offset = zzUnpacktrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -241,11 +256,12 @@ class _MakoLexer implements FlexLexer {
     "\2\11\4\1\2\11\1\1\1\0\1\1\1\0\4\1"+
     "\1\11\3\0\1\1\1\0\1\11\3\0\1\11\1\0"+
     "\1\11\1\0\1\1\2\11\1\1\1\11\1\1\1\0"+
-    "\1\11\1\0\1\1\1\11\1\1\2\11\1\1\1\0"+
-    "\1\11\5\0\1\11\1\0\1\11\1\0\1\11";
+    "\1\11\1\0\1\1\1\11\1\1\1\11\6\0\1\11"+
+    "\12\0\1\11\5\0\1\11\2\0\1\11\3\0\1\11"+
+    "\1\0\1\11\3\0\1\11\3\0\2\11\2\0\1\11";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[78];
+    int [] result = new int[109];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -611,27 +627,27 @@ class _MakoLexer implements FlexLexer {
             { return TEMPLATE_TEXT;
             }
           // fall through
-          case 30: break;
+          case 35: break;
           case 2:
             { return TokenType.WHITE_SPACE;
             }
           // fall through
-          case 31: break;
+          case 36: break;
           case 3:
             { return EXPR_CONTENT;
             }
           // fall through
-          case 32: break;
+          case 37: break;
           case 4:
             { braceDepth++; return EXPR_CONTENT;
             }
           // fall through
-          case 33: break;
+          case 38: break;
           case 5:
             { return FILTER_SEP;
             }
           // fall through
-          case 34: break;
+          case 39: break;
           case 6:
             { if (braceDepth > 0) {
                                        braceDepth--;
@@ -643,57 +659,57 @@ class _MakoLexer implements FlexLexer {
                                      }
             }
           // fall through
-          case 35: break;
+          case 40: break;
           case 7:
             { return TokenType.BAD_CHARACTER;
             }
           // fall through
-          case 36: break;
+          case 41: break;
           case 8:
             { return TAG_ATTR_EQ;
             }
           // fall through
-          case 37: break;
+          case 42: break;
           case 9:
             { yybegin(YYINITIAL); return TAG_CLOSE;
             }
           // fall through
-          case 38: break;
+          case 43: break;
           case 10:
             { return TAG_ATTR_NAME;
             }
           // fall through
-          case 39: break;
+          case 44: break;
           case 11:
             { return CODE_CONTENT;
             }
           // fall through
-          case 40: break;
+          case 45: break;
           case 12:
             { return MODULE_CONTENT;
             }
           // fall through
-          case 41: break;
+          case 46: break;
           case 13:
             { return DOC_CONTENT;
             }
           // fall through
-          case 42: break;
+          case 47: break;
           case 14:
             { return LINE_COMMENT;
             }
           // fall through
-          case 43: break;
+          case 48: break;
           case 15:
             { yybegin(EXPRESSION); resetBraceDepth(); return EXPR_START;
             }
           // fall through
-          case 44: break;
+          case 49: break;
           case 16:
             { return CONTROL_LINE;
             }
           // fall through
-          case 45: break;
+          case 50: break;
           case 17:
             // lookahead expression with fixed base length
             zzMarkedPos = Character.offsetByCodePoints
@@ -701,12 +717,12 @@ class _MakoLexer implements FlexLexer {
             { return FILTER_SEP;
             }
           // fall through
-          case 46: break;
+          case 51: break;
           case 18:
             { return TAG_ATTR_VALUE;
             }
           // fall through
-          case 47: break;
+          case 52: break;
           case 19:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
@@ -714,12 +730,12 @@ class _MakoLexer implements FlexLexer {
             { return CODE_CONTENT;
             }
           // fall through
-          case 48: break;
+          case 53: break;
           case 20:
             { yybegin(YYINITIAL); return CODE_CLOSE;
             }
           // fall through
-          case 49: break;
+          case 54: break;
           case 21:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
@@ -727,7 +743,7 @@ class _MakoLexer implements FlexLexer {
             { return MODULE_CONTENT;
             }
           // fall through
-          case 50: break;
+          case 55: break;
           case 22:
             // lookahead expression with fixed lookahead length
             zzMarkedPos = Character.offsetByCodePoints
@@ -735,45 +751,70 @@ class _MakoLexer implements FlexLexer {
             { return DOC_CONTENT;
             }
           // fall through
-          case 51: break;
+          case 56: break;
           case 23:
             { yypushback(yytext().length() - 2); yybegin(CODE_BLOCK); return CODE_OPEN;
             }
           // fall through
-          case 52: break;
+          case 57: break;
           case 24:
             { yybegin(MODULE_BLOCK); return MODULE_OPEN;
             }
           // fall through
-          case 53: break;
+          case 58: break;
           case 25:
-            { yypushback(1); yybegin(TAG_ATTRS); return TAG_OPEN;
-            }
-          // fall through
-          case 54: break;
-          case 26:
             // lookahead expression with fixed base length
             zzMarkedPos = Character.offsetByCodePoints
                 (zzBufferL, zzStartRead, 2);
             { return DOC_CONTENT;
             }
           // fall through
-          case 55: break;
+          case 59: break;
+          case 26:
+            { yybegin(TAG_ATTRS); return TAG_OPEN_DEF;
+            }
+          // fall through
+          case 60: break;
           case 27:
             { return END_TAG;
             }
           // fall through
-          case 56: break;
+          case 61: break;
           case 28:
             { yybegin(DOC_COMMENT); return DOC_OPEN;
             }
           // fall through
-          case 57: break;
+          case 62: break;
           case 29:
+            { yybegin(TAG_ATTRS); return TAG_OPEN_PAGE;
+            }
+          // fall through
+          case 63: break;
+          case 30:
+            { yybegin(TAG_ATTRS); return TAG_OPEN_BLOCK;
+            }
+          // fall through
+          case 64: break;
+          case 31:
             { yybegin(YYINITIAL); return DOC_CLOSE;
             }
           // fall through
-          case 58: break;
+          case 65: break;
+          case 32:
+            { yybegin(TAG_ATTRS); return TAG_OPEN_INCLUDE;
+            }
+          // fall through
+          case 66: break;
+          case 33:
+            { yybegin(TAG_ATTRS); return TAG_OPEN_INHERIT;
+            }
+          // fall through
+          case 67: break;
+          case 34:
+            { yybegin(TAG_ATTRS); return TAG_OPEN_NAMESPACE;
+            }
+          // fall through
+          case 68: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }

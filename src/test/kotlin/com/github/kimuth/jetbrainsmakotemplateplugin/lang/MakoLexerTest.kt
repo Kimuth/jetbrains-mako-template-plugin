@@ -156,21 +156,34 @@ class MakoLexerTest : BasePlatformTestCase() {
     }
 
     // ---------------------------------------------------------------------------
-    // 9. Named tag: <%def name="foo"> → TAG_OPEN, TAG_ATTR_NAME, TAG_ATTR_EQ, TAG_ATTR_VALUE, TAG_CLOSE
+    // 9. Named tag: <%def name="foo"> → TAG_OPEN_DEF, TAG_ATTR_NAME, TAG_ATTR_EQ, TAG_ATTR_VALUE, TAG_CLOSE
     // ---------------------------------------------------------------------------
 
     fun testNamedTag() {
         val tokens = tokenize("<%def name=\"foo\">")
         assertNoBADCharacter(tokens)
         val types = tokenTypes("<%def name=\"foo\">")
-        assertTrue("Must contain TAG_OPEN", MakoTokenTypes.TAG_OPEN in types)
+        assertTrue("Must contain TAG_OPEN_DEF", MakoTokenTypes.TAG_OPEN_DEF in types)
         assertTrue("Must contain TAG_ATTR_NAME", MakoTokenTypes.TAG_ATTR_NAME in types)
         assertTrue("Must contain TAG_ATTR_EQ", MakoTokenTypes.TAG_ATTR_EQ in types)
         assertTrue("Must contain TAG_ATTR_VALUE", MakoTokenTypes.TAG_ATTR_VALUE in types)
         assertTrue("Must contain TAG_CLOSE", MakoTokenTypes.TAG_CLOSE in types)
-        // TAG_OPEN must come first, TAG_CLOSE must come last
-        assertEquals("TAG_OPEN must be first token", MakoTokenTypes.TAG_OPEN, types.first())
+        // TAG_OPEN_DEF must come first, TAG_CLOSE must come last
+        assertEquals("TAG_OPEN_DEF must be first token", MakoTokenTypes.TAG_OPEN_DEF, types.first())
         assertEquals("TAG_CLOSE must be last token", MakoTokenTypes.TAG_CLOSE, types.last())
+    }
+
+    // ---------------------------------------------------------------------------
+    // 9b. Per-tag token types: each tag keyword emits its specific TAG_OPEN_xxx token
+    // ---------------------------------------------------------------------------
+
+    fun testTagOpenTypes() {
+        assertEquals(MakoTokenTypes.TAG_OPEN_DEF, tokenTypes("<%def name=\"x\">").first())
+        assertEquals(MakoTokenTypes.TAG_OPEN_BLOCK, tokenTypes("<%block name=\"x\">").first())
+        assertEquals(MakoTokenTypes.TAG_OPEN_INHERIT, tokenTypes("<%inherit file=\"base.mako\"/>").first())
+        assertEquals(MakoTokenTypes.TAG_OPEN_INCLUDE, tokenTypes("<%include file=\"header.mako\"/>").first())
+        assertEquals(MakoTokenTypes.TAG_OPEN_NAMESPACE, tokenTypes("<%namespace name=\"util\" file=\"util.mako\"/>").first())
+        assertEquals(MakoTokenTypes.TAG_OPEN_PAGE, tokenTypes("<%page expression_filter=\"h\"/>").first())
     }
 
     // ---------------------------------------------------------------------------

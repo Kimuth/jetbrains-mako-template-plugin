@@ -49,9 +49,13 @@ WhiteSpace     = [ \t]+
   // Module-level code block: <%! ... %>
   "<%!"                            { yybegin(MODULE_BLOCK); return MODULE_OPEN; }
 
-  // Named block tags: <%def, <%block, <%inherit, <%include, <%namespace, <%page
-  // Push back the letter so TAG_ATTRS state can read the full tag name as TAG_ATTR_NAME
-  "<%" [a-zA-Z]                    { yypushback(1); yybegin(TAG_ATTRS); return TAG_OPEN; }
+  // Named block tags: per-tag token types (longest match first within same-length groups)
+  "<%def"                          { yybegin(TAG_ATTRS); return TAG_OPEN_DEF; }
+  "<%block"                        { yybegin(TAG_ATTRS); return TAG_OPEN_BLOCK; }
+  "<%inherit"                      { yybegin(TAG_ATTRS); return TAG_OPEN_INHERIT; }
+  "<%include"                      { yybegin(TAG_ATTRS); return TAG_OPEN_INCLUDE; }
+  "<%namespace"                    { yybegin(TAG_ATTRS); return TAG_OPEN_NAMESPACE; }
+  "<%page"                         { yybegin(TAG_ATTRS); return TAG_OPEN_PAGE; }
 
   // Anonymous code block starting with whitespace: <% code %>
   "<%" {WhiteSpace}                { yypushback(yytext().length() - 2); yybegin(CODE_BLOCK); return CODE_OPEN; }
@@ -123,7 +127,7 @@ WhiteSpace     = [ \t]+
   "/>"                             { yybegin(YYINITIAL); return TAG_CLOSE; }
   ">"                              { yybegin(YYINITIAL); return TAG_CLOSE; }
 
-  // Attribute/tag names (also catches the tag keyword itself after TAG_OPEN pushback)
+  // Attribute names (tag keyword is fully consumed in TAG_OPEN_xxx token, not repeated here)
   [a-zA-Z_][a-zA-Z0-9_]*          { return TAG_ATTR_NAME; }
 
   // Attribute assignment

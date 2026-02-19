@@ -14,8 +14,13 @@ object MakoTokenTypes {
     // Control lines
     @JvmField val CONTROL_LINE   = IElementType("CONTROL_LINE",   MakoLanguage) // % keyword ... (entire line)
 
-    // Block tags — opening/closing markers
-    @JvmField val TAG_OPEN       = IElementType("TAG_OPEN",       MakoLanguage) // <%def, <%block, etc.
+    // Block tags — per-tag opening token types (split from TAG_OPEN for distinct PSI nodes)
+    @JvmField val TAG_OPEN_DEF       = IElementType("TAG_OPEN_DEF",       MakoLanguage) // <%def
+    @JvmField val TAG_OPEN_BLOCK     = IElementType("TAG_OPEN_BLOCK",     MakoLanguage) // <%block
+    @JvmField val TAG_OPEN_INHERIT   = IElementType("TAG_OPEN_INHERIT",   MakoLanguage) // <%inherit
+    @JvmField val TAG_OPEN_INCLUDE   = IElementType("TAG_OPEN_INCLUDE",   MakoLanguage) // <%include
+    @JvmField val TAG_OPEN_NAMESPACE = IElementType("TAG_OPEN_NAMESPACE", MakoLanguage) // <%namespace
+    @JvmField val TAG_OPEN_PAGE      = IElementType("TAG_OPEN_PAGE",      MakoLanguage) // <%page
     @JvmField val TAG_CLOSE      = IElementType("TAG_CLOSE",      MakoLanguage) // %>
     @JvmField val END_TAG        = IElementType("END_TAG",        MakoLanguage) // </%def>, etc.
     @JvmField val TAG_ATTR_NAME  = IElementType("TAG_ATTR_NAME",  MakoLanguage) // attribute name
