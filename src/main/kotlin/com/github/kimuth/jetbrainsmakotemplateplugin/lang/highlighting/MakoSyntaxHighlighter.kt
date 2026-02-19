@@ -19,7 +19,7 @@ class MakoSyntaxHighlighter : SyntaxHighlighterBase() {
 
         @JvmField
         val MAKO_EXPRESSION = createTextAttributesKey(
-            "MAKO_EXPRESSION", DefaultLanguageHighlighterColors.TEMPLATE_LANGUAGE_COLOR
+            "MAKO_EXPRESSION", DefaultLanguageHighlighterColors.MARKUP_TAG
         )
 
         @JvmField
