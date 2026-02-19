@@ -148,13 +148,13 @@ tasks {
         dependsOn(patchChangelog)
     }
 
-    // GrammarKit generation tasks — activated in Phase 2 when .flex and .bnf files are created
-    // Uncomment and configure in Phase 2:
-    // val generateMakoLexer = register<GenerateLexerTask>("generateMakoLexer") {
-    //     sourceFile.set(file("src/main/kotlin/com/github/kimuth/jetbrainsmakotemplateplugin/lang/MakoLexer.flex"))
-    //     targetOutputDir.set(file("src/main/gen/com/github/kimuth/jetbrainsmakotemplateplugin/lang"))
-    //     purgeOldFiles.set(true)
-    // }
+    // GrammarKit generation tasks — Phase 2: generateMakoLexer activated
+    val generateMakoLexer = register<GenerateLexerTask>("generateMakoLexer") {
+        sourceFile.set(file("src/main/grammars/MakoLexer.flex"))
+        targetOutputDir.set(file("src/main/gen/com/github/kimuth/jetbrainsmakotemplateplugin/lang"))
+        purgeOldFiles.set(true)
+    }
+    // generateMakoParser is NOT activated in Phase 2 — no .bnf file exists yet
     // val generateMakoParser = register<GenerateParserTask>("generateMakoParser") {
     //     sourceFile.set(file("src/main/kotlin/com/github/kimuth/jetbrainsmakotemplateplugin/lang/Mako.bnf"))
     //     targetRootOutputDir.set(file("src/main/gen"))
@@ -162,9 +162,9 @@ tasks {
     //     pathToPsiRoot.set("com/github/kimuth/jetbrainsmakotemplateplugin/lang/psi")
     //     purgeOldFiles.set(true)
     // }
-    // compileKotlin {
-    //     dependsOn(generateMakoLexer, generateMakoParser)
-    // }
+    compileKotlin {
+        dependsOn(generateMakoLexer)
+    }
 }
 
 intellijPlatformTesting {
