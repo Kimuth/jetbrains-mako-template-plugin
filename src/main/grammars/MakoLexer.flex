@@ -118,9 +118,10 @@ WhiteSpace     = [ \t]+
 }
 
 <TAG_ATTRS> {
-  // Self-closing or regular close
+  // Self-closing or regular close — named tags end with >, code-style tags end with %>
   "%>"                             { yybegin(YYINITIAL); return TAG_CLOSE; }
   "/>"                             { yybegin(YYINITIAL); return TAG_CLOSE; }
+  ">"                              { yybegin(YYINITIAL); return TAG_CLOSE; }
 
   // Attribute/tag names (also catches the tag keyword itself after TAG_OPEN pushback)
   [a-zA-Z_][a-zA-Z0-9_]*          { return TAG_ATTR_NAME; }
