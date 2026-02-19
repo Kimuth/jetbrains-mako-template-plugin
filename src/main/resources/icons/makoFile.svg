@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <!-- File shape: rounded rectangle with folded top-right corner (14x14 with 1px border) -->
+  <!-- Base file body -->
+  <path d="M2 2 L10 2 L14 6 L14 15 L2 15 Z" fill="#6E6E6E" fill-opacity="0.40" stroke="#6E6E6E" stroke-opacity="0.5" stroke-width="0.5"/>
+  <!-- Folded corner triangle -->
+  <path d="M10 2 L14 6 L10 6 Z" fill="#6E6E6E" fill-opacity="0.25"/>
+  <line x1="10" y1="2" x2="10" y2="6" stroke="#6E6E6E" stroke-opacity="0.5" stroke-width="0.5"/>
+  <!-- Stylized "M" letter centered on file shape -->
+  <text x="8" y="13" font-family="Arial, sans-serif" font-size="8" font-weight="bold"
+        text-anchor="middle" fill="#40B6E0" fill-opacity="0.70">M</text>
+</svg>
