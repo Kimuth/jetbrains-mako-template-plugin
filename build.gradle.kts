@@ -162,7 +162,12 @@ tasks {
         purgeOldFiles.set(true)
     }
     compileKotlin {
-        dependsOn(generateMakoLexer, generateMakoParser)
+        // generateMakoLexer runs automatically -- lexer sources not committed to gen/
+        // generateMakoParser is manual: run it explicitly when Mako.bnf changes.
+        // Parser gen files are committed in src/main/gen/ and must not be overwritten on
+        // every build because MakoTypes.java contains hand-added token delegates that
+        // generateMakoParser would purge (purgeOldFiles=true).
+        dependsOn(generateMakoLexer)
     }
 }
 
