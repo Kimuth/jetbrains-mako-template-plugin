@@ -11,14 +11,14 @@ import static com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoTypes.*
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.*;
 
-public class MakoControlLineImpl extends ASTWrapperPsiElement implements MakoControlLine {
+public class MakoControlLineStmtImpl extends ASTWrapperPsiElement implements MakoControlLineStmt {
 
-  public MakoControlLineImpl(@NotNull ASTNode node) {
+  public MakoControlLineStmtImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull MakoVisitor visitor) {
-    visitor.visitControlLine(this);
+    visitor.visitControlLineStmt(this);
   }
 
   @Override

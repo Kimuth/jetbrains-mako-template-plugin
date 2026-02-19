@@ -16,7 +16,7 @@ public class MakoVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitControlLine(@NotNull MakoControlLine o) {
+  public void visitControlLineStmt(@NotNull MakoControlLineStmt o) {
     visitPsiElement(o);
   }
 

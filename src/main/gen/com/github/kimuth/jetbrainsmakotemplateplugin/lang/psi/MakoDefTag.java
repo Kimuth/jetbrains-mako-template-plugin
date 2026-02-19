@@ -15,7 +15,7 @@ public interface MakoDefTag extends PsiNamedElement {
   List<MakoCodeBlock> getCodeBlockList();
 
   @NotNull
-  List<MakoControlLine> getControlLineList();
+  List<MakoControlLineStmt> getControlLineStmtList();
 
   @NotNull
   List<MakoDefTag> getDefTagList();

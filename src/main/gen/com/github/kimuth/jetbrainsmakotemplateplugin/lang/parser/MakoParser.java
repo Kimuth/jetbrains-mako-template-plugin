@@ -100,13 +100,13 @@ public class MakoParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // CONTROL_LINE
-  public static boolean control_line(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "control_line")) return false;
+  public static boolean control_line_stmt(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "control_line_stmt")) return false;
     if (!nextTokenIs(builder_, CONTROL_LINE)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
     result_ = consumeToken(builder_, CONTROL_LINE);
-    exit_section_(builder_, marker_, CONTROL_LINE, result_);
+    exit_section_(builder_, marker_, CONTROL_LINE_STMT, result_);
     return result_;
   }
 
@@ -327,7 +327,7 @@ public class MakoParser implements PsiParser, LightPsiParser {
   //                 | namespace_tag
   //                 | page_tag
   //                 | expression
-  //                 | control_line
+  //                 | control_line_stmt
   //                 | code_block
   //                 | module_block
   //                 | doc_comment
@@ -344,7 +344,7 @@ public class MakoParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = namespace_tag(builder_, level_ + 1);
     if (!result_) result_ = page_tag(builder_, level_ + 1);
     if (!result_) result_ = expression(builder_, level_ + 1);
-    if (!result_) result_ = control_line(builder_, level_ + 1);
+    if (!result_) result_ = control_line_stmt(builder_, level_ + 1);
     if (!result_) result_ = code_block(builder_, level_ + 1);
     if (!result_) result_ = module_block(builder_, level_ + 1);
     if (!result_) result_ = doc_comment(builder_, level_ + 1);

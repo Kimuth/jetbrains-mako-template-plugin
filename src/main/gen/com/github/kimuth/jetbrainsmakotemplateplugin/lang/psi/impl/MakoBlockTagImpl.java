@@ -40,8 +40,8 @@ public class MakoBlockTagImpl extends MakoBlockTagMixin implements MakoBlockTag 
 
   @Override
   @NotNull
-  public List<MakoControlLine> getControlLineList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MakoControlLine.class);
+  public List<MakoControlLineStmt> getControlLineStmtList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MakoControlLineStmt.class);
   }
 
   @Override
