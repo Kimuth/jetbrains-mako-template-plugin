@@ -1,0 +1,141 @@
+{
+  parserClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.parser.MakoParser"
+  parserUtilClass="com.intellij.lang.parser.GeneratedParserUtilBase"
+
+  psiClassPrefix="Mako"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi"
+  psiImplPackage="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl"
+
+  elementTypeHolderClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoTypes"
+  elementTypeClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoElementType"
+  tokenTypeClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoTokenType"
+
+  generateTokens=false
+
+  tokens=[
+    TAG_OPEN_DEF="TAG_OPEN_DEF"
+    TAG_OPEN_BLOCK="TAG_OPEN_BLOCK"
+    TAG_OPEN_INHERIT="TAG_OPEN_INHERIT"
+    TAG_OPEN_INCLUDE="TAG_OPEN_INCLUDE"
+    TAG_OPEN_NAMESPACE="TAG_OPEN_NAMESPACE"
+    TAG_OPEN_PAGE="TAG_OPEN_PAGE"
+    TAG_CLOSE="TAG_CLOSE"
+    END_TAG="END_TAG"
+    TAG_ATTR_NAME="TAG_ATTR_NAME"
+    TAG_ATTR_EQ="TAG_ATTR_EQ"
+    TAG_ATTR_VALUE="TAG_ATTR_VALUE"
+    EXPR_START="EXPR_START"
+    EXPR_END="EXPR_END"
+    EXPR_CONTENT="EXPR_CONTENT"
+    FILTER_SEP="FILTER_SEP"
+    CONTROL_LINE="CONTROL_LINE"
+    CODE_OPEN="CODE_OPEN"
+    CODE_CONTENT="CODE_CONTENT"
+    MODULE_OPEN="MODULE_OPEN"
+    MODULE_CONTENT="MODULE_CONTENT"
+    CODE_CLOSE="CODE_CLOSE"
+    LINE_COMMENT="LINE_COMMENT"
+    DOC_OPEN="DOC_OPEN"
+    DOC_CONTENT="DOC_CONTENT"
+    DOC_CLOSE="DOC_CLOSE"
+    TEMPLATE_TEXT="TEMPLATE_TEXT"
+  ]
+}
+
+makoFile ::= item_*
+
+private item_ ::= def_tag
+                | block_tag
+                | inherit_tag
+                | include_tag
+                | namespace_tag
+                | page_tag
+                | expression
+                | control_line
+                | code_block
+                | module_block
+                | doc_comment
+                | line_comment_rule
+                | TEMPLATE_TEXT
+
+// ---- Named block tags (container tags with content + end tag) ----
+
+def_tag ::= TAG_OPEN_DEF tag_attribute* TAG_CLOSE item_* END_TAG
+    {
+      pin=1
+      recoverWhile=tag_recover
+      mixin="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl.MakoDefTagMixin"
+      implements="com.intellij.psi.PsiNamedElement"
+      methods=[getName setName getNameIdentifier]
+    }
+
+block_tag ::= TAG_OPEN_BLOCK tag_attribute* TAG_CLOSE item_* END_TAG
+    {
+      pin=1
+      recoverWhile=tag_recover
+      mixin="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl.MakoBlockTagMixin"
+      implements="com.intellij.psi.PsiNamedElement"
+      methods=[getName setName getNameIdentifier]
+    }
+
+// ---- Single-construct tags (no children, self-closing or simple close) ----
+
+inherit_tag ::= TAG_OPEN_INHERIT tag_attribute* TAG_CLOSE
+    { pin=1  recoverWhile=tag_recover }
+
+include_tag ::= TAG_OPEN_INCLUDE tag_attribute* TAG_CLOSE
+    { pin=1  recoverWhile=tag_recover }
+
+namespace_tag ::= TAG_OPEN_NAMESPACE tag_attribute* TAG_CLOSE
+    { pin=1  recoverWhile=tag_recover }
+
+page_tag ::= TAG_OPEN_PAGE tag_attribute* TAG_CLOSE
+    { pin=1  recoverWhile=tag_recover }
+
+// ---- Attribute helper (private = no PSI node) ----
+
+private tag_attribute ::= TAG_ATTR_NAME TAG_ATTR_EQ TAG_ATTR_VALUE
+                        | TAG_ATTR_NAME
+
+// ---- Expression: ${...} ----
+
+expression ::= EXPR_START EXPR_CONTENT* (FILTER_SEP EXPR_CONTENT*)* EXPR_END
+    { pin=1  recoverWhile=expression_recover }
+
+// ---- Control line: % keyword ... (single token) ----
+
+control_line ::= CONTROL_LINE
+
+// ---- Code block: <% ... %> ----
+
+code_block ::= CODE_OPEN CODE_CONTENT* CODE_CLOSE
+    { pin=1  recoverWhile=tag_recover }
+
+// ---- Module block: <%! ... %> ----
+
+module_block ::= MODULE_OPEN MODULE_CONTENT* CODE_CLOSE
+    { pin=1  recoverWhile=tag_recover }
+
+// ---- Doc comment: <%doc> ... </%doc> ----
+
+doc_comment ::= DOC_OPEN DOC_CONTENT* DOC_CLOSE
+    { pin=1  recoverWhile=tag_recover }
+
+// ---- Line comment: ## ... (single token) ----
+// Named "line_comment_rule" to avoid conflict with the LINE_COMMENT token name
+
+line_comment_rule ::= LINE_COMMENT
+
+// ---- Recovery predicates ----
+// Negative predicates: recovery STOPS when any construct boundary token is seen
+
+private tag_recover ::= !(TAG_OPEN_DEF | TAG_OPEN_BLOCK | TAG_OPEN_INHERIT | TAG_OPEN_INCLUDE
+                        | TAG_OPEN_NAMESPACE | TAG_OPEN_PAGE
+                        | END_TAG | CONTROL_LINE | CODE_OPEN | MODULE_OPEN | DOC_OPEN
+                        | EXPR_START | LINE_COMMENT)
+
+private expression_recover ::= !(EXPR_END | TAG_OPEN_DEF | TAG_OPEN_BLOCK | TAG_OPEN_INHERIT
+                               | TAG_OPEN_INCLUDE | TAG_OPEN_NAMESPACE | TAG_OPEN_PAGE
+                               | END_TAG | CONTROL_LINE | CODE_OPEN | MODULE_OPEN | DOC_OPEN
+                               | LINE_COMMENT)

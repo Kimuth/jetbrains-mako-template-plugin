@@ -148,22 +148,21 @@ tasks {
         dependsOn(patchChangelog)
     }
 
-    // GrammarKit generation tasks — Phase 2: generateMakoLexer activated
+    // GrammarKit generation tasks — Phase 3: both lexer and parser activated
     val generateMakoLexer = register<GenerateLexerTask>("generateMakoLexer") {
         sourceFile.set(file("src/main/grammars/MakoLexer.flex"))
         targetOutputDir.set(file("src/main/gen/com/github/kimuth/jetbrainsmakotemplateplugin/lang"))
         purgeOldFiles.set(true)
     }
-    // generateMakoParser is NOT activated in Phase 2 — no .bnf file exists yet
-    // val generateMakoParser = register<GenerateParserTask>("generateMakoParser") {
-    //     sourceFile.set(file("src/main/kotlin/com/github/kimuth/jetbrainsmakotemplateplugin/lang/Mako.bnf"))
-    //     targetRootOutputDir.set(file("src/main/gen"))
-    //     pathToParser.set("com/github/kimuth/jetbrainsmakotemplateplugin/lang/parser/MakoParser.java")
-    //     pathToPsiRoot.set("com/github/kimuth/jetbrainsmakotemplateplugin/lang/psi")
-    //     purgeOldFiles.set(true)
-    // }
+    val generateMakoParser = register<GenerateParserTask>("generateMakoParser") {
+        sourceFile.set(file("src/main/grammars/Mako.bnf"))
+        targetRootOutputDir.set(file("src/main/gen"))
+        pathToParser.set("com/github/kimuth/jetbrainsmakotemplateplugin/lang/parser/MakoParser.java")
+        pathToPsiRoot.set("com/github/kimuth/jetbrainsmakotemplateplugin/lang/psi")
+        purgeOldFiles.set(true)
+    }
     compileKotlin {
-        dependsOn(generateMakoLexer)
+        dependsOn(generateMakoLexer, generateMakoParser)
     }
 }
 
