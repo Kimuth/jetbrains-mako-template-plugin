@@ -77,9 +77,10 @@ Plans:
   3. Pressing Ctrl+/ on a line containing Mako code inserts a `##` line comment prefix; pressing again removes it
   4. Pressing Ctrl+Shift+/ wraps selected Mako content in `<%doc>...</%doc>` block comment tags; pressing again unwraps it
   5. Mako-specific colors appear as named entries in Settings > Editor > Color Scheme > Mako and can be customized by the user
-**Plans**: 1 plan
+**Plans**: 2 plans
 Plans:
-- [ ] 04-01-PLAN.md — Create MakoSyntaxHighlighter, ColorSettingsPage, PairedBraceMatcher, Commenter and register in plugin.xml
+- [x] 04-01-PLAN.md — Create MakoSyntaxHighlighter, ColorSettingsPage, PairedBraceMatcher, Commenter and register in plugin.xml
+- [ ] 04-02-PLAN.md — Gap closure: fix MAKO_EXPRESSION fallback color from TEMPLATE_LANGUAGE_COLOR to MARKUP_TAG
 
 ### Phase 5: Structural Features
 **Goal**: Users can collapse large template sections and navigate directly to named defs and blocks without scrolling
@@ -133,7 +134,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 1. Language Foundation | 2/2 | Complete    | 2026-02-19 |
 | 2. Lexer | 3/3 | Complete   | 2026-02-19 |
 | 3. Parser and PSI Tree | 3/3 | Complete    | 2026-02-19 |
-| 4. Syntax Highlighting and Comment Support | 0/1 | Not started | - |
+| 4. Syntax Highlighting and Comment Support | 1/2 | In progress | - |
 | 5. Structural Features | 0/TBD | Not started | - |
 | 6. Python Language Injection | 0/TBD | Not started | - |
 | 7. Completion | 0/TBD | Not started | - |
