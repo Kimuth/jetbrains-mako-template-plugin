@@ -1,0 +1,123 @@
+# Requirements: Mako Template Plugin for JetBrains
+
+**Defined:** 2026-02-19
+**Core Value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
+
+## v1 Requirements
+
+Requirements for initial release. Each maps to roadmap phases.
+
+### Language Foundation
+
+- [ ] **LANG-01**: Plugin registers `.mako` as a recognized file type in PyCharm
+- [ ] **LANG-02**: `.mako` files display a Mako-specific icon in the project tree
+- [ ] **LANG-03**: Mako language is registered as a `TemplateLanguage` subclass with the IntelliJ Platform
+
+### Lexer & Parsing
+
+- [ ] **PARS-01**: JFlex-generated lexer tokenizes all Mako constructs (`${...}`, `% control`, `<%def>`, `<%block>`, `<%inherit>`, `<%include>`, `<%namespace>`, `<%page>`, `<%! %>`, `<% %>`, `<%doc>`, `##`)
+- [ ] **PARS-02**: Lexer correctly handles nested constructs (Python expressions inside `${...}`)
+- [ ] **PARS-03**: Lexer state is serializable for incremental re-lexing (restart from mid-file)
+- [ ] **PARS-04**: GrammarKit-generated parser builds PSI tree with typed nodes for each Mako construct
+- [ ] **PARS-05**: Parser recovers gracefully from malformed Mako (partial parses, not full failure)
+
+### Syntax & Visual
+
+- [ ] **SYNX-01**: Mako directives (`<%def>`, `<%block>`, etc.) are highlighted with distinct colors
+- [ ] **SYNX-02**: Mako expressions (`${...}`) are highlighted distinctly from surrounding HTML
+- [ ] **SYNX-03**: Mako control lines (`% for`, `% if`, `% while`, `% endfor`, etc.) are highlighted
+- [ ] **SYNX-04**: Mako comments (`##` and `<%doc>`) are highlighted as comments
+- [ ] **SYNX-05**: Matching Mako tag pairs (`<%def>` / `</%def>`) are highlighted when cursor is on either
+- [ ] **SYNX-06**: User can fold/collapse `<%def>`, `<%block>`, and control flow blocks
+- [ ] **SYNX-07**: User can customize Mako-specific colors via Settings > Editor > Color Scheme
+
+### Editing
+
+- [ ] **EDIT-01**: User can toggle line comments (`##`) with Ctrl+/
+- [ ] **EDIT-02**: User can toggle block comments (`<%doc>...</%doc>`) with Ctrl+Shift+/
+- [ ] **EDIT-03**: Structure view panel shows all `<%def>` and `<%block>` declarations as navigable nodes
+
+### Completion & Errors
+
+- [ ] **COMP-01**: User gets autocomplete suggestions for Mako tag names (`<%def`, `<%block`, `<%inherit`, etc.)
+- [ ] **COMP-02**: User gets autocomplete suggestions for Mako tag attributes (`name=`, `file=`, `buffered=`)
+- [ ] **COMP-03**: Malformed Mako syntax (unclosed tags, invalid directives) shows error annotations in the editor
+
+## v2 Requirements
+
+Deferred to future release. Tracked but not in current roadmap.
+
+### Multi-Language Integration
+
+- **MLNG-01**: Embedded HTML regions are syntax-highlighted via language injection
+- **MLNG-02**: Embedded Python expressions are syntax-highlighted via language injection
+- **MLNG-03**: HTML code completion works inside HTML regions of Mako templates
+- **MLNG-04**: Python code completion works inside `${...}` expression blocks
+
+### Navigation
+
+- **NAVG-01**: User can Ctrl+click on `<%inherit file="...">` to navigate to the base template
+- **NAVG-02**: User can Ctrl+click on `<%include file="...">` to navigate to the included file
+- **NAVG-03**: User can Ctrl+click on `<%namespace file="...">` to navigate to the namespace file
+- **NAVG-04**: User can navigate from def calls to def declarations within a file
+
+### Advanced Intelligence
+
+- **ADVN-01**: Cross-file def call navigation (resolve `${lib.foo()}` to `<%def name="foo">` in another file)
+- **ADVN-02**: Find usages for `<%def>` declarations across the project
+- **ADVN-03**: Rename refactoring for `<%def name="...">` updates all call sites
+- **ADVN-04**: Inspection flags undefined variables in `${...}` expressions
+
+### Polish
+
+- **PLSH-01**: Live templates / code snippets for common Mako patterns
+- **PLSH-02**: Breadcrumb navigation showing template structure context
+- **PLSH-03**: Settings panel for configuring which `.html` files get Mako treatment
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Template preview / render output | Requires Mako Python runtime and context data — fundamentally unsafe in IDE |
+| Full Python semantic analysis without Python plugin | Reimplementing Python type inference is infeasible |
+| Mako configuration file support | Separate domain; config files already handled by other plugins |
+| Web framework integration (Pyramid, TurboGears) | Framework-specific; breaks single-responsibility of template plugin |
+| Auto-format / prettify Mako templates | Extremely hard for multi-language files; recommend external formatters |
+| Non-PyCharm IDE support | Python integration is core to value; PyCharm-only is the right scope |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| LANG-01 | — | Pending |
+| LANG-02 | — | Pending |
+| LANG-03 | — | Pending |
+| PARS-01 | — | Pending |
+| PARS-02 | — | Pending |
+| PARS-03 | — | Pending |
+| PARS-04 | — | Pending |
+| PARS-05 | — | Pending |
+| SYNX-01 | — | Pending |
+| SYNX-02 | — | Pending |
+| SYNX-03 | — | Pending |
+| SYNX-04 | — | Pending |
+| SYNX-05 | — | Pending |
+| SYNX-06 | — | Pending |
+| SYNX-07 | — | Pending |
+| EDIT-01 | — | Pending |
+| EDIT-02 | — | Pending |
+| EDIT-03 | — | Pending |
+| COMP-01 | — | Pending |
+| COMP-02 | — | Pending |
+| COMP-03 | — | Pending |
+
+**Coverage:**
+- v1 requirements: 21 total
+- Mapped to phases: 0
+- Unmapped: 21
+
+---
+*Requirements defined: 2026-02-19*
+*Last updated: 2026-02-19 after initial definition*
