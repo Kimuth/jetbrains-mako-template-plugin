@@ -32,7 +32,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. PyCharm lists "Mako" as a recognized language in Settings > Languages & Frameworks
   3. The plugin builds cleanly with GrammarKit and JFlex generation steps wired into the Gradle build
   4. The boilerplate tool window, service, and startup activity from the original scaffold are removed
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 01-01-PLAN.md — Remove scaffold boilerplate, configure build for PyCharm Community + GrammarKit
+- [ ] 01-02-PLAN.md — Create MakoLanguage, MakoFileType, MakoIcons, and register fileType in plugin.xml
 
 ### Phase 2: Lexer
 **Goal**: Every character in a `.mako` file is assigned the correct token type, and the lexer can correctly resume from any mid-file offset
@@ -117,7 +120,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Language Foundation | 0/TBD | Not started | - |
+| 1. Language Foundation | 0/2 | Planned | - |
 | 2. Lexer | 0/TBD | Not started | - |
 | 3. Parser and PSI Tree | 0/TBD | Not started | - |
 | 4. Syntax Highlighting and Comment Support | 0/TBD | Not started | - |
