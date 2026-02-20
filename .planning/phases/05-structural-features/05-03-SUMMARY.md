@@ -146,3 +146,20 @@ None - no external service configuration required.
 ---
 *Phase: 05-structural-features*
 *Completed: 2026-02-20*
+
+## Self-Check: PASSED
+
+All created files verified present:
+- FOUND: src/main/grammars/Mako.bnf
+- FOUND: src/main/gen/.../parser/MakoParser.java
+- FOUND: src/main/gen/.../psi/MakoTypes.java
+- FOUND: src/main/gen/.../psi/MakoTemplateTextContent.java
+- FOUND: src/main/gen/.../psi/impl/MakoTemplateTextContentImpl.java
+- FOUND: src/test/kotlin/.../MakoFoldingTest.kt
+- FOUND: src/test/testData/parser/WellFormedFile.txt
+- FOUND: .planning/phases/05-structural-features/05-03-SUMMARY.md
+
+All commits verified:
+- a2563cf: fix(05-03): fix parser grammar so END_TAG always consumed in def/block tags
+- c6eca29: test(05-03): add 5 regression tests for TEMPLATE_TEXT-body folding
+- a248de3: docs(05-03): complete grammar fix plan
