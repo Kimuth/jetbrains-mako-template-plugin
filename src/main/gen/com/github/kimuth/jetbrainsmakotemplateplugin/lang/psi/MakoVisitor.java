@@ -56,6 +56,10 @@ public class MakoVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitTemplateTextContent(@NotNull MakoTemplateTextContent o) {
+    visitPsiElement(o);
+  }
+
   public void visitPsiNamedElement(@NotNull PsiNamedElement o) {
     visitElement(o);
   }

@@ -98,4 +98,10 @@ public class MakoDefTagImpl extends MakoDefTagMixin implements MakoDefTag {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, MakoPageTag.class);
   }
 
+  @Override
+  @NotNull
+  public List<MakoTemplateTextContent> getTemplateTextContentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MakoTemplateTextContent.class);
+  }
+
 }

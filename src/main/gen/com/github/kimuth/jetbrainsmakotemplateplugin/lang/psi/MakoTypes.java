@@ -24,6 +24,7 @@ public interface MakoTypes {
   IElementType MODULE_BLOCK = new MakoElementType("MODULE_BLOCK");
   IElementType NAMESPACE_TAG = new MakoElementType("NAMESPACE_TAG");
   IElementType PAGE_TAG = new MakoElementType("PAGE_TAG");
+  IElementType TEMPLATE_TEXT_CONTENT = new MakoElementType("TEMPLATE_TEXT_CONTENT");
 
   // Token type delegates (generateTokens=false in BNF -- tokens are defined in MakoTokenTypes.kt).
   // MakoParser.java uses "static import MakoTypes.*", so all token constants referenced by the
@@ -95,6 +96,9 @@ public interface MakoTypes {
       }
       else if (type == PAGE_TAG) {
         return new MakoPageTagImpl(node);
+      }
+      else if (type == TEMPLATE_TEXT_CONTENT) {
+        return new MakoTemplateTextContentImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

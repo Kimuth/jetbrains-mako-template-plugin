@@ -44,6 +44,9 @@ public interface MakoDefTag extends PsiNamedElement {
   @NotNull
   List<MakoPageTag> getPageTagList();
 
+  @NotNull
+  List<MakoTemplateTextContent> getTemplateTextContentList();
+
   //WARNING: getName(...) is skipped
   //matching getName(MakoDefTag, ...)
   //methods are not found in null

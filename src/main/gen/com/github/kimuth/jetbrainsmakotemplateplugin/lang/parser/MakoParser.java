@@ -320,7 +320,8 @@ public class MakoParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // def_tag
+  // template_text_content
+  //                 | def_tag
   //                 | block_tag
   //                 | inherit_tag
   //                 | include_tag
@@ -331,13 +332,13 @@ public class MakoParser implements PsiParser, LightPsiParser {
   //                 | code_block
   //                 | module_block
   //                 | doc_comment
-  //                 | line_comment_rule
-  //                 | TEMPLATE_TEXT
+  //                 | line_comment_rule
   static boolean item_(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "item_")) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
-    result_ = def_tag(builder_, level_ + 1);
+    result_ = template_text_content(builder_, level_ + 1);
+    if (!result_) result_ = def_tag(builder_, level_ + 1);
     if (!result_) result_ = block_tag(builder_, level_ + 1);
     if (!result_) result_ = inherit_tag(builder_, level_ + 1);
     if (!result_) result_ = include_tag(builder_, level_ + 1);
@@ -349,7 +350,6 @@ public class MakoParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = module_block(builder_, level_ + 1);
     if (!result_) result_ = doc_comment(builder_, level_ + 1);
     if (!result_) result_ = line_comment_rule(builder_, level_ + 1);
-    if (!result_) result_ = consumeToken(builder_, TEMPLATE_TEXT);
     exit_section_(builder_, marker_, null, result_);
     return result_;
   }
@@ -501,6 +501,18 @@ public class MakoParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, DOC_OPEN);
     if (!result_) result_ = consumeToken(builder_, EXPR_START);
     if (!result_) result_ = consumeToken(builder_, LINE_COMMENT);
+    return result_;
+  }
+
+  /* ********************************************************** */
+  // TEMPLATE_TEXT
+  public static boolean template_text_content(PsiBuilder builder_, int level_) {
+    if (!recursion_guard_(builder_, level_, "template_text_content")) return false;
+    if (!nextTokenIs(builder_, TEMPLATE_TEXT)) return false;
+    boolean result_;
+    Marker marker_ = enter_section_(builder_);
+    result_ = consumeToken(builder_, TEMPLATE_TEXT);
+    exit_section_(builder_, marker_, TEMPLATE_TEXT_CONTENT, result_);
     return result_;
   }
 

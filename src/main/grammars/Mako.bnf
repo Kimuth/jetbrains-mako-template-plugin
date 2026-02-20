@@ -45,7 +45,8 @@
 
 makoFile ::= item_*
 
-private item_ ::= def_tag
+private item_ ::= template_text_content
+                | def_tag
                 | block_tag
                 | inherit_tag
                 | include_tag
@@ -57,7 +58,6 @@ private item_ ::= def_tag
                 | module_block
                 | doc_comment
                 | line_comment_rule
-                | TEMPLATE_TEXT
 
 // ---- Named block tags (container tags with content + end tag) ----
 
@@ -126,6 +126,14 @@ doc_comment ::= DOC_OPEN DOC_CONTENT* DOC_CLOSE
 // Named "line_comment_rule" to avoid conflict with the LINE_COMMENT token name
 
 line_comment_rule ::= LINE_COMMENT
+
+// ---- Template text (named rule so enter_section_/exit_section_ properly updates ErrorState) ----
+// A non-private rule so GrammarKit generates enter_section_/exit_section_ wrapper code, which
+// updates GrammarKit's ErrorState on token consumption. This fixes a parser bug where bare
+// consumeToken(TEMPLATE_TEXT) in item_* did not update ErrorState, causing END_TAG consumption
+// in the parent def_tag/block_tag to fail when the body contained only TEMPLATE_TEXT tokens.
+
+template_text_content ::= TEMPLATE_TEXT
 
 // ---- Recovery predicates ----
 // Negative predicates: recovery STOPS when any construct boundary token is seen
