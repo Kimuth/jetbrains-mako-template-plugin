@@ -38,4 +38,17 @@ class MakoParsingTest : ParsingTestCase("", "mako", MakoParserDefinition()) {
     fun testMalformedTag() {
         doTest(true)
     }
+
+    /**
+     * PARS-06: Two consecutive expressions on separate lines parse as two sibling
+     * MakoExpressionImpl nodes with no PSI errors.
+     *
+     * Regression test for the bug where the second `${` was consumed inside the first
+     * MakoExpressionImpl because `expression_recover` was missing EXPR_START in its
+     * stop-token set. GrammarKit's recoverWhile runs even on successful matches, so
+     * the recovery loop would greedily consume the second expression start.
+     */
+    fun testConsecutiveExpressions() {
+        doTest(true)
+    }
 }
