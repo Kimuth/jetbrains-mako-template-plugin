@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Language Foundation** - Register Mako as a language and `.mako` as a recognized file type
 - [x] **Phase 2: Lexer** - JFlex-generated lexer that correctly tokenizes all Mako constructs with restart-state semantics
 - [x] **Phase 3: Parser and PSI Tree** - GrammarKit-generated parser with distinct typed PSI nodes for every Mako construct (completed 2026-02-19)
-- [x] **Phase 4: Syntax Highlighting and Comment Support** - Distinct colors for all Mako constructs, brace matching, comment toggling, and color scheme settings (completed 2026-02-19)
+- [x] **Phase 4: Syntax Highlighting and Comment Support** - Distinct colors for all Mako constructs, brace matching, comment toggling, and color scheme settings (completed 2026-02-19)
 - [ ] **Phase 5: Structural Features** - Code folding and structure view panel for navigating defs and blocks
 - [ ] **Phase 6: Python Language Injection** - Inject Python into expression and code block regions via MultiHostInjector
 - [ ] **Phase 7: Completion** - Autocomplete for Mako tag names and tag attributes
@@ -80,7 +80,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 - [x] 04-01-PLAN.md — Create MakoSyntaxHighlighter, ColorSettingsPage, PairedBraceMatcher, Commenter and register in plugin.xml
-- [ ] 04-02-PLAN.md — Gap closure: fix MAKO_EXPRESSION fallback color from TEMPLATE_LANGUAGE_COLOR to MARKUP_TAG
+- [x] 04-02-PLAN.md — Gap closure: fix MAKO_EXPRESSION fallback color from TEMPLATE_LANGUAGE_COLOR to MARKUP_TAG
 
 ### Phase 5: Structural Features
 **Goal**: Users can collapse large template sections and navigate directly to named defs and blocks without scrolling
@@ -90,7 +90,10 @@ Plans:
   1. A gutter fold arrow appears on the opening line of every `<%def>`, `<%block>`, and control flow block (`% for`, `% if`, `% while`); clicking it collapses the block to a single line
   2. The Structure view panel (View > Tool Windows > Structure, or Ctrl+F12) shows all `<%def>` and `<%block>` declarations as a navigable tree; clicking a node moves the editor caret to that declaration
   3. `<%doc>` and `<%!>` blocks are collapsed by default when a file is opened; all other blocks start expanded
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 05-01-PLAN.md — MakoFoldingBuilder with sibling-scan control flow folding, folding test
+- [ ] 05-02-PLAN.md — Structure View three-class stack (factory, model, element), structure view test
 
 ### Phase 6: Python Language Injection
 **Goal**: Python syntax highlighting and analysis from PyCharm's Python plugin is active inside Mako expression and code block regions
@@ -135,7 +138,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 2. Lexer | 3/3 | Complete   | 2026-02-19 |
 | 3. Parser and PSI Tree | 3/3 | Complete    | 2026-02-19 |
 | 4. Syntax Highlighting and Comment Support | 2/2 | Complete   | 2026-02-19 |
-| 5. Structural Features | 0/TBD | Not started | - |
+| 5. Structural Features | 0/2 | Not started | - |
 | 6. Python Language Injection | 0/TBD | Not started | - |
 | 7. Completion | 0/TBD | Not started | - |
 | 8. Error Annotations and Release Readiness | 0/TBD | Not started | - |
