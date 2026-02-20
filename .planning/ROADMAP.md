@@ -92,7 +92,7 @@ Plans:
   3. `<%doc>` and `<%!>` blocks are collapsed by default when a file is opened; all other blocks start expanded
 **Plans**: 2 plans
 Plans:
-- [ ] 05-01-PLAN.md — MakoFoldingBuilder with sibling-scan control flow folding, folding test
+- [x] 05-01-PLAN.md — MakoFoldingBuilder with sibling-scan control flow folding, folding test
 - [ ] 05-02-PLAN.md — Structure View three-class stack (factory, model, element), structure view test
 
 ### Phase 6: Python Language Injection
@@ -138,7 +138,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 2. Lexer | 3/3 | Complete   | 2026-02-19 |
 | 3. Parser and PSI Tree | 3/3 | Complete    | 2026-02-19 |
 | 4. Syntax Highlighting and Comment Support | 2/2 | Complete   | 2026-02-19 |
-| 5. Structural Features | 0/2 | Not started | - |
+| 5. Structural Features | 1/2 | In Progress | - |
 | 6. Python Language Injection | 0/TBD | Not started | - |
 | 7. Completion | 0/TBD | Not started | - |
 | 8. Error Annotations and Release Readiness | 0/TBD | Not started | - |

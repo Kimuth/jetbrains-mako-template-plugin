@@ -28,7 +28,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **SYNX-03**: Mako control lines (`% for`, `% if`, `% while`, `% endfor`, etc.) are highlighted
 - [x] **SYNX-04**: Mako comments (`##` and `<%doc>`) are highlighted as comments
 - [x] **SYNX-05**: Matching Mako tag pairs (`<%def>` / `</%def>`) are highlighted when cursor is on either
-- [ ] **SYNX-06**: User can fold/collapse `<%def>`, `<%block>`, and control flow blocks
+- [x] **SYNX-06**: User can fold/collapse `<%def>`, `<%block>`, and control flow blocks
 - [x] **SYNX-07**: User can customize Mako-specific colors via Settings > Editor > Color Scheme
 
 ### Editing
@@ -104,7 +104,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SYNX-03 | Phase 4 | Complete |
 | SYNX-04 | Phase 4 | Complete |
 | SYNX-05 | Phase 4 | Complete |
-| SYNX-06 | Phase 5 | Pending |
+| SYNX-06 | Phase 5 | Complete |
 | SYNX-07 | Phase 4 | Complete |
 | EDIT-01 | Phase 4 | Complete |
 | EDIT-02 | Phase 4 | Complete |

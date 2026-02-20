@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 4 - Syntax Highlighting and Comment Support — Plan 2 of 2 COMPLETE
+**Current focus:** Phase 5 - Structural Features — Plan 1 of 3 COMPLETE
 
 ## Current Position
 
-Phase: 4 of 8 (Syntax Highlighting) — Complete
-Plan: 2 of 2 complete
-Status: Phase 4 complete — syntax highlighting, color settings, brace matching, comment toggling, and expression highlighting fix implemented; full build passes with all 22 tests green
-Last activity: 2026-02-20 — Plan 02 complete (MAKO_EXPRESSION fallback changed to MARKUP_TAG; ${...} expressions now visually distinct in all color schemes)
+Phase: 5 of 8 (Structural Features) — In Progress
+Plan: 1 of 3 complete
+Status: Phase 5 Plan 1 complete — MakoFoldingBuilder implemented with 5 construct types (def/block/doc/module/control-flow); 31 tests green; purgeOldFiles build bug fixed
+Last activity: 2026-02-20 — Plan 01 complete (FoldingBuilderEx + DUMMY_BLOCK-transparent control flow scanner; ParsingTestCase-based folding tests)
 
-Progress: [██████░░░░] 50%
+Progress: [███████░░░] 62%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: 3 min
-- Total execution time: 0.40 hours
+- Total plans completed: 9
+- Average duration: 7 min
+- Total execution time: ~1 hour
 
 **By Phase:**
 
@@ -31,10 +31,11 @@ Progress: [██████░░░░] 50%
 | 02-lexer | 3 | 7 min | 2.3 min |
 | 03-parser | 3 | 15 min | 5 min |
 | 04-syntax-highlighting | 2 | 3 min | 1.5 min |
+| 05-structural-features | 1 | 45 min | 45 min |
 
 **Recent Trend:**
-- Last 5 plans: 2 min, 3 min, 3 min, 1 min, 4 min
-- Trend: stable at ~2-4 min/plan
+- Last 5 plans: 3 min, 3 min, 1 min, 4 min, 45 min
+- Trend: 45 min for folding (complex PSI tree debugging)
 
 *Updated after each plan completion*
 | Phase 01-language-foundation P02 | 2 | 2 tasks | 5 files |
@@ -46,6 +47,7 @@ Progress: [██████░░░░] 50%
 | Phase 03-parser P03 | 3 | 2 tasks | 8 files |
 | Phase 04-syntax-highlighting P01 | 2 | 3 tasks | 6 files |
 | Phase 04-syntax-highlighting-comment-support P02 | 1 | 1 tasks | 1 files |
+| Phase 05-structural-features P01 | 45 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -92,6 +94,11 @@ Recent decisions affecting current work:
 - [Phase 04-01]: All MAKO_ TextAttributesKey constants prefixed with MAKO_ to avoid global name collisions with other language highlighters
 - [Phase 04-01]: TEMPLATE_TEXT and TAG_ATTR_EQ both return EMPTY_KEYS — HTML layer handles template text; TAG_ATTR_EQ is plain punctuation needing no special color
 - [Phase 04-02]: MARKUP_TAG fallback for MAKO_EXPRESSION: TEMPLATE_LANGUAGE_COLOR inherits from HighlighterColors.TEXT with no visible foreground; MARKUP_TAG provides distinct teal/Darcula, blue/Light colors for ${...} expressions
+- [Phase 05-01]: AST-level scanning for doc_comment folds: DOC_OPEN/CLOSE in getCommentTokens() means PsiBuilder skips them; doc_comment PSI rule never matches; scan root.node.firstChildNode/treeNext directly
+- [Phase 05-01]: DUMMY_BLOCK transparent descent: GeneratedParserUtilBase wraps unconsumed tokens in DUMMY_BLOCK when makoFile() loop exits early; control flow tokens inside must be recursively collected
+- [Phase 05-01]: ASTNode element type check for control lines: CONTROL_LINE tokens may appear as raw LeafPsiElement (not MakoControlLineStmtImpl) inside DUMMY_BLOCK; check node.elementType directly
+- [Phase 05-01]: purgeOldFiles=false on generateMakoLexer: lang/ directory contains committed psi/ and parser/ subdirs; purgeOldFiles=true recursively deletes them on every clean build
+- [Phase 05-01]: ParsingTestCase for folding tests: BasePlatformTestCase cannot register MakoFileType so testFolding() opens .mako as PlainText; use ParsingTestCase with explicit MakoParserDefinition()
 
 ### Pending Todos
 
@@ -108,5 +115,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed 04-syntax-highlighting-comment-support/04-02-PLAN.md (MAKO_EXPRESSION fallback changed to MARKUP_TAG; ${...} expressions now visually distinct in all standard color schemes; all 22 tests green)
-Resume file: .planning/phases/05-template-language/ (Phase 5)
+Stopped at: Completed 05-structural-features/05-01-PLAN.md (MakoFoldingBuilder with DUMMY_BLOCK-transparent control flow scanning; 31 tests green; purgeOldFiles build bug fixed)
+Resume file: .planning/phases/05-structural-features/ (Phase 5, Plan 2)
