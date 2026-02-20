@@ -475,7 +475,7 @@ public class MakoParser implements PsiParser, LightPsiParser {
   // !(TAG_OPEN_DEF | TAG_OPEN_BLOCK | TAG_OPEN_INHERIT | TAG_OPEN_INCLUDE
   //                         | TAG_OPEN_NAMESPACE | TAG_OPEN_PAGE
   //                         | END_TAG | CONTROL_LINE | CODE_OPEN | MODULE_OPEN | DOC_OPEN
-  //                         | EXPR_START | LINE_COMMENT)
+  //                         | EXPR_START | LINE_COMMENT | TEMPLATE_TEXT)
   static boolean tag_recover(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "tag_recover")) return false;
     boolean result_;
@@ -488,7 +488,7 @@ public class MakoParser implements PsiParser, LightPsiParser {
   // TAG_OPEN_DEF | TAG_OPEN_BLOCK | TAG_OPEN_INHERIT | TAG_OPEN_INCLUDE
   //                         | TAG_OPEN_NAMESPACE | TAG_OPEN_PAGE
   //                         | END_TAG | CONTROL_LINE | CODE_OPEN | MODULE_OPEN | DOC_OPEN
-  //                         | EXPR_START | LINE_COMMENT
+  //                         | EXPR_START | LINE_COMMENT | TEMPLATE_TEXT
   private static boolean tag_recover_0(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "tag_recover_0")) return false;
     boolean result_;
@@ -505,6 +505,7 @@ public class MakoParser implements PsiParser, LightPsiParser {
     if (!result_) result_ = consumeToken(builder_, DOC_OPEN);
     if (!result_) result_ = consumeToken(builder_, EXPR_START);
     if (!result_) result_ = consumeToken(builder_, LINE_COMMENT);
+    if (!result_) result_ = consumeToken(builder_, TEMPLATE_TEXT);
     return result_;
   }
 

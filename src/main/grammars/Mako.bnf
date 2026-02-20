@@ -141,7 +141,7 @@ template_text_content ::= TEMPLATE_TEXT
 private tag_recover ::= !(TAG_OPEN_DEF | TAG_OPEN_BLOCK | TAG_OPEN_INHERIT | TAG_OPEN_INCLUDE
                         | TAG_OPEN_NAMESPACE | TAG_OPEN_PAGE
                         | END_TAG | CONTROL_LINE | CODE_OPEN | MODULE_OPEN | DOC_OPEN
-                        | EXPR_START | LINE_COMMENT)
+                        | EXPR_START | LINE_COMMENT | TEMPLATE_TEXT)
 
 private expression_recover ::= !(EXPR_START | EXPR_END | TEMPLATE_TEXT
                                | TAG_OPEN_DEF | TAG_OPEN_BLOCK | TAG_OPEN_INHERIT

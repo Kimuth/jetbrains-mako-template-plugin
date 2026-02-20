@@ -65,4 +65,30 @@ class MakoParsingTest : ParsingTestCase("", "mako", MakoParserDefinition()) {
     fun testExpressionFollowedByText() {
         doTest(true)
     }
+
+    /**
+     * PARS-08: TEMPLATE_TEXT following a closed `<%def>...</%def>` block parses as a
+     * top-level MakoTemplateTextContentImpl sibling in the FILE node, not as a
+     * PsiErrorElement inside the MakoDefTagImpl.
+     *
+     * Regression test for the bug where `tag_recover` was missing TEMPLATE_TEXT in its
+     * stop-token set. GrammarKit's recoverWhile runs after every pinned rule (even
+     * successful ones), so the recovery loop consumed the trailing TEMPLATE_TEXT token
+     * into the DEF_TAG node as a PsiErrorElement.
+     */
+    fun testDefTagFollowedByText() {
+        doTest(true)
+    }
+
+    /**
+     * PARS-09: TEMPLATE_TEXT following a closed `<%block>...</%block>` block parses as a
+     * top-level MakoTemplateTextContentImpl sibling in the FILE node, not as a
+     * PsiErrorElement inside the MakoBlockTagImpl.
+     *
+     * Regression test for the same `tag_recover` missing TEMPLATE_TEXT bug as PARS-08,
+     * covering the block_tag variant.
+     */
+    fun testBlockTagFollowedByText() {
+        doTest(true)
+    }
 }
