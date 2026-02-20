@@ -95,7 +95,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None.
+- [highlighting] Reference TextMate/VS Code Mako bundles for syntax decisions (Phase 5+) — `.planning/todos/pending/2026-02-20-reference-textmate-vscode-mako-bundles.md`
 
 ### Blockers/Concerns
 
