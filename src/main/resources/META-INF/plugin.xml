@@ -37,5 +37,9 @@
         <!-- Phase 5: Code Folding -->
         <lang.foldingBuilder language="Mako Template"
             implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.folding.MakoFoldingBuilder"/>
+
+        <!-- Phase 5: Structure View -->
+        <lang.psiStructureViewFactory language="Mako Template"
+            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.structure.MakoStructureViewFactory"/>
     </extensions>
 </idea-plugin>
