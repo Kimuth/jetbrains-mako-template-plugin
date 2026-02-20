@@ -49,7 +49,7 @@ class MakoSyntaxHighlighter : SyntaxHighlighterBase() {
 
         @JvmField
         val MAKO_TAG_CLOSE = createTextAttributesKey(
-            "MAKO_TAG_CLOSE", DefaultLanguageHighlighterColors.BRACKETS
+            "MAKO_TAG_CLOSE", DefaultLanguageHighlighterColors.KEYWORD
         )
 
         @JvmField

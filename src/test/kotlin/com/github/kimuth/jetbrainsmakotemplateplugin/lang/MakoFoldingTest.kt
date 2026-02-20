@@ -5,8 +5,8 @@ import com.intellij.openapi.editor.impl.DocumentImpl
 import com.intellij.testFramework.ParsingTestCase
 
 /**
- * Folding builder tests covering all 5 foldable construct types:
- *   def_tag, block_tag, doc_comment, module_block, and control flow (for/if/while).
+ * Folding builder tests covering all 6 foldable construct types:
+ *   def_tag, block_tag, doc_comment, module_block, code_block, and control flow (for/if/while).
  *
  * Extends ParsingTestCase with MakoParserDefinition so PsiFileFactory is properly set up.
  * Uses parseFile() to create Mako PSI files and calls MakoFoldingBuilder directly.
@@ -21,6 +21,10 @@ This documentation should be collapsed by default.
 
 <%!
     import os
+%>
+
+<%
+    rows = []
 %>
 
 <%def name="greet">
@@ -50,14 +54,13 @@ Hello ${"$"}{name}!
         return builder.buildFoldRegions(file, doc, false).size
     }
 
-    /** All 7 fold regions: def, block, doc, module, for, if, while */
+    /** All 8 fold regions: def, block, doc, module, code, for, if, while */
     fun testAllConstructsFolded() {
-        // Expected: def(1) + block(1) + doc(1) + module(1) + for(1) + if(1) + while(1) = 7
         val count = buildFolds(SAMPLE_MAKO)
-        assertEquals("Expected 7 fold regions (def+block+doc+module+for+if+while)", 7, count)
+        assertEquals("Expected 8 fold regions (def+block+doc+module+code+for+if+while)", 8, count)
     }
 
-    /** Def tag combined with for loop — verifies control flow at file level alongside def */
+    /** Def tag combined with for loop */
     fun testDefWithForLoop() {
         val content = """<%def name="greet">
 Hello!
@@ -66,7 +69,6 @@ Hello!
 % for item in items:
     content
 % endfor"""
-        // Expect: 1 for def_tag + 1 for for/endfor = 2
         assertEquals("Expected 2 fold regions (def + for loop)", 2, buildFolds(content))
     }
 
@@ -92,6 +94,14 @@ Hello!
     import os
 %>"""
         assertEquals("Expected 1 fold region for module_block", 1, buildFolds(content))
+    }
+
+    /** code_block folds <% ... %> */
+    fun testCodeBlockFolded() {
+        val content = """<%
+    rows = [[v for v in range(0,10)] for row in range(0,10)]
+%>"""
+        assertEquals("Expected 1 fold region for code_block", 1, buildFolds(content))
     }
 
     /** % for ... % endfor control flow folds */
@@ -123,7 +133,6 @@ Hello!
         val content = """% endfor
 some content
 % endif"""
-        // Should produce 0 folds without throwing
         assertEquals("Malformed file should produce 0 folds", 0, buildFolds(content))
     }
 }

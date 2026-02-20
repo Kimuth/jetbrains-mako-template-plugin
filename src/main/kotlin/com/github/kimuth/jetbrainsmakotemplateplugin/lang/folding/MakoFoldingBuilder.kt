@@ -4,7 +4,6 @@ import com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoTokenTypes
 import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoBlockTag
 import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoDefTag
 import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoFile
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoModuleBlock
 import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoTypes
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
@@ -43,21 +42,16 @@ class MakoFoldingBuilder : FoldingBuilderEx(), DumbAware {
         buildDocCommentFolds(root, descriptors)
 
         // 4. module_block folding (collapsed by default)
-        PsiTreeUtil.collectElementsOfType(root, MakoModuleBlock::class.java).forEach { module ->
-            descriptors.add(
-                FoldingDescriptor(
-                    module.node,
-                    module.textRange,
-                    null,
-                    Collections.emptySet(),
-                    false,
-                    "<%!...%>",
-                    true
-                )
-            )
-        }
+        // Use AST-level scan for MODULE_OPEN tokens paired with CODE_CLOSE.
+        // The PSI-level MakoModuleBlock composite may not exist in all environments
+        // (e.g., TemplateLanguage file view providers can alter the PSI tree structure).
+        buildModuleBlockFolds(root, descriptors)
 
-        // 5. Control flow folding via sibling-scan
+        // 5. code_block folding (expanded by default)
+        // Same AST approach: CODE_OPEN paired with CODE_CLOSE.
+        buildCodeBlockFolds(root, descriptors)
+
+        // 6. Control flow folding via sibling-scan
         // Scan root file element
         if (root is MakoFile) {
             descriptors.addAll(buildControlFlowFoldsUnder(root))
@@ -84,7 +78,6 @@ class MakoFoldingBuilder : FoldingBuilderEx(), DumbAware {
         var node = root.node.firstChildNode
         while (node != null) {
             if (node.elementType == MakoTokenTypes.DOC_OPEN) {
-                // Scan forward siblings for matching DOC_CLOSE
                 var sibling = node.treeNext
                 while (sibling != null && sibling.elementType != MakoTokenTypes.DOC_CLOSE) {
                     sibling = sibling.treeNext
@@ -102,6 +95,84 @@ class MakoFoldingBuilder : FoldingBuilderEx(), DumbAware {
                             true
                         )
                     )
+                }
+            }
+            node = node.treeNext
+        }
+    }
+
+    /**
+     * Scan for MODULE_OPEN tokens in the AST and pair each with the next CODE_CLOSE.
+     * Uses AST-level scan (like doc_comment) rather than PSI-level MakoModuleBlock
+     * because the TemplateLanguage file view provider may alter the PSI tree structure
+     * such that MODULE_BLOCK composites are not created.
+     */
+    private fun buildModuleBlockFolds(root: PsiElement, descriptors: MutableList<FoldingDescriptor>) {
+        var node = root.node.firstChildNode
+        while (node != null) {
+            if (node.elementType == MakoTokenTypes.MODULE_OPEN ||
+                node.elementType == MakoTypes.MODULE_BLOCK) {
+                if (node.elementType == MakoTypes.MODULE_BLOCK) {
+                    // PSI composite exists — use its full range
+                    descriptors.add(
+                        FoldingDescriptor(
+                            node,
+                            node.textRange,
+                            null,
+                            Collections.emptySet(),
+                            false,
+                            "<%!...%>",
+                            true
+                        )
+                    )
+                } else {
+                    // Raw MODULE_OPEN token — scan forward for CODE_CLOSE
+                    var sibling = node.treeNext
+                    while (sibling != null && sibling.elementType != MakoTokenTypes.CODE_CLOSE) {
+                        sibling = sibling.treeNext
+                    }
+                    if (sibling != null) {
+                        val range = TextRange(node.startOffset, sibling.startOffset + sibling.textLength)
+                        descriptors.add(
+                            FoldingDescriptor(
+                                node,
+                                range,
+                                null,
+                                Collections.emptySet(),
+                                false,
+                                "<%!...%>",
+                                true
+                            )
+                        )
+                    }
+                }
+            }
+            node = node.treeNext
+        }
+    }
+
+    /**
+     * Scan for CODE_OPEN tokens in the AST and pair each with the next CODE_CLOSE.
+     * Anonymous code blocks (<% ... %>) are foldable but start expanded.
+     */
+    private fun buildCodeBlockFolds(root: PsiElement, descriptors: MutableList<FoldingDescriptor>) {
+        var node = root.node.firstChildNode
+        while (node != null) {
+            if (node.elementType == MakoTokenTypes.CODE_OPEN ||
+                node.elementType == MakoTypes.CODE_BLOCK) {
+                if (node.elementType == MakoTypes.CODE_BLOCK) {
+                    // PSI composite exists
+                    descriptors.add(FoldingDescriptor(node, node.textRange))
+                } else {
+                    // Raw CODE_OPEN token — scan forward for CODE_CLOSE
+                    var sibling = node.treeNext
+                    while (sibling != null && sibling.elementType != MakoTokenTypes.CODE_CLOSE) {
+                        sibling = sibling.treeNext
+                    }
+                    if (sibling != null) {
+                        val range = TextRange(node.startOffset, sibling.startOffset + sibling.textLength)
+                        descriptors.add(FoldingDescriptor(node, range))
+                    }
                 }
             }
             node = node.treeNext
@@ -149,12 +220,6 @@ class MakoFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     private fun buildControlFlowFoldsUnder(parent: PsiElement): List<FoldingDescriptor> {
         val descriptors = mutableListOf<FoldingDescriptor>()
-        // Stack holds the ASTNode for each unmatched opening control line.
-        // We use ASTNode rather than PsiElement to handle both:
-        //   - MakoControlLineStmtImpl (CONTROL_LINE_STMT composite) — normal parse
-        //   - LeafPsiElement with elementType CONTROL_LINE — raw token when error recovery
-        //     causes makoFile() to exit early and remaining tokens are consumed without
-        //     being wrapped in CONTROL_LINE_STMT composites.
         val stack = ArrayDeque<ASTNode>()
 
         for (node in collectControlLineNodes(parent.node)) {
