@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Lexer** - JFlex-generated lexer that correctly tokenizes all Mako constructs with restart-state semantics
 - [x] **Phase 3: Parser and PSI Tree** - GrammarKit-generated parser with distinct typed PSI nodes for every Mako construct (completed 2026-02-19)
 - [x] **Phase 4: Syntax Highlighting and Comment Support** - Distinct colors for all Mako constructs, brace matching, comment toggling, and color scheme settings (completed 2026-02-19)
-- [x] **Phase 5: Structural Features** - Code folding and structure view panel for navigating defs and blocks (completed 2026-02-20)
+- [ ] **Phase 5: Structural Features** - Code folding and structure view panel for navigating defs and blocks
 - [ ] **Phase 6: Python Language Injection** - Inject Python into expression and code block regions via MultiHostInjector
 - [ ] **Phase 7: Completion** - Autocomplete for Mako tag names and tag attributes
 - [ ] **Phase 8: Error Annotations and Release Readiness** - Red squiggles for malformed Mako syntax and Marketplace-ready build
@@ -90,10 +90,11 @@ Plans:
   1. A gutter fold arrow appears on the opening line of every `<%def>`, `<%block>`, and control flow block (`% for`, `% if`, `% while`); clicking it collapses the block to a single line
   2. The Structure view panel (View > Tool Windows > Structure, or Ctrl+F12) shows all `<%def>` and `<%block>` declarations as a navigable tree; clicking a node moves the editor caret to that declaration
   3. `<%doc>` and `<%!>` blocks are collapsed by default when a file is opened; all other blocks start expanded
-**Plans**: 2 plans
+**Plans**: 3 plans
 Plans:
 - [x] 05-01-PLAN.md — MakoFoldingBuilder with sibling-scan control flow folding, folding test
-- [ ] 05-02-PLAN.md — Structure View three-class stack (factory, model, element), structure view test
+- [x] 05-02-PLAN.md — Structure View three-class stack (factory, model, element), structure view test
+- [ ] 05-03-PLAN.md — Gap closure: fix grammar so END_TAG is included in DEF_TAG/BLOCK_TAG with TEMPLATE_TEXT-only bodies
 
 ### Phase 6: Python Language Injection
 **Goal**: Python syntax highlighting and analysis from PyCharm's Python plugin is active inside Mako expression and code block regions
@@ -138,7 +139,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 2. Lexer | 3/3 | Complete   | 2026-02-19 |
 | 3. Parser and PSI Tree | 3/3 | Complete    | 2026-02-19 |
 | 4. Syntax Highlighting and Comment Support | 2/2 | Complete   | 2026-02-19 |
-| 5. Structural Features | 2/2 | Complete   | 2026-02-20 |
+| 5. Structural Features | 2/3 | In Progress | - |
 | 6. Python Language Injection | 0/TBD | Not started | - |
 | 7. Completion | 0/TBD | Not started | - |
 | 8. Error Annotations and Release Readiness | 0/TBD | Not started | - |
