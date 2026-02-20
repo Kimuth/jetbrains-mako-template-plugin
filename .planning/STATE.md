@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 5 - Structural Features — Plan 2 of 3 COMPLETE
+**Current focus:** Phase 5 - Structural Features — ALL 3 PLANS COMPLETE
 
 ## Current Position
 
-Phase: 5 of 8 (Structural Features) — In Progress
-Plan: 2 of 3 complete
-Status: Phase 5 Plan 2 complete — Structure View three-class stack (MakoStructureViewFactory/ViewModel/Element) registered in plugin.xml; 35 tests green
-Last activity: 2026-02-20 — Plan 02 complete (Structure View panel showing <%def> and <%block> nodes as navigable tree; ParsingTestCase-based tests; parser flattening behavior documented)
+Phase: 5 of 8 (Structural Features) — COMPLETE
+Plan: 3 of 3 complete
+Status: Phase 5 Plan 3 complete — Grammar fix for TEMPLATE_TEXT-body folding; template_text_content rule + item_ reordering; 52 tests green; SYNX-06 satisfied
+Last activity: 2026-02-20 — Plan 03 complete (grammar fix: END_TAG now always consumed in def/block PSI composites regardless of body content; 5 regression tests added)
 
-Progress: [███████░░░] 62%
+Progress: [████████░░] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 11
 - Average duration: 8 min
-- Total execution time: ~71 min
+- Total execution time: ~91 min
 
 **By Phase:**
 
@@ -31,11 +31,11 @@ Progress: [███████░░░] 62%
 | 02-lexer | 3 | 7 min | 2.3 min |
 | 03-parser | 3 | 15 min | 5 min |
 | 04-syntax-highlighting | 2 | 3 min | 1.5 min |
-| 05-structural-features | 2 | 58 min | 29 min |
+| 05-structural-features | 3 | 78 min | 26 min |
 
 **Recent Trend:**
-- Last 5 plans: 3 min, 1 min, 4 min, 45 min, 13 min
-- Trend: 13 min for structure view (PSI flattening discovery, test content debugging)
+- Last 5 plans: 1 min, 4 min, 45 min, 13 min, 20 min
+- Trend: 20 min for grammar fix (GrammarKit internals analysis, alternative ordering discovery)
 
 *Updated after each plan completion*
 | Phase 01-language-foundation P02 | 2 | 2 tasks | 5 files |
@@ -49,6 +49,7 @@ Progress: [███████░░░] 62%
 | Phase 04-syntax-highlighting-comment-support P02 | 1 | 1 tasks | 1 files |
 | Phase 05-structural-features P01 | 45 | 2 tasks | 5 files |
 | Phase 05-structural-features P02 | 13 | 2 tasks | 5 files |
+| Phase 05-structural-features P03 | 20 | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -102,7 +103,8 @@ Recent decisions affecting current work:
 - [Phase 05-01]: ParsingTestCase for folding tests: BasePlatformTestCase cannot register MakoFileType so testFolding() opens .mako as PlainText; use ParsingTestCase with explicit MakoParserDefinition()
 - [Phase 05-structural-features]: ASTWrapperPsiElement implements NavigatablePsiElement (via PsiElementBase) so navigate() delegation is free in structure view elements
 - [Phase 05-structural-features]: Parser flattens nested <%def> tags into file-level siblings — structure view reflects actual PSI tree (no artificial nesting added)
-- [Phase 05-structural-features]: Test content for structure view must use empty tag bodies — TEMPLATE_TEXT inside tags triggers pin=1 error recovery that consumes END_TAG of subsequent sibling tags
+- [Phase 05-structural-features]: Test content for structure view must use empty tag bodies — TEMPLATE_TEXT inside tags triggers pin=1 error recovery that consumes END_TAG of subsequent sibling tags [RESOLVED by 05-03: grammar fix means this is no longer required; TEMPLATE_TEXT bodies now parse correctly]
+- [Phase 05-structural-features]: template_text_content FIRST in item_ alternatives: root fix is alternative ordering not just naming the rule; bare consumeToken in later position causes GrammarKit recovery from failed pinned rules to consume TEMPLATE_TEXT before item_() alternative can match it
 
 ### Pending Todos
 
@@ -119,5 +121,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed 05-structural-features/05-02-PLAN.md (Structure View three-class stack; 35 tests green; parser flattening behavior documented)
-Resume file: .planning/phases/05-structural-features/ (Phase 5, Plan 3)
+Stopped at: Completed 05-structural-features/05-03-PLAN.md (Grammar fix for TEMPLATE_TEXT-body folding; 52 tests green; SYNX-06 satisfied; Phase 5 ALL PLANS COMPLETE)
+Resume file: .planning/phases/06-navigation/ (Phase 6, Plan 1)
