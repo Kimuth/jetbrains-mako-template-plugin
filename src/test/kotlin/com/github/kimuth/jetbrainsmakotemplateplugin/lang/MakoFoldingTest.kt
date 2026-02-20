@@ -180,4 +180,49 @@ some content
 % endif"""
         assertEquals("Malformed file should produce 0 folds", 0, buildFolds(content))
     }
+
+    // ---- TEMPLATE_TEXT-body regression tests (GAP-02 / SYNX-06) ----
+    // These test cases previously produced incorrect fold regions because END_TAG was orphaned
+    // at file level when the def/block body contained only TEMPLATE_TEXT tokens. The grammar
+    // fix (template_text_content named rule) ensures END_TAG is consumed into the composite.
+
+    /** Single <%def> with plain-text-only body should fold (regression: END_TAG was orphaned) */
+    fun testDefWithPlainTextBodyFolds() {
+        val content = "<%def name=\"foo\">\nHello world!\n</%def>"
+        assertEquals("Expected 1 fold region for def with plain-text body", 1, buildFolds(content))
+    }
+
+    /** Single <%block> with plain-text-only body should fold (regression: END_TAG was orphaned) */
+    fun testBlockWithPlainTextBodyFolds() {
+        val content = "<%block name=\"header\">\n<h1>Title</h1>\n</%block>"
+        assertEquals("Expected 1 fold region for block with plain-text body", 1, buildFolds(content))
+    }
+
+    /** Two consecutive <%def> tags with plain-text-only bodies should each fold.
+     *  Regression: orphaned END_TAG caused second def to be parsed as flat file-level tokens. */
+    fun testSiblingDefsWithPlainTextBodiesFold() {
+        val content = "<%def name=\"foo\">\nHello!\n</%def>\n\n<%def name=\"bar\">\nWorld!\n</%def>"
+        assertEquals("Expected 2 fold regions for sibling defs with plain-text bodies", 2, buildFolds(content))
+    }
+
+    /** <%def> followed by <%block>, both with plain-text-only bodies, should each fold.
+     *  Regression: orphaned END_TAG caused second tag to be parsed as flat file-level tokens. */
+    fun testSiblingDefAndBlockWithPlainTextBodiesFold() {
+        val content = "<%def name=\"foo\">\nHello!\n</%def>\n\n<%block name=\"header\">\n<h1>Title</h1>\n</%block>"
+        assertEquals("Expected 2 fold regions for sibling def+block with plain-text bodies", 2, buildFolds(content))
+    }
+
+    /** Fold range for <%def> with plain-text body must include the closing </%def> tag.
+     *  Regression: fold endOffset excluded END_TAG when END_TAG was orphaned at file level. */
+    fun testDefFoldRangeIncludesEndTag() {
+        val content = "<%def name=\"foo\">\nHello world!\n</%def>"
+        val file = parseFile("def_range", content)
+        val doc = DocumentImpl(content)
+        val builder = MakoFoldingBuilder()
+        val regions = builder.buildFoldRegions(file, doc, false)
+
+        assertEquals("Expected exactly 1 fold region", 1, regions.size)
+        assertEquals("Fold endOffset must equal content.length (END_TAG included in DEF_TAG composite)",
+            content.length, regions[0].range.endOffset)
+    }
 }
