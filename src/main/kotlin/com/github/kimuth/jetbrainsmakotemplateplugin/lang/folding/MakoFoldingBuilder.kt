@@ -1,11 +1,11 @@
 package com.github.kimuth.jetbrainsmakotemplateplugin.lang.folding
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoFile
+import com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoTokenTypes
 import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoBlockTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoControlLineStmt
 import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoDefTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoDocComment
+import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoFile
 import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoModuleBlock
+import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoTypes
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
@@ -37,19 +37,10 @@ class MakoFoldingBuilder : FoldingBuilderEx(), DumbAware {
         }
 
         // 3. doc_comment folding (collapsed by default)
-        PsiTreeUtil.collectElementsOfType(root, MakoDocComment::class.java).forEach { doc ->
-            descriptors.add(
-                FoldingDescriptor(
-                    doc.node,
-                    doc.textRange,
-                    null,
-                    Collections.emptySet(),
-                    false,
-                    "<%doc>...</%doc>",
-                    true
-                )
-            )
-        }
+        // DOC_OPEN/DOC_CONTENT/DOC_CLOSE tokens are in getCommentTokens() so they are treated as
+        // PsiComment nodes by the platform (flat siblings, not wrapped in a MakoDocComment composite).
+        // Scan the AST for DOC_OPEN nodes and pair each with its following DOC_CLOSE sibling.
+        buildDocCommentFolds(root, descriptors)
 
         // 4. module_block folding (collapsed by default)
         PsiTreeUtil.collectElementsOfType(root, MakoModuleBlock::class.java).forEach { module ->
@@ -83,32 +74,103 @@ class MakoFoldingBuilder : FoldingBuilderEx(), DumbAware {
         return descriptors.toTypedArray()
     }
 
+    /**
+     * Scan for DOC_OPEN tokens in the AST and pair each with its following DOC_CLOSE sibling.
+     * Because DOC_OPEN/DOC_CONTENT/DOC_CLOSE are in the comment token set, the platform creates
+     * flat PsiComment nodes for them rather than wrapping them in a MakoDocComment composite.
+     * We must walk the AST to find DOC_OPEN nodes directly.
+     */
+    private fun buildDocCommentFolds(root: PsiElement, descriptors: MutableList<FoldingDescriptor>) {
+        var node = root.node.firstChildNode
+        while (node != null) {
+            if (node.elementType == MakoTokenTypes.DOC_OPEN) {
+                // Scan forward siblings for matching DOC_CLOSE
+                var sibling = node.treeNext
+                while (sibling != null && sibling.elementType != MakoTokenTypes.DOC_CLOSE) {
+                    sibling = sibling.treeNext
+                }
+                if (sibling != null) {
+                    val range = TextRange(node.startOffset, sibling.startOffset + sibling.textLength)
+                    descriptors.add(
+                        FoldingDescriptor(
+                            node,
+                            range,
+                            null,
+                            Collections.emptySet(),
+                            false,
+                            "<%doc>...</%doc>",
+                            true
+                        )
+                    )
+                }
+            }
+            node = node.treeNext
+        }
+    }
+
     private fun extractKeyword(text: String): String {
         return text.trimStart().removePrefix("%").trimStart().split(Regex("\\s+"))[0].trimEnd(':')
     }
 
-    private fun buildControlFlowFoldsUnder(parent: PsiElement): List<FoldingDescriptor> {
-        val descriptors = mutableListOf<FoldingDescriptor>()
-        val stack = ArrayDeque<MakoControlLineStmt>()
-
-        var child = parent.firstChild
-        while (child != null) {
-            if (child is MakoControlLineStmt) {
-                val keyword = extractKeyword(child.text)
-                when {
-                    keyword in OPENING_KEYWORDS -> stack.addLast(child)
-                    keyword in CLOSING_KEYWORDS && stack.isNotEmpty() -> {
-                        val openLine = stack.removeLast()
-                        descriptors.add(
-                            FoldingDescriptor(
-                                openLine.node,
-                                TextRange(openLine.textRange.startOffset, child.textRange.endOffset)
-                            )
-                        )
+    /**
+     * Collect control line ASTNodes in document order, transparently descending into
+     * DUMMY_BLOCK wrappers that the error-recovery system may create when the parser
+     * encounters unexpected tokens (e.g. orphaned END_TAG at file scope causes the
+     * remaining tokens to be grouped into DUMMY_BLOCKs).
+     *
+     * We stop recursing when we reach structured composites that have their own scope
+     * (DEF_TAG, BLOCK_TAG, CONTROL_LINE_STMT) so that control-flow pairs inside a
+     * nested scope are not mixed with the parent scope.
+     */
+    private fun collectControlLineNodes(parent: ASTNode): List<ASTNode> {
+        val result = mutableListOf<ASTNode>()
+        var node = parent.firstChildNode
+        while (node != null) {
+            when (node.elementType) {
+                MakoTokenTypes.CONTROL_LINE -> result.add(node)
+                MakoTypes.CONTROL_LINE_STMT -> result.add(node)
+                // Transparent containers: error recovery wraps leftover tokens in DUMMY_BLOCK.
+                // Recurse into them so their CONTROL_LINE tokens are visible at this scope level.
+                else -> {
+                    val et = node.elementType
+                    val isDummy = et.toString() == "DUMMY_BLOCK" ||
+                            et.javaClass.simpleName == "DummyBlockElementType"
+                    if (isDummy) {
+                        result.addAll(collectControlLineNodes(node))
                     }
+                    // DEF_TAG, BLOCK_TAG, CONTROL_LINE_STMT composites are not transparent:
+                    // their interior is handled by separate calls to buildControlFlowFoldsUnder.
                 }
             }
-            child = child.nextSibling
+            node = node.treeNext
+        }
+        return result
+    }
+
+    private fun buildControlFlowFoldsUnder(parent: PsiElement): List<FoldingDescriptor> {
+        val descriptors = mutableListOf<FoldingDescriptor>()
+        // Stack holds the ASTNode for each unmatched opening control line.
+        // We use ASTNode rather than PsiElement to handle both:
+        //   - MakoControlLineStmtImpl (CONTROL_LINE_STMT composite) — normal parse
+        //   - LeafPsiElement with elementType CONTROL_LINE — raw token when error recovery
+        //     causes makoFile() to exit early and remaining tokens are consumed without
+        //     being wrapped in CONTROL_LINE_STMT composites.
+        val stack = ArrayDeque<ASTNode>()
+
+        for (node in collectControlLineNodes(parent.node)) {
+            val keyword = extractKeyword(node.text)
+            when {
+                keyword in OPENING_KEYWORDS -> stack.addLast(node)
+                keyword in CLOSING_KEYWORDS && stack.isNotEmpty() -> {
+                    val openNode = stack.removeLast()
+                    descriptors.add(
+                        FoldingDescriptor(
+                            openNode,
+                            TextRange(openNode.startOffset, node.startOffset + node.textLength)
+                        )
+                    )
+                }
+            }
         }
 
         return descriptors

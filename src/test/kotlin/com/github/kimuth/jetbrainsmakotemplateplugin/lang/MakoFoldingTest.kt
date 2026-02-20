@@ -1,0 +1,129 @@
+package com.github.kimuth.jetbrainsmakotemplateplugin.lang
+
+import com.github.kimuth.jetbrainsmakotemplateplugin.lang.folding.MakoFoldingBuilder
+import com.intellij.openapi.editor.impl.DocumentImpl
+import com.intellij.testFramework.ParsingTestCase
+
+/**
+ * Folding builder tests covering all 5 foldable construct types:
+ *   def_tag, block_tag, doc_comment, module_block, and control flow (for/if/while).
+ *
+ * Extends ParsingTestCase with MakoParserDefinition so PsiFileFactory is properly set up.
+ * Uses parseFile() to create Mako PSI files and calls MakoFoldingBuilder directly.
+ */
+class MakoFoldingTest : ParsingTestCase("folding", "mako", MakoParserDefinition()) {
+
+    override fun getTestDataPath() = "src/test/testData"
+
+    private val SAMPLE_MAKO = """<%doc>
+This documentation should be collapsed by default.
+</%doc>
+
+<%!
+    import os
+%>
+
+<%def name="greet">
+Hello ${"$"}{name}!
+</%def>
+
+<%block name="header">
+<h1>Title</h1>
+</%block>
+
+% for item in items:
+    ${"$"}{item}
+% endfor
+
+% if show:
+    <p>Visible</p>
+% endif
+
+% while count > 0:
+    <p>Counting</p>
+% endwhile"""
+
+    private fun buildFolds(content: String): Int {
+        val file = parseFile("test", content)
+        val doc = DocumentImpl(content)
+        val builder = MakoFoldingBuilder()
+        return builder.buildFoldRegions(file, doc, false).size
+    }
+
+    /** All 7 fold regions: def, block, doc, module, for, if, while */
+    fun testAllConstructsFolded() {
+        // Expected: def(1) + block(1) + doc(1) + module(1) + for(1) + if(1) + while(1) = 7
+        val count = buildFolds(SAMPLE_MAKO)
+        assertEquals("Expected 7 fold regions (def+block+doc+module+for+if+while)", 7, count)
+    }
+
+    /** Def tag combined with for loop — verifies control flow at file level alongside def */
+    fun testDefWithForLoop() {
+        val content = """<%def name="greet">
+Hello!
+</%def>
+
+% for item in items:
+    content
+% endfor"""
+        // Expect: 1 for def_tag + 1 for for/endfor = 2
+        assertEquals("Expected 2 fold regions (def + for loop)", 2, buildFolds(content))
+    }
+
+    /** def_tag folds the entire <%def ...>...</%def> span */
+    fun testDefTagFolded() {
+        val content = """<%def name="greet">
+Hello!
+</%def>"""
+        assertEquals("Expected 1 fold region for def_tag", 1, buildFolds(content))
+    }
+
+    /** block_tag folds the entire <%block ...>...</%block> span */
+    fun testBlockTagFolded() {
+        val content = """<%block name="header">
+<h1>Title</h1>
+</%block>"""
+        assertEquals("Expected 1 fold region for block_tag", 1, buildFolds(content))
+    }
+
+    /** module_block folds <%! ... %> */
+    fun testModuleBlockFolded() {
+        val content = """<%!
+    import os
+%>"""
+        assertEquals("Expected 1 fold region for module_block", 1, buildFolds(content))
+    }
+
+    /** % for ... % endfor control flow folds */
+    fun testForLoopFolded() {
+        val content = """% for item in items:
+    content
+% endfor"""
+        assertEquals("Expected 1 fold region for for loop", 1, buildFolds(content))
+    }
+
+    /** % if ... % endif control flow folds */
+    fun testIfBlockFolded() {
+        val content = """% if show:
+    <p>Visible</p>
+% endif"""
+        assertEquals("Expected 1 fold region for if block", 1, buildFolds(content))
+    }
+
+    /** % while ... % endwhile control flow folds */
+    fun testWhileLoopFolded() {
+        val content = """% while count > 0:
+    <p>Counting</p>
+% endwhile"""
+        assertEquals("Expected 1 fold region for while loop", 1, buildFolds(content))
+    }
+
+    /** Malformed file with orphaned % endfor does not crash (empty stack guard) */
+    fun testMalformedControlFlowNoCrash() {
+        val content = """% endfor
+some content
+% endif"""
+        // Should produce 0 folds without throwing
+        assertEquals("Malformed file should produce 0 folds", 0, buildFolds(content))
+    }
+}
