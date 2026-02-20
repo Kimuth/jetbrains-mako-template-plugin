@@ -143,7 +143,8 @@ private tag_recover ::= !(TAG_OPEN_DEF | TAG_OPEN_BLOCK | TAG_OPEN_INHERIT | TAG
                         | END_TAG | CONTROL_LINE | CODE_OPEN | MODULE_OPEN | DOC_OPEN
                         | EXPR_START | LINE_COMMENT)
 
-private expression_recover ::= !(EXPR_START | EXPR_END | TAG_OPEN_DEF | TAG_OPEN_BLOCK | TAG_OPEN_INHERIT
+private expression_recover ::= !(EXPR_START | EXPR_END | TEMPLATE_TEXT
+                               | TAG_OPEN_DEF | TAG_OPEN_BLOCK | TAG_OPEN_INHERIT
                                | TAG_OPEN_INCLUDE | TAG_OPEN_NAMESPACE | TAG_OPEN_PAGE
                                | END_TAG | CONTROL_LINE | CODE_OPEN | MODULE_OPEN | DOC_OPEN
                                | LINE_COMMENT)

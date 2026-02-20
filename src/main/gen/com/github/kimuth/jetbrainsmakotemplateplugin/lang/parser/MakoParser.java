@@ -233,7 +233,8 @@ public class MakoParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // !(EXPR_START | EXPR_END | TAG_OPEN_DEF | TAG_OPEN_BLOCK | TAG_OPEN_INHERIT
+  // !(EXPR_START | EXPR_END | TEMPLATE_TEXT
+  //                                | TAG_OPEN_DEF | TAG_OPEN_BLOCK | TAG_OPEN_INHERIT
   //                                | TAG_OPEN_INCLUDE | TAG_OPEN_NAMESPACE | TAG_OPEN_PAGE
   //                                | END_TAG | CONTROL_LINE | CODE_OPEN | MODULE_OPEN | DOC_OPEN
   //                                | LINE_COMMENT)
@@ -246,7 +247,8 @@ public class MakoParser implements PsiParser, LightPsiParser {
     return result_;
   }
 
-  // EXPR_START | EXPR_END | TAG_OPEN_DEF | TAG_OPEN_BLOCK | TAG_OPEN_INHERIT
+  // EXPR_START | EXPR_END | TEMPLATE_TEXT
+  //                                | TAG_OPEN_DEF | TAG_OPEN_BLOCK | TAG_OPEN_INHERIT
   //                                | TAG_OPEN_INCLUDE | TAG_OPEN_NAMESPACE | TAG_OPEN_PAGE
   //                                | END_TAG | CONTROL_LINE | CODE_OPEN | MODULE_OPEN | DOC_OPEN
   //                                | LINE_COMMENT
@@ -255,6 +257,7 @@ public class MakoParser implements PsiParser, LightPsiParser {
     boolean result_;
     result_ = consumeToken(builder_, EXPR_START);
     if (!result_) result_ = consumeToken(builder_, EXPR_END);
+    if (!result_) result_ = consumeToken(builder_, TEMPLATE_TEXT);
     if (!result_) result_ = consumeToken(builder_, TAG_OPEN_DEF);
     if (!result_) result_ = consumeToken(builder_, TAG_OPEN_BLOCK);
     if (!result_) result_ = consumeToken(builder_, TAG_OPEN_INHERIT);

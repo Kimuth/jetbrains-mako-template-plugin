@@ -1,0 +1,7 @@
+FILE(0,9)
+  MakoExpressionImpl(EXPRESSION)(0,6)
+    PsiElement(EXPR_START)('${')(0,2)
+    PsiElement(EXPR_CONTENT)('foo')(2,5)
+    PsiElement(EXPR_END)('}')(5,6)
+  MakoTemplateTextContentImpl(TEMPLATE_TEXT_CONTENT)(6,9)
+    PsiElement(TEMPLATE_TEXT)('bar')(6,9)

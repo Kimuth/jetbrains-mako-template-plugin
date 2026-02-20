@@ -51,4 +51,18 @@ class MakoParsingTest : ParsingTestCase("", "mako", MakoParserDefinition()) {
     fun testConsecutiveExpressions() {
         doTest(true)
     }
+
+    /**
+     * PARS-07: TEMPLATE_TEXT immediately following a `${...}` expression parses as a
+     * sibling MakoTemplateTextContentImpl node, not as a PsiErrorElement inside the
+     * MakoExpressionImpl.
+     *
+     * Regression test for the bug where `expression_recover` was missing TEMPLATE_TEXT
+     * in its stop-token set. GrammarKit's recoverWhile runs after every pinned rule
+     * (even successful ones), so the recovery loop consumed the following TEMPLATE_TEXT
+     * token into the EXPRESSION node as a PsiErrorElement.
+     */
+    fun testExpressionFollowedByText() {
+        doTest(true)
+    }
 }
