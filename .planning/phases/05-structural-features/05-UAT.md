@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 05-structural-features
 source: 05-01-SUMMARY.md, 05-02-SUMMARY.md
 started: 2026-02-20T20:00:00Z
@@ -57,7 +57,14 @@ skipped: 0
   reason: "User reported: It actually depends on what is inside that <%block />, it's the same with previous checkpoint verification for <%def /> block."
   severity: major
   test: 2
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "GrammarKit parser fails to include END_TAG inside DEF_TAG/BLOCK_TAG PSI nodes when tag body contains only TEMPLATE_TEXT (no pinned constructs). Unpinned consumeToken(TEMPLATE_TEXT) in item_ rule does not update ErrorState, causing subsequent consumeToken(END_TAG) to fail. END_TAG becomes orphaned at file level, breaking fold region calculation and cascading to break all subsequent sibling def/block tags."
+  artifacts:
+    - path: "src/main/grammars/Mako.bnf"
+      issue: "def_tag and block_tag rules use item_* for body; TEMPLATE_TEXT matched by unpinned consumeToken fails to advance error recovery state"
+    - path: "src/main/gen/com/github/kimuth/jetbrainsmakotemplateplugin/lang/parser/MakoParser.java"
+      issue: "Generated def_tag parser step 5 (consumeToken END_TAG) fails when body has only unpinned TEMPLATE_TEXT items"
+    - path: "src/main/kotlin/com/github/kimuth/jetbrainsmakotemplateplugin/lang/folding/MakoFoldingBuilder.kt"
+      issue: "findClosingTokenEnd falls back to composite.textRange.endOffset when END_TAG absent — fold region excludes closing tag"
+  missing:
+    - "Grammar fix: ensure TEMPLATE_TEXT in tag bodies is handled by a pinned rule or add folding builder fallback to scan file-level siblings for orphaned END_TAG"
+  debug_session: ".planning/debug/fold-content-dependency.md"
