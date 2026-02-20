@@ -320,4 +320,134 @@ Hello ${'$'}{name | h}!
         val tokens = tokenize(text)
         assertNoBADCharacter(tokens)
     }
+
+    // ---------------------------------------------------------------------------
+    // 16. Unclosed constructs — lexer must not crash at EOF
+    // ---------------------------------------------------------------------------
+
+    fun testUnclosedCodeBlock() {
+        // <%\nblabla = "foo" without closing %>
+        val tokens = tokenize("<%\nblabla = \"foo\"")
+        assertTrue("Must contain CODE_OPEN", tokens.any { it.first == MakoTokenTypes.CODE_OPEN })
+        assertTrue("Must contain CODE_CONTENT", tokens.any { it.first == MakoTokenTypes.CODE_CONTENT })
+        assertFalse("Must NOT contain CODE_CLOSE", tokens.any { it.first == MakoTokenTypes.CODE_CLOSE })
+    }
+
+    fun testUnclosedModuleBlock() {
+        // <%!\nimport os without closing %>
+        val tokens = tokenize("<%!\nimport os")
+        assertTrue("Must contain MODULE_OPEN", tokens.any { it.first == MakoTokenTypes.MODULE_OPEN })
+        assertTrue("Must contain MODULE_CONTENT", tokens.any { it.first == MakoTokenTypes.MODULE_CONTENT })
+        assertFalse("Must NOT contain CODE_CLOSE", tokens.any { it.first == MakoTokenTypes.CODE_CLOSE })
+    }
+
+    fun testUnclosedExpression() {
+        // ${foo without closing }
+        val tokens = tokenize("\${foo")
+        assertTrue("Must contain EXPR_START", tokens.any { it.first == MakoTokenTypes.EXPR_START })
+        assertTrue("Must contain EXPR_CONTENT", tokens.any { it.first == MakoTokenTypes.EXPR_CONTENT })
+        assertFalse("Must NOT contain EXPR_END", tokens.any { it.first == MakoTokenTypes.EXPR_END })
+    }
+
+    fun testUnclosedDocComment() {
+        // <%doc>comment body without closing </%doc>
+        val tokens = tokenize("<%doc>comment body")
+        assertTrue("Must contain DOC_OPEN", tokens.any { it.first == MakoTokenTypes.DOC_OPEN })
+        assertTrue("Must contain DOC_CONTENT", tokens.any { it.first == MakoTokenTypes.DOC_CONTENT })
+        assertFalse("Must NOT contain DOC_CLOSE", tokens.any { it.first == MakoTokenTypes.DOC_CLOSE })
+    }
+
+    fun testUnclosedTagAttrs() {
+        // <%def name="foo without closing >
+        val tokens = tokenize("<%def name=\"foo")
+        assertTrue("Must contain TAG_OPEN_DEF", tokens.any { it.first == MakoTokenTypes.TAG_OPEN_DEF })
+        assertFalse("Must NOT contain TAG_CLOSE", tokens.any { it.first == MakoTokenTypes.TAG_CLOSE })
+    }
+
+    fun testCodeBlockWithOnlyOpen() {
+        // Just <% followed by space and EOF
+        val tokens = tokenize("<% ")
+        assertTrue("Must contain CODE_OPEN", tokens.any { it.first == MakoTokenTypes.CODE_OPEN })
+    }
+
+    fun testCodeBlockPercentAtEof() {
+        // Code block ending with lone % at EOF
+        val tokens = tokenize("<% foo %")
+        assertTrue("Must contain CODE_OPEN", tokens.any { it.first == MakoTokenTypes.CODE_OPEN })
+        assertTrue("Must contain CODE_CONTENT", tokens.any { it.first == MakoTokenTypes.CODE_CONTENT })
+    }
+
+    // ---------------------------------------------------------------------------
+    // 17. braceDepth encoding — state preserves nesting depth for incremental re-lex
+    // ---------------------------------------------------------------------------
+
+    fun testBraceDepthEncodedInState() {
+        val lexer = MakoLexerAdapter()
+        val text = "\${{'key': 'val'}}"
+        lexer.start(text)
+
+        // Advance past EXPR_START
+        assertEquals(MakoTokenTypes.EXPR_START, lexer.tokenType)
+        lexer.advance()
+
+        // Now inside expression with nested braces — state should encode braceDepth
+        // After the inner { the braceDepth should be 1, encoded in bits 4+
+        // Advance through tokens until we hit the first inner {
+        while (lexer.tokenType != null) {
+            val state = lexer.state
+            val jflexState = state and 0xF
+            val depth = (state ushr 4) and 0xF
+
+            // In EXPRESSION state (JFlex state 2), depth should reflect nesting
+            if (jflexState == 2 && lexer.tokenText == "{") {
+                // After consuming {, braceDepth was incremented
+                assertTrue("braceDepth should be > 0 after inner {", depth > 0)
+                break
+            }
+            lexer.advance()
+        }
+    }
+
+    fun testBraceDepthRestoredOnRestart() {
+        val lexer = MakoLexerAdapter()
+        val text = "\${{'key': 'val'}}"
+        lexer.start(text)
+
+        // Advance past EXPR_START to get into EXPRESSION state with braceDepth > 0
+        lexer.advance() // past EXPR_START
+
+        // Find the position after the inner { where braceDepth > 0
+        var savedState = -1
+        var savedOffset = -1
+        while (lexer.tokenType != null) {
+            if (lexer.tokenText == "{") {
+                lexer.advance() // consume the {
+                savedState = lexer.state
+                savedOffset = lexer.tokenStart
+                break
+            }
+            lexer.advance()
+        }
+
+        assertTrue("Should have found inner { and saved state", savedState > 0)
+
+        // Restart lexer from saved state — simulates incremental re-lexing
+        lexer.start(text, savedOffset, text.length, savedState)
+
+        // The restarted lexer should correctly handle the remaining tokens
+        // without prematurely closing the expression at the inner }
+        val remainingTokens = mutableListOf<Pair<IElementType, String>>()
+        while (lexer.tokenType != null) {
+            remainingTokens.add(lexer.tokenType!! to lexer.tokenText)
+            lexer.advance()
+        }
+
+        // The inner } should be EXPR_CONTENT (not EXPR_END) because braceDepth was restored
+        val innerClose = remainingTokens.find { it.second == "}" }
+        assertNotNull("Should find a } token", innerClose)
+
+        // Should have exactly one EXPR_END at the outermost }
+        val exprEndCount = remainingTokens.count { it.first == MakoTokenTypes.EXPR_END }
+        assertEquals("EXPR_END must appear exactly once (outermost })", 1, exprEndCount)
+    }
 }

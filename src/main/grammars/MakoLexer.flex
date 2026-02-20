@@ -20,7 +20,9 @@ import com.intellij.psi.TokenType;
     this((java.io.Reader)null);
   }
 
-  private int braceDepth = 0;
+  // Package-private so MakoLexerAdapter can encode/decode it in getState()/start()
+  // for correct incremental re-lexing of nested expressions like ${{'a': 1}}
+  int braceDepth = 0;
 
   private void resetBraceDepth() { braceDepth = 0; }
 %}

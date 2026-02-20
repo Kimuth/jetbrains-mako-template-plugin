@@ -128,6 +128,51 @@ Hello!
         assertEquals("Expected 1 fold region for while loop", 1, buildFolds(content))
     }
 
+    /** code_block fold range does NOT bleed into subsequent template text */
+    fun testCodeBlockFoldRange() {
+        val content = """<%
+    rows = []
+%>
+This text should NOT be inside the fold
+% for item in items:
+    content
+% endfor"""
+        val file = parseFile("codeblock_range", content)
+        val doc = DocumentImpl(content)
+        val builder = MakoFoldingBuilder()
+        val regions = builder.buildFoldRegions(file, doc, false)
+
+        // Should have 2 folds: code_block + for loop
+        assertEquals("Expected 2 fold regions (code_block + for)", 2, regions.size)
+
+        // Find the code_block fold (the one that starts at offset 0)
+        val codeBlockFold = regions.find { it.range.startOffset == 0 }
+        assertNotNull("Should have a fold starting at offset 0 (code_block)", codeBlockFold)
+
+        // The code_block fold should end at %>  (offset of "%>" + 2)
+        val closeIdx = content.indexOf("%>")
+        assertEquals("code_block fold should end right after %>",
+            closeIdx + 2, codeBlockFold!!.range.endOffset)
+    }
+
+    /** module_block fold range does NOT bleed into subsequent template text */
+    fun testModuleBlockFoldRange() {
+        val content = """<%!
+    import os
+%>
+This text should NOT be inside the fold"""
+        val file = parseFile("moduleblock_range", content)
+        val doc = DocumentImpl(content)
+        val builder = MakoFoldingBuilder()
+        val regions = builder.buildFoldRegions(file, doc, false)
+
+        assertEquals("Expected 1 fold region for module_block", 1, regions.size)
+
+        val closeIdx = content.indexOf("%>")
+        assertTrue("module_block fold should end at or before %>",
+            regions[0].range.endOffset <= closeIdx + 2)
+    }
+
     /** Malformed file with orphaned % endfor does not crash (empty stack guard) */
     fun testMalformedControlFlowNoCrash() {
         val content = """% endfor
