@@ -35,7 +35,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **EDIT-01**: User can toggle line comments (`##`) with Ctrl+/
 - [x] **EDIT-02**: User can toggle block comments (`<%doc>...</%doc>`) with Ctrl+Shift+/
-- [ ] **EDIT-03**: Structure view panel shows all `<%def>` and `<%block>` declarations as navigable nodes
+- [x] **EDIT-03**: Structure view panel shows all `<%def>` and `<%block>` declarations as navigable nodes
 
 ### Completion & Errors
 
@@ -108,7 +108,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SYNX-07 | Phase 4 | Complete |
 | EDIT-01 | Phase 4 | Complete |
 | EDIT-02 | Phase 4 | Complete |
-| EDIT-03 | Phase 5 | Pending |
+| EDIT-03 | Phase 5 | Complete |
 | COMP-01 | Phase 7 | Pending |
 | COMP-02 | Phase 7 | Pending |
 | COMP-03 | Phase 8 | Pending |

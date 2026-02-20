@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Lexer** - JFlex-generated lexer that correctly tokenizes all Mako constructs with restart-state semantics
 - [x] **Phase 3: Parser and PSI Tree** - GrammarKit-generated parser with distinct typed PSI nodes for every Mako construct (completed 2026-02-19)
 - [x] **Phase 4: Syntax Highlighting and Comment Support** - Distinct colors for all Mako constructs, brace matching, comment toggling, and color scheme settings (completed 2026-02-19)
-- [ ] **Phase 5: Structural Features** - Code folding and structure view panel for navigating defs and blocks
+- [x] **Phase 5: Structural Features** - Code folding and structure view panel for navigating defs and blocks (completed 2026-02-20)
 - [ ] **Phase 6: Python Language Injection** - Inject Python into expression and code block regions via MultiHostInjector
 - [ ] **Phase 7: Completion** - Autocomplete for Mako tag names and tag attributes
 - [ ] **Phase 8: Error Annotations and Release Readiness** - Red squiggles for malformed Mako syntax and Marketplace-ready build
@@ -138,7 +138,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 2. Lexer | 3/3 | Complete   | 2026-02-19 |
 | 3. Parser and PSI Tree | 3/3 | Complete    | 2026-02-19 |
 | 4. Syntax Highlighting and Comment Support | 2/2 | Complete   | 2026-02-19 |
-| 5. Structural Features | 1/2 | In Progress | - |
+| 5. Structural Features | 2/2 | Complete   | 2026-02-20 |
 | 6. Python Language Injection | 0/TBD | Not started | - |
 | 7. Completion | 0/TBD | Not started | - |
 | 8. Error Annotations and Release Readiness | 0/TBD | Not started | - |

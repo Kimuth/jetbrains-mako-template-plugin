@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 5 - Structural Features — Plan 1 of 3 COMPLETE
+**Current focus:** Phase 5 - Structural Features — Plan 2 of 3 COMPLETE
 
 ## Current Position
 
 Phase: 5 of 8 (Structural Features) — In Progress
-Plan: 1 of 3 complete
-Status: Phase 5 Plan 1 complete — MakoFoldingBuilder implemented with 5 construct types (def/block/doc/module/control-flow); 31 tests green; purgeOldFiles build bug fixed
-Last activity: 2026-02-20 — Plan 01 complete (FoldingBuilderEx + DUMMY_BLOCK-transparent control flow scanner; ParsingTestCase-based folding tests)
+Plan: 2 of 3 complete
+Status: Phase 5 Plan 2 complete — Structure View three-class stack (MakoStructureViewFactory/ViewModel/Element) registered in plugin.xml; 35 tests green
+Last activity: 2026-02-20 — Plan 02 complete (Structure View panel showing <%def> and <%block> nodes as navigable tree; ParsingTestCase-based tests; parser flattening behavior documented)
 
 Progress: [███████░░░] 62%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: 7 min
-- Total execution time: ~1 hour
+- Total plans completed: 10
+- Average duration: 8 min
+- Total execution time: ~71 min
 
 **By Phase:**
 
@@ -31,11 +31,11 @@ Progress: [███████░░░] 62%
 | 02-lexer | 3 | 7 min | 2.3 min |
 | 03-parser | 3 | 15 min | 5 min |
 | 04-syntax-highlighting | 2 | 3 min | 1.5 min |
-| 05-structural-features | 1 | 45 min | 45 min |
+| 05-structural-features | 2 | 58 min | 29 min |
 
 **Recent Trend:**
-- Last 5 plans: 3 min, 3 min, 1 min, 4 min, 45 min
-- Trend: 45 min for folding (complex PSI tree debugging)
+- Last 5 plans: 3 min, 1 min, 4 min, 45 min, 13 min
+- Trend: 13 min for structure view (PSI flattening discovery, test content debugging)
 
 *Updated after each plan completion*
 | Phase 01-language-foundation P02 | 2 | 2 tasks | 5 files |
@@ -48,6 +48,7 @@ Progress: [███████░░░] 62%
 | Phase 04-syntax-highlighting P01 | 2 | 3 tasks | 6 files |
 | Phase 04-syntax-highlighting-comment-support P02 | 1 | 1 tasks | 1 files |
 | Phase 05-structural-features P01 | 45 | 2 tasks | 5 files |
+| Phase 05-structural-features P02 | 13 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -99,6 +100,9 @@ Recent decisions affecting current work:
 - [Phase 05-01]: ASTNode element type check for control lines: CONTROL_LINE tokens may appear as raw LeafPsiElement (not MakoControlLineStmtImpl) inside DUMMY_BLOCK; check node.elementType directly
 - [Phase 05-01]: purgeOldFiles=false on generateMakoLexer: lang/ directory contains committed psi/ and parser/ subdirs; purgeOldFiles=true recursively deletes them on every clean build
 - [Phase 05-01]: ParsingTestCase for folding tests: BasePlatformTestCase cannot register MakoFileType so testFolding() opens .mako as PlainText; use ParsingTestCase with explicit MakoParserDefinition()
+- [Phase 05-structural-features]: ASTWrapperPsiElement implements NavigatablePsiElement (via PsiElementBase) so navigate() delegation is free in structure view elements
+- [Phase 05-structural-features]: Parser flattens nested <%def> tags into file-level siblings — structure view reflects actual PSI tree (no artificial nesting added)
+- [Phase 05-structural-features]: Test content for structure view must use empty tag bodies — TEMPLATE_TEXT inside tags triggers pin=1 error recovery that consumes END_TAG of subsequent sibling tags
 
 ### Pending Todos
 
@@ -115,5 +119,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed 05-structural-features/05-01-PLAN.md (MakoFoldingBuilder with DUMMY_BLOCK-transparent control flow scanning; 31 tests green; purgeOldFiles build bug fixed)
-Resume file: .planning/phases/05-structural-features/ (Phase 5, Plan 2)
+Stopped at: Completed 05-structural-features/05-02-PLAN.md (Structure View three-class stack; 35 tests green; parser flattening behavior documented)
+Resume file: .planning/phases/05-structural-features/ (Phase 5, Plan 3)
