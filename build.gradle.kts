@@ -152,7 +152,11 @@ tasks {
     val generateMakoLexer = register<GenerateLexerTask>("generateMakoLexer") {
         sourceFile.set(file("src/main/grammars/MakoLexer.flex"))
         targetOutputDir.set(file("src/main/gen/com/github/kimuth/jetbrainsmakotemplateplugin/lang"))
-        purgeOldFiles.set(true)
+        // purgeOldFiles MUST remain false: the lang/ directory also contains psi/ and parser/
+        // subdirectories with committed GrammarKit parser output (MakoTypes.java, MakoParser.java,
+        // etc.). Setting purgeOldFiles=true would recursively delete those subdirectories on
+        // every clean build, breaking compilation until generateMakoParser is re-run manually.
+        purgeOldFiles.set(false)
     }
     val generateMakoParser = register<GenerateParserTask>("generateMakoParser") {
         sourceFile.set(file("src/main/grammars/Mako.bnf"))
