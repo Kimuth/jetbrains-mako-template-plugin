@@ -101,7 +101,12 @@ private tag_attribute ::= TAG_ATTR_NAME TAG_ATTR_EQ TAG_ATTR_VALUE
 // ---- Expression: ${...} ----
 
 expression ::= EXPR_START EXPR_CONTENT* (FILTER_SEP EXPR_CONTENT*)* EXPR_END
-    { pin=1  recoverWhile=expression_recover }
+    {
+      pin=1
+      recoverWhile=expression_recover
+      mixin="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl.MakoExpressionMixin"
+      implements="com.intellij.psi.PsiLanguageInjectionHost"
+    }
 
 // ---- Control line statement: % keyword ... (single token) ----
 
@@ -110,12 +115,22 @@ control_line_stmt ::= CONTROL_LINE
 // ---- Code block: <% ... %> ----
 
 code_block ::= CODE_OPEN CODE_CONTENT* CODE_CLOSE
-    { pin=1  recoverWhile=tag_recover }
+    {
+      pin=1
+      recoverWhile=tag_recover
+      mixin="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl.MakoCodeBlockMixin"
+      implements="com.intellij.psi.PsiLanguageInjectionHost"
+    }
 
 // ---- Module block: <%! ... %> ----
 
 module_block ::= MODULE_OPEN MODULE_CONTENT* CODE_CLOSE
-    { pin=1  recoverWhile=tag_recover }
+    {
+      pin=1
+      recoverWhile=tag_recover
+      mixin="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl.MakoModuleBlockMixin"
+      implements="com.intellij.psi.PsiLanguageInjectionHost"
+    }
 
 // ---- Doc comment: <%doc> ... </%doc> ----
 
