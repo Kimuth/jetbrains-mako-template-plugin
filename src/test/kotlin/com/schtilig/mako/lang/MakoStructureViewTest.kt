@@ -97,6 +97,44 @@ class MakoStructureViewTest : ParsingTestCase("structure", "mako", MakoParserDef
     }
 
     /**
+     * Tests that defs and blocks appear interleaved in document order.
+     * File order: def "first", block "second", def "third" must produce children
+     * in that exact sequence in the structure view.
+     */
+    fun testChildrenInDocumentOrder() {
+        val content = "<%def name=\"first\"></%def>\n<%block name=\"second\"></%block>\n<%def name=\"third\"></%def>"
+        val file = parseFile("doc_order", content)
+        val model = MakoStructureViewModel(null, file)
+        val root = model.root as MakoStructureViewElement
+        val children = root.children
+
+        assertEquals("Should have 3 children", 3, children.size)
+        assertEquals("First child should be 'first'", "first", children[0].presentation.presentableText)
+        assertEquals("Second child should be 'second'", "second", children[1].presentation.presentableText)
+        assertEquals("Third child should be 'third'", "third", children[2].presentation.presentableText)
+    }
+
+    /**
+     * Tests that the fallback icon for a def node is AllIcons.Nodes.Function,
+     * not MakoIcons.FILE.
+     */
+    fun testDefNodeUsesFunctionIcon() {
+        val content = "<%def name=\"greet\"></%def>"
+        val file = parseFile("icon_check", content)
+        val model = MakoStructureViewModel(null, file)
+        val root = model.root as MakoStructureViewElement
+        val children = root.children
+
+        assertEquals("Should have exactly 1 child", 1, children.size)
+        val icon = children[0].presentation.getIcon(false)
+        assertEquals(
+            "Def node icon should be AllIcons.Nodes.Function",
+            com.intellij.icons.AllIcons.Nodes.Function,
+            icon
+        )
+    }
+
+    /**
      * Tests that only def_tag and block_tag appear in the structure view —
      * template text, control flow, expressions and code blocks are excluded.
      */
