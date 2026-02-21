@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-21 after v0.2.0 milestone start)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** v0.2.0 — Phase 11: Python Injection Fixes
+**Current focus:** v0.2.0 — Phase 12: Code Folding and Structure View
 
 ## Current Position
 
-Phase: 11 of 16 (Python Injection Fixes)
+Phase: 12 of 16 (Code Folding and Structure View)
 Plan: 2 of N in current phase (COMPLETE)
-Status: Phase 11 Plan 02 complete
-Last activity: 2026-02-21 — Phase 11 Plan 02 complete (INJECT-02: injection range stops at FILTER_SEP for filtered expressions)
+Status: Phase 12 Plan 02 complete
+Last activity: 2026-02-21 — Phase 12 Plan 02 complete (VIEW-02, VIEW-04: structure view document order + function icon)
 
-Progress: [██░░░░░░░░] 28% (v0.2.0 — Phase 10+11p01 complete, 1+ phases done)
+Progress: [███░░░░░░░] 35% (v0.2.0 — Phase 10+11+12p01+12p02 complete)
 
 ## Performance Metrics
 
@@ -39,6 +39,7 @@ Progress: [██░░░░░░░░] 28% (v0.2.0 — Phase 10+11p01 comple
 | Phase 10-psi-correctness P01 | 3 | 2 tasks | 3 files |
 | Phase 11-python-injection-fixes P01 | 2 | 5 min | 4 files |
 | Phase 11-python-injection-fixes P02 | 5 | 2 tasks | 2 files |
+| Phase 12-code-folding-and-structure-view P02 | 3 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -51,6 +52,8 @@ Progress: [██░░░░░░░░] 28% (v0.2.0 — Phase 10+11p01 comple
 All key decisions logged in PROJECT.md Key Decisions table.
 - [Phase 11-02]: Injector uses ASTNode child walk with filterSep.startOffset - context.textRange.startOffset to stop MakoExpression injection before FILTER_SEP
 - [Phase 11-02]: Lexer-level tests chosen for injection range validation (INJECT-02) — FILTER_SEP position is fully determined by lexer, no full platform wiring needed
+- [12-02]: (childDefs + childBlocks).sortedBy { it.textOffset } chosen for document-order children — cleaner than mutable accumulator
+- [12-02]: AllIcons.Nodes.Function replaces MakoIcons.FILE as fallback icon — gives visual semantic signal for callable definitions
 
 ### Roadmap Evolution
 
@@ -76,5 +79,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 11-02-PLAN.md — INJECT-02 injection range stops at FILTER_SEP for filtered expressions
-Resume with: `/gsd:execute-phase 11`
+Stopped at: Completed 12-02-PLAN.md — VIEW-02+VIEW-04 structure view document order and function icon
+Resume with: `/gsd:execute-phase 12`
