@@ -32,8 +32,8 @@ All requirements derived from the v0.1.0 code review (`.docs/code-review.md`, re
 
 ### Code Completion
 
-- [ ] **COMP-01**: `<%doc` insert handler in `MakoCompletionContributor` computes the replacement start position from `ltPos` (already computed earlier in the method) instead of using `ctx.startOffset - 2`, so partial text already typed is correctly accounted for
-- [ ] **COMP-02**: `MakoCompletionContributor` uses `parameters.editor.document.charsSequence` and scans backward from `offset` instead of copying `file.text` and taking a substring
+- [x] **COMP-01**: `<%doc` insert handler in `MakoCompletionContributor` computes the replacement start position from `ltPos` (already computed earlier in the method) instead of using `ctx.startOffset - 2`, so partial text already typed is correctly accounted for
+- [x] **COMP-02**: `MakoCompletionContributor` uses `parameters.editor.document.charsSequence` and scans backward from `offset` instead of copying `file.text` and taking a substring
 
 ### Annotator
 
@@ -74,8 +74,8 @@ All requirements derived from the v0.1.0 code review (`.docs/code-review.md`, re
 | VIEW-04 | Phase 12 | Complete |
 | VIEW-05 | Phase 12 | Complete |
 | VIEW-06 | Phase 13 | Complete |
-| COMP-01 | Phase 14 | Pending |
-| COMP-02 | Phase 14 | Pending |
+| COMP-01 | Phase 14 | Complete |
+| COMP-02 | Phase 14 | Complete |
 | ANNOT-01 | Phase 15 | Pending |
 | ANNOT-02 | Phase 15 | Pending |
 | CLEAN-01 | Phase 16 | Pending |

@@ -32,7 +32,7 @@ Full details: `.planning/milestones/v0.1.0-ROADMAP.md`
 - [x] **Phase 11: Python Injection Fixes** — Fix updateText no-op and filter-name injection boundary (completed 2026-02-21)
 - [x] **Phase 12: Code Folding and Structure View** — Fix nested folding and structure view ordering, icon, and DUMMY_BLOCK detection (completed 2026-02-21)
 - [x] **Phase 13: Editor Behavior Fixes** — Fix code content color, MODULE_OPEN brace pair, and braceDepth overflow warning (completed 2026-02-21)
-- [ ] **Phase 14: Completion Fixes** — Fix doc-insert offset math and eliminate full-file text allocation
+- [x] **Phase 14: Completion Fixes** — Fix doc-insert offset math and eliminate full-file text allocation (completed 2026-02-21)
 - [ ] **Phase 15: Annotator Fixes** — Fix language guard and add unknown-directive regression test
 - [ ] **Phase 16: Dead Code Cleanup** — Remove FILTER_NAME token, unused token sets, and resolve orphaned fixture
 
@@ -148,6 +148,6 @@ Plans:
 | 11. Python Injection Fixes | 2/2 | Complete    | 2026-02-21 | - |
 | 12. Code Folding and Structure View | 2/2 | Complete    | 2026-02-21 | - |
 | 13. Editor Behavior Fixes | 1/1 | Complete    | 2026-02-21 | - |
-| 14. Completion Fixes | v0.2.0 | 0/TBD | Not started | - |
+| 14. Completion Fixes | 1/1 | Complete   | 2026-02-21 | - |
 | 15. Annotator Fixes | v0.2.0 | 0/TBD | Not started | - |
 | 16. Dead Code Cleanup | v0.2.0 | 0/TBD | Not started | - |

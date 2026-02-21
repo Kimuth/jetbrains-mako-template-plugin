@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-21 after v0.2.0 milestone start)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** v0.2.0 — Phase 13: Editor Behavior Fixes
+**Current focus:** v0.2.0 — Phase 14: Completion Fixes
 
 ## Current Position
 
-Phase: 13 of 16 (Editor Behavior Fixes)
+Phase: 14 of 16 (Completion Fixes)
 Plan: 1 of N in current phase (COMPLETE)
-Status: Phase 13 Plan 01 complete
-Last activity: 2026-02-21 — Phase 13 Plan 01 complete (VIEW-01, VIEW-03, VIEW-06: code content color, MODULE_OPEN brace pair, braceDepth overflow logger)
+Status: Phase 14 Plan 01 complete
+Last activity: 2026-02-21 — Phase 14 Plan 01 complete (COMP-01: <%doc ltPos fix, COMP-02: charsSequence allocation-free scan)
 
-Progress: [████░░░░░░] 40% (v0.2.0 — Phase 10+11+12p01+12p02+13p01 complete)
+Progress: [█████░░░░░] 45% (v0.2.0 — Phase 10+11+12p01+12p02+13p01+14p01 complete)
 
 ## Performance Metrics
 
@@ -42,6 +42,7 @@ Progress: [████░░░░░░] 40% (v0.2.0 — Phase 10+11+12p01+12p
 | Phase 12-code-folding-and-structure-view P02 | 3 | 2 tasks | 2 files |
 | Phase 12-code-folding-and-structure-view P01 | 5 | 2 tasks | 2 files |
 | Phase 13-editor-behavior-fixes P01 | 2 | 3 tasks | 3 files |
+| Phase 14-completion-fixes P01 | 2 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -61,6 +62,8 @@ All key decisions logged in PROJECT.md Key Decisions table.
 - [Phase 13-01]: MAKO_CODE_CONTENT fallback changed from STRING to IDENTIFIER — code block tokens represent executable code, not string literals
 - [Phase 13-01]: MODULE_OPEN pairs with CODE_CLOSE using structural=false — consistent with CODE_OPEN pair since both share the same close token
 - [Phase 13-01]: Logger placed in companion object of MakoLexerAdapter — follows IntelliJ platform convention for per-class diagnostic loggers
+- [Phase 14-01]: <%doc handler uses ltPos (captured from addCompletions scope) instead of ctx.startOffset - 2 — correct anchor regardless of partial typed text
+- [Phase 14-01]: document.charsSequence backward scan replaces file.text.substring allocation — CharSequence view backed by document buffer with no heap allocation per keystroke
 
 ### Roadmap Evolution
 
@@ -86,5 +89,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 13-01-PLAN.md — VIEW-01/VIEW-03/VIEW-06: MAKO_CODE_CONTENT color fix, MODULE_OPEN brace pair, braceDepth overflow logger
-Resume with: `/gsd:execute-phase 13`
+Stopped at: Completed 14-01-PLAN.md — COMP-01: <%doc insert handler uses ltPos, COMP-02: charsSequence backward scan (no full-file allocation)
+Resume with: `/gsd:execute-phase 14`
