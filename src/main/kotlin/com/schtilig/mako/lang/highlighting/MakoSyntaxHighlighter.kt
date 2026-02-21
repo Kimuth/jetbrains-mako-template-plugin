@@ -54,7 +54,7 @@ class MakoSyntaxHighlighter : SyntaxHighlighterBase() {
 
         @JvmField
         val MAKO_CODE_CONTENT = createTextAttributesKey(
-            "MAKO_CODE_CONTENT", DefaultLanguageHighlighterColors.STRING
+            "MAKO_CODE_CONTENT", DefaultLanguageHighlighterColors.IDENTIFIER
         )
 
         // Pre-allocated key arrays to avoid per-call allocation
