@@ -1,10 +1,10 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.folding
+package com.schtilig.mako.lang.folding
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoTokenTypes
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoBlockTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoDefTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoFile
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoTypes
+import com.schtilig.mako.lang.MakoTokenTypes
+import com.schtilig.mako.lang.psi.MakoBlockTag
+import com.schtilig.mako.lang.psi.MakoDefTag
+import com.schtilig.mako.lang.psi.MakoFile
+import com.schtilig.mako.lang.psi.MakoTypes
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor

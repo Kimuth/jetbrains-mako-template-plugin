@@ -1,4 +1,4 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin
+package com.schtilig.mako
 
 import com.intellij.lang.Language
 import com.intellij.psi.templateLanguages.TemplateLanguage

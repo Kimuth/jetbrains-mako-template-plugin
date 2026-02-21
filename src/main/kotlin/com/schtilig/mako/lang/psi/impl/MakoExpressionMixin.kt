@@ -1,6 +1,6 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl
+package com.schtilig.mako.lang.psi.impl
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoExpression
+import com.schtilig.mako.lang.psi.MakoExpression
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange

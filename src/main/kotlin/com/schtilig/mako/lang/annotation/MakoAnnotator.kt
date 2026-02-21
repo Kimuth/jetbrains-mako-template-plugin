@@ -1,9 +1,9 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.annotation
+package com.schtilig.mako.lang.annotation
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoTokenTypes
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoBlockTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoDefTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoTemplateTextContent
+import com.schtilig.mako.lang.MakoTokenTypes
+import com.schtilig.mako.lang.psi.MakoBlockTag
+import com.schtilig.mako.lang.psi.MakoDefTag
+import com.schtilig.mako.lang.psi.MakoTemplateTextContent
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity

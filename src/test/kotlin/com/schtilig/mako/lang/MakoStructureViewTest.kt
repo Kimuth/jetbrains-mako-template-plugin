@@ -1,9 +1,9 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang
+package com.schtilig.mako.lang
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoBlockTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoDefTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.structure.MakoStructureViewElement
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.structure.MakoStructureViewModel
+import com.schtilig.mako.lang.psi.MakoBlockTag
+import com.schtilig.mako.lang.psi.MakoDefTag
+import com.schtilig.mako.lang.structure.MakoStructureViewElement
+import com.schtilig.mako.lang.structure.MakoStructureViewModel
 import com.intellij.testFramework.ParsingTestCase
 
 /**

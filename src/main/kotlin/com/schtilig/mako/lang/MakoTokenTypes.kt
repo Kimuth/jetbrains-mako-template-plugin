@@ -1,6 +1,6 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang
+package com.schtilig.mako.lang
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.MakoLanguage
+import com.schtilig.mako.MakoLanguage
 import com.intellij.psi.tree.IElementType
 
 object MakoTokenTypes {

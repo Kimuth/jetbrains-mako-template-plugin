@@ -1,4 +1,4 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang
+package com.schtilig.mako.lang
 
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.openapi.fileTypes.FileTypeManager

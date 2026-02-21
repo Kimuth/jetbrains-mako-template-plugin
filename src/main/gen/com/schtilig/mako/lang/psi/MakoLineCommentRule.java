@@ -1,5 +1,5 @@
 // This is a generated file. Not intended for manual editing.
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi;
+package com.schtilig.mako.lang.psi;
 
 import java.util.List;
 import org.jetbrains.annotations.*;

@@ -1,8 +1,8 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.injection
+package com.schtilig.mako.lang.injection
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoCodeBlock
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoExpression
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoModuleBlock
+import com.schtilig.mako.lang.psi.MakoCodeBlock
+import com.schtilig.mako.lang.psi.MakoExpression
+import com.schtilig.mako.lang.psi.MakoModuleBlock
 import com.intellij.lang.Language
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar

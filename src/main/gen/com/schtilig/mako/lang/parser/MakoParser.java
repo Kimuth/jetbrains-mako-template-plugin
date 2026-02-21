@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.parser;
+package com.schtilig.mako.lang.parser;
 
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoTypes.*;
+import static com.schtilig.mako.lang.psi.MakoTypes.*;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;

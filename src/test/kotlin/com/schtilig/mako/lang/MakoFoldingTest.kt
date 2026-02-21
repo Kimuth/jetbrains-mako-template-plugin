@@ -1,6 +1,6 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang
+package com.schtilig.mako.lang
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.folding.MakoFoldingBuilder
+import com.schtilig.mako.lang.folding.MakoFoldingBuilder
 import com.intellij.openapi.editor.impl.DocumentImpl
 import com.intellij.testFramework.ParsingTestCase
 

@@ -1,4 +1,4 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.highlighting
+package com.schtilig.mako.lang.highlighting
 
 import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory

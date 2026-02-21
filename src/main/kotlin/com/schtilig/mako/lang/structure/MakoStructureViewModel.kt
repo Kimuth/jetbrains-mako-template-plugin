@@ -1,7 +1,7 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.structure
+package com.schtilig.mako.lang.structure
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoBlockTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoDefTag
+import com.schtilig.mako.lang.psi.MakoBlockTag
+import com.schtilig.mako.lang.psi.MakoDefTag
 import com.intellij.ide.structureView.StructureViewModel
 import com.intellij.ide.structureView.StructureViewModelBase
 import com.intellij.ide.structureView.StructureViewTreeElement

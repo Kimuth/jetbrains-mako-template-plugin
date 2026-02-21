@@ -1,4 +1,4 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang
+package com.schtilig.mako.lang
 
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.TokenSet

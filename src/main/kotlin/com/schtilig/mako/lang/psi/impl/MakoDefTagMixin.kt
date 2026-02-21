@@ -1,6 +1,6 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl
+package com.schtilig.mako.lang.psi.impl
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoTokenTypes
+import com.schtilig.mako.lang.MakoTokenTypes
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement

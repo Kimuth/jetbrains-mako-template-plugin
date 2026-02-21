@@ -1,12 +1,12 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.completion
+package com.schtilig.mako.lang.completion
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoTokenTypes
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoBlockTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoDefTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoIncludeTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoInheritTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoNamespaceTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoPageTag
+import com.schtilig.mako.lang.MakoTokenTypes
+import com.schtilig.mako.lang.psi.MakoBlockTag
+import com.schtilig.mako.lang.psi.MakoDefTag
+import com.schtilig.mako.lang.psi.MakoIncludeTag
+import com.schtilig.mako.lang.psi.MakoInheritTag
+import com.schtilig.mako.lang.psi.MakoNamespaceTag
+import com.schtilig.mako.lang.psi.MakoPageTag
 import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider

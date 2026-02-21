@@ -1,4 +1,4 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.editing
+package com.schtilig.mako.lang.editing
 
 import com.intellij.lang.Commenter
 

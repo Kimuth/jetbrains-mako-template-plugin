@@ -1,7 +1,7 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.highlighting
+package com.schtilig.mako.lang.highlighting
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoLexerAdapter
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoTokenTypes
+import com.schtilig.mako.lang.MakoLexerAdapter
+import com.schtilig.mako.lang.MakoTokenTypes
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey

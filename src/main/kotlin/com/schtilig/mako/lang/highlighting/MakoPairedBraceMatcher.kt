@@ -1,6 +1,6 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.highlighting
+package com.schtilig.mako.lang.highlighting
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoTokenTypes
+import com.schtilig.mako.lang.MakoTokenTypes
 import com.intellij.lang.BracePair
 import com.intellij.lang.PairedBraceMatcher
 import com.intellij.psi.PsiFile

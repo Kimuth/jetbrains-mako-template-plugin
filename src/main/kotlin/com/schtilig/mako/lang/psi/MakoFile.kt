@@ -1,7 +1,7 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi
+package com.schtilig.mako.lang.psi
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.MakoFileType
-import com.github.kimuth.jetbrainsmakotemplateplugin.MakoLanguage
+import com.schtilig.mako.MakoFileType
+import com.schtilig.mako.MakoLanguage
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.psi.FileViewProvider
 

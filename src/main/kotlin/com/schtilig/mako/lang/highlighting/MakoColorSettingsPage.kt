@@ -1,6 +1,6 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.highlighting
+package com.schtilig.mako.lang.highlighting
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.MakoIcons
+import com.schtilig.mako.MakoIcons
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.options.colors.AttributesDescriptor

@@ -1,9 +1,9 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.structure
+package com.schtilig.mako.lang.structure
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.MakoIcons
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoBlockTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoDefTag
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoFile
+import com.schtilig.mako.MakoIcons
+import com.schtilig.mako.lang.psi.MakoBlockTag
+import com.schtilig.mako.lang.psi.MakoDefTag
+import com.schtilig.mako.lang.psi.MakoFile
 import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement

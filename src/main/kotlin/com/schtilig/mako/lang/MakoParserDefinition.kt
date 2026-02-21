@@ -1,9 +1,9 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang
+package com.schtilig.mako.lang
 
-import com.github.kimuth.jetbrainsmakotemplateplugin.MakoLanguage
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.parser.MakoParser
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoFile
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoTypes
+import com.schtilig.mako.MakoLanguage
+import com.schtilig.mako.lang.parser.MakoParser
+import com.schtilig.mako.lang.psi.MakoFile
+import com.schtilig.mako.lang.psi.MakoTypes
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiParser

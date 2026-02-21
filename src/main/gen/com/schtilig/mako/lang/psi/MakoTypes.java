@@ -1,13 +1,13 @@
 // This is a generated file. Not intended for manual editing.
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi;
+package com.schtilig.mako.lang.psi;
 
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoElementType;
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoTokenType;
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoTokenTypes;
-import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl.*;
+import com.schtilig.mako.lang.MakoElementType;
+import com.schtilig.mako.lang.MakoTokenType;
+import com.schtilig.mako.lang.MakoTokenTypes;
+import com.schtilig.mako.lang.psi.impl.*;
 
 public interface MakoTypes {
 

@@ -1,4 +1,4 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang.structure
+package com.schtilig.mako.lang.structure
 
 import com.intellij.ide.structureView.StructureViewBuilder
 import com.intellij.ide.structureView.TreeBasedStructureViewBuilder
