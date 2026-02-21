@@ -6,6 +6,7 @@ import com.schtilig.mako.lang.psi.MakoDefTag
 import com.schtilig.mako.lang.psi.MakoFile
 import com.schtilig.mako.lang.psi.MakoTypes
 import com.intellij.lang.ASTNode
+import com.intellij.lang.Language
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
@@ -212,9 +213,7 @@ class MakoFoldingBuilder : FoldingBuilderEx(), DumbAware {
                 MakoTokenTypes.CONTROL_LINE -> result.add(node)
                 MakoTypes.CONTROL_LINE_STMT -> result.add(node)
                 else -> {
-                    val et = node.elementType
-                    val isDummy = et.toString() == "DUMMY_BLOCK" ||
-                            et.javaClass.simpleName == "DummyBlockElementType"
+                    val isDummy = node.psi.language == Language.ANY
                     if (isDummy) {
                         result.addAll(collectControlLineNodes(node))
                     }

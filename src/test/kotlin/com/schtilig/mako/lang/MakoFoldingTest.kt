@@ -225,4 +225,22 @@ some content
         assertEquals("Fold endOffset must equal content.length (END_TAG included in DEF_TAG composite)",
             content.length, regions[0].range.endOffset)
     }
+
+    /** <%doc> nested inside a <%def> should produce a fold region (FOLD-01) */
+    fun testDocCommentNestedInDefFolds() {
+        val content = "<%def name=\"outer\">\n<%doc>\nNested doc.\n</%doc>\n</%def>"
+        assertEquals("Expected 2 folds: outer def + nested doc comment", 2, buildFolds(content))
+    }
+
+    /** <% %> code block nested inside a <%block> should produce a fold region (FOLD-01) */
+    fun testCodeBlockNestedInBlockFolds() {
+        val content = "<%block name=\"content\">\n<%\nx = 1\n%>\n</%block>"
+        assertEquals("Expected 2 folds: outer block + nested code block", 2, buildFolds(content))
+    }
+
+    /** <%! %> module block nested inside a <%def> should produce a fold region (FOLD-01) */
+    fun testModuleBlockNestedInDefFolds() {
+        val content = "<%def name=\"outer\">\n<%!\nimport os\n%>\n</%def>"
+        assertEquals("Expected 2 folds: outer def + nested module block", 2, buildFolds(content))
+    }
 }
