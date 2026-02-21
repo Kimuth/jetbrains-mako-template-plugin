@@ -103,3 +103,12 @@ None - no external service configuration required.
 ---
 *Phase: 10-psi-correctness*
 *Completed: 2026-02-21*
+
+## Self-Check: PASSED
+
+- FOUND: `src/test/kotlin/com/schtilig/mako/lang/MakoPsiMixinTest.kt`
+- FOUND: `src/main/kotlin/com/schtilig/mako/lang/psi/impl/MakoDefTagMixin.kt`
+- FOUND: `src/main/kotlin/com/schtilig/mako/lang/psi/impl/MakoBlockTagMixin.kt`
+- FOUND: `.planning/phases/10-psi-correctness/10-01-SUMMARY.md`
+- FOUND: commit `a533a5e` (RED test commit)
+- FOUND: commit `19b1d66` (GREEN feat commit)
