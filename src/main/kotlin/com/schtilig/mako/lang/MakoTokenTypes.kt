@@ -9,7 +9,6 @@ object MakoTokenTypes {
     @JvmField val EXPR_END       = IElementType("EXPR_END",       MakoLanguage) // }
     @JvmField val EXPR_CONTENT   = IElementType("EXPR_CONTENT",   MakoLanguage) // Python expression text
     @JvmField val FILTER_SEP     = IElementType("FILTER_SEP",     MakoLanguage) // | inside ${...}
-    @JvmField val FILTER_NAME    = IElementType("FILTER_NAME",    MakoLanguage) // h, trim, u, x, n
 
     // Control lines
     @JvmField val CONTROL_LINE   = IElementType("CONTROL_LINE",   MakoLanguage) // % keyword ... (entire line)

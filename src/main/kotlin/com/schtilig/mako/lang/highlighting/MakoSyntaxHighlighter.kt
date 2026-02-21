@@ -90,7 +90,6 @@ class MakoSyntaxHighlighter : SyntaxHighlighterBase() {
             MakoTokenTypes.EXPR_END     -> EXPRESSION_KEYS
             MakoTokenTypes.EXPR_CONTENT -> EXPRESSION_KEYS
             MakoTokenTypes.FILTER_SEP   -> EXPRESSION_KEYS
-            MakoTokenTypes.FILTER_NAME  -> EXPRESSION_KEYS
 
             // Control lines
             MakoTokenTypes.CONTROL_LINE -> CONTROL_LINE_KEYS

@@ -42,7 +42,6 @@ public interface MakoTypes {
   IElementType EXPR_END       = MakoTokenTypes.EXPR_END;
   IElementType EXPR_START     = MakoTokenTypes.EXPR_START;
   IElementType FILTER_SEP     = MakoTokenTypes.FILTER_SEP;
-  IElementType FILTER_NAME    = MakoTokenTypes.FILTER_NAME;
   IElementType LINE_COMMENT   = MakoTokenTypes.LINE_COMMENT;
   IElementType MODULE_CONTENT = MakoTokenTypes.MODULE_CONTENT;
   IElementType MODULE_OPEN    = MakoTokenTypes.MODULE_OPEN;
