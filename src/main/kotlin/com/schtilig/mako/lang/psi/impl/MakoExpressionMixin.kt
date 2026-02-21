@@ -31,7 +31,6 @@ abstract class MakoExpressionMixin(node: ASTNode) :
         }
 
     override fun updateText(text: String): PsiLanguageInjectionHost {
-        // Minimal implementation — full manipulation support added with Plan 03 injector
-        return this
+        throw UnsupportedOperationException("Mako injection hosts do not support round-trip text edits")
     }
 }
