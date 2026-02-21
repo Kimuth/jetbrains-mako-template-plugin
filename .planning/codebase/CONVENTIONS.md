@@ -1,161 +1,148 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-02-19
+**Analysis Date:** 2026-02-21
 
 ## Naming Patterns
 
 **Files:**
-- PascalCase for Kotlin class files: `MyBundle.kt`, `MyProjectService.kt`, `MyProjectActivity.kt`, `MyToolWindowFactory.kt`
-- File names match primary public class name
-- Package structure follows Java/Kotlin conventions: `com.github.kimuth.jetbrainsmakotemplateplugin.*`
+- Class files use PascalCase: `MakoLexerAdapter.kt`, `MakoParserDefinition.kt`, `MakoSyntaxHighlighter.kt`
+- Test files follow pattern `[Feature]Test.kt`: `MakoLexerTest.kt`, `MakoParsingTest.kt`, `MakoFoldingTest.kt`
+- Gradle/Kotlin build configuration: `build.gradle.kts`
 
-**Classes:**
-- PascalCase: `MyBundle`, `MyProjectService`, `MyProjectActivity`, `MyToolWindowFactory`
-- Nested classes use PascalCase: `MyToolWindowFactory.MyToolWindow`
-- Implementation of interfaces uses descriptive names: `class MyProjectService(project: Project)` implementing service patterns
+**Classes & Objects:**
+- PascalCase for all classes: `MakoLanguage`, `MakoTokenTypes`, `MakoLexerAdapter`
+- Singleton objects use `object` keyword: `MakoLanguage`, `MakoTokenTypes` in `src/main/kotlin/com/github/kimuth/jetbrainsmakotemplateplugin/lang/MakoTokenTypes.kt`
+- Mixins follow pattern `[Feature]Mixin`: `MakoDefTagMixin.kt`, `MakoBlockTagMixin.kt`
 
-**Functions:**
-- camelCase: `message()`, `messagePointer()`, `getRandomNumber()`, `getContent()`, `execute()`, `createToolWindowContent()`
-- Getter methods use `get` prefix: `getTestDataPath()`, `getRandomNumber()`, `getContent()`
-- Action handlers: `addActionListener { ... }` - lambdas for event listeners
+**Functions & Variables:**
+- camelCase for function names: `buildFoldRegions()`, `findClosingTokenEnd()`, `getHighlightingLexer()`
+- camelCase for member variables and properties: `braceDepth`, `makoFlex`
+- Private properties prefixed with underscore not used; rely on visibility modifiers instead
+- Constants use UPPER_SNAKE_CASE: `OPENING_KEYWORDS`, `CLOSING_KEYWORDS`, `DIRECTIVE_KEYS`, `EMPTY_KEYS` (in `MakoSyntaxHighlighter.kt`)
 
-**Variables:**
-- camelCase for local variables: `psiFile`, `xmlFile`, `label`, `projectService`, `myFixture`
-- Private properties use underscore prefix convention not observed in this codebase (standard Kotlin `private val`)
-- Latin/descriptive names for loop/temporary variables: no abbreviated variables observed
-
-**Constants:**
-- UPPER_SNAKE_CASE: `BUNDLE = "messages.MyBundle"`
-- Marked with `const val` and `@NonNls` annotation where applicable
-
-**Types:**
-- Generic types explicitly named: `JBPanel<JBPanel<*>>`
-- Type parameters not abbreviated in codebase
+**Token Type Constants:**
+- Each token type defined as `@JvmField val`: `val EXPR_START = IElementType("EXPR_START", MakoLanguage)`
+- Named with UPPER_SNAKE_CASE: `TAG_OPEN_DEF`, `TAG_ATTR_VALUE`, `MODULE_CONTENT`
+- All stored in singleton object `MakoTokenTypes`
 
 ## Code Style
 
 **Formatting:**
-- IntelliJ IDEA default formatting applied (standard 4-space indentation inferred from codebase)
-- One statement per line
-- Trailing commas not used in this codebase
-- Newlines between method definitions and properties
-- Double blank line separation not observed in these short files
+- Language: Kotlin (JVM target 21)
+- No explicit formatter config found; follows Kotlin standard conventions
+- Max line length appears to be ~100-130 characters (based on examined code)
+- Braces on same line (Kotlin style): `fun testBasic() {`
 
-**Linting & Code Inspection:**
-- Qodana inspections enabled via `qodana.yml`
-- Profile: `qodana.recommended` (JVM community profile)
-- JDK version: 21 (enforced)
-- Code inspection runs automatically in CI pipeline
-
-**Kotlin Compiler:**
-- Kotlin 2.3.0
-- JVM toolchain: 21
-- Null safety: Explicit null checks observed (`?.let` operators used in `src/main/kotlin/com/github/kimuth/jetbrainsmakotemplateplugin/toolWindow/MyToolWindowFactory.kt`)
+**Linting:**
+- No `.eslintrc` or similar linting configuration detected
+- Project uses Gradle with Qodana plugin (`alias(libs.plugins.qodana)` in `build.gradle.kts`) for code quality analysis
+- Code follows standard Kotlin style conventions
 
 ## Import Organization
 
 **Order:**
-1. IntelliJ Platform API imports: `com.intellij.*`
-2. JetBrains annotations: `org.jetbrains.annotations.*`
-3. Project-specific imports: `com.github.kimuth.jetbrainsmakotemplateplugin.*`
-4. Java/stdlib imports: `javax.swing.*`
+1. Package declaration
+2. Imports from standard library (`kotlin.*`, `java.*`)
+3. Imports from IntelliJ/JetBrains libraries (`com.intellij.*`)
+4. Imports from local project (`com.github.kimuth.*`)
+5. Explicit imports preferred; no wildcard imports observed
 
 **Path Aliases:**
-- No path aliases or packages imports used in current codebase
-- Explicit qualified imports only (no star imports observed)
-
-**Examples:**
-- `src/main/kotlin/com/github/kimuth/jetbrainsmakotemplateplugin/services/MyProjectService.kt`:
-  ```kotlin
-  import com.intellij.openapi.components.Service
-  import com.intellij.openapi.diagnostic.thisLogger
-  import com.intellij.openapi.project.Project
-  import com.github.kimuth.jetbrainsmakotemplateplugin.MyBundle
-  ```
+- Not applicable (Kotlin/Java project)
+- Package structure follows Maven convention: `com.github.kimuth.jetbrainsmakotemplateplugin`
 
 ## Error Handling
 
 **Patterns:**
-- IntelliJ Platform logging via `thisLogger()`: Used for warnings and info messages
-- No try-catch blocks observed in current codebase (plugin framework handles most exceptions)
-- Safe navigation operators: `?.let` pattern used when accessing potentially null values
-  ```kotlin
-  // From MyToolWindowFactory.kt
-  xmlFile.rootTag?.let {
-      assertEquals("foo", it.name)
-      assertEquals("bar", it.value.text)
-  }
-  ```
-- IntelliJ utilities for validation: `PsiErrorElementUtil.hasErrors()`, `assertInstanceOf()`, `assertNotNull()`
+- Explicit null-checking with null-safe operators (`?.`)
+- Type-safe pattern matching in when expressions: `when (tokenType) { ... }`
+- Assertions in tests: `assertTrue()`, `assertEquals()`, `assertNotNull()`, `assertFalse()`
+- Recovery from parser errors via `tag_recover` and `expression_recover` stop-token sets (grammar-level)
 
-**Warnings:**
-- Logger warnings for cleanup reminders: `thisLogger().warn("Don't forget to remove...")`
-- Annotations used: `@Suppress("unused")` for intentionally unused members
+**Example from `MakoDefTagMixin.kt`:**
+```kotlin
+override fun getName(): String? {
+    val attrValue = node.findChildByType(MakoTokenTypes.TAG_ATTR_VALUE)
+    return attrValue?.text?.trim('"', '\'')
+}
+```
 
 ## Logging
 
-**Framework:** IntelliJ Platform's `thisLogger()`
+**Framework:** None detected in current codebase
 
-**Patterns:**
-- Info level for state notifications: `thisLogger().info(MyBundle.message(...))`
-- Warn level for developer reminders: `thisLogger().warn("Don't forget...")`
-- Localization support via `MyBundle` wrapper accessing resource properties
-
-**Examples from codebase:**
-```kotlin
-// From MyProjectService.kt
-thisLogger().info(MyBundle.message("projectService", project.name))
-thisLogger().warn("Don't forget to remove all non-needed sample code files...")
-```
+**Approach:**
+- No structured logging found; tests use standard assertions
+- Plugin execution relies on IntelliJ Platform's built-in logging/error reporting
 
 ## Comments
 
 **When to Comment:**
-- Not extensively used in this template codebase
-- Plugin configuration documented via XML comments in `plugin.xml`
+- KDoc comments for public classes, public functions, and significant implementation details
+- Inline comments for non-obvious logic (especially parser recovery, token state encoding)
+- TODO/FIXME comments not found in codebase
 
-**KDoc/JavaDoc:**
-- Used minimally in template
-- Annotations used instead: `@NonNls`, `@PropertyKey`, `@JvmStatic`, `@Suppress`
+**KDoc/JSDoc Pattern:**
+```kotlin
+/**
+ * Wraps [_MakoLexer] with state encoding that includes [_MakoLexer.braceDepth].
+ * [Purpose and behavior description...]
+ *
+ * Encoding: bits 0-3 = JFlex state, bits 4-7 = braceDepth
+ */
+class MakoLexerAdapter : FlexAdapter(_MakoLexer()) { ... }
+```
+
+**Documentation follows IntelliJ Platform conventions:**
+- Full parameter/return documentation in public APIs
+- References to related code using square brackets: `[ClassName]`, `[methodName]`
+- Example from test classes: Detailed KDoc for test methods explaining regression coverage
 
 ## Function Design
 
-**Size:**
-- Methods kept small and focused
-- Example: `getRandomNumber()` is 1-liner, `getContent()` constructs and returns in 8 lines
-- Nested classes used for encapsulation: `MyToolWindowFactory.MyToolWindow` for tool window UI construction
+**Size Guidelines:**
+- Most functions 20-50 lines
+- Helper functions like `extractKeyword()` in `MakoFoldingBuilder.kt` are 1-2 lines
+- Complex logic broken into private helper methods: `findClosingTokenEnd()`, `collectControlLineNodes()`, `buildControlFlowFoldsUnder()`
 
 **Parameters:**
-- Explicit types always specified
-- Constructor injection pattern used: `class MyProjectService(project: Project)`, `class MyToolWindowFactory.MyToolWindow(toolWindow: ToolWindow)`
-- No default parameters observed in this codebase
+- Minimal parameter count (1-3 params typical)
+- When building complex structures, use type-safe DSL or builder: `parseFile("test", content)` returns `MakoFile`
+- Mutable collections passed as parameters use standard Kotlin conventions: `MutableList<FoldingDescriptor>`
 
 **Return Values:**
-- Explicit return types specified in function signatures
-- Extension functions supported: `toolWindow.project.service<MyProjectService>()`
-- Functional returns: lambda expressions used for event handlers
+- Nullable return types use `Type?`: `fun getName(): String?` in mixins
+- Collection returns use immutable types when possible: `List<Pair<IElementType, String>>` in lexer tests
+- Array returns for performance-sensitive code: `Array<FoldingDescriptor>` in folding builder
 
 ## Module Design
 
 **Exports:**
-- Single public class per file as primary export
-- Nested classes allowed for closely related functionality: `MyToolWindowFactory.MyToolWindow`
-- Interfaces implemented explicitly: `class MyProjectService`, `class MyToolWindowFactory : ToolWindowFactory`, `class MyProjectActivity : ProjectActivity`
+- Top-level classes exported as public: `class MakoParserDefinition : ParserDefinition`
+- Singletons exported as `object`: `object MakoLanguage`, `object MakoTokenTypes`
+- Mixins abstract to force GrammarKit generation: `abstract class MakoDefTagMixin`
 
-**Object Singleton Pattern:**
-- `object MyBundle : DynamicBundle(BUNDLE)` - Kotlin object singleton used for bundle access
+**Barrel Files:**
+- Not used; full explicit imports preferred
+- Each module has single responsibility: `MakoTokenTypes.kt` for all token definitions, `MakoParserDefinition.kt` for parser setup
 
-**Service Locator Pattern:**
-- IntelliJ Platform Service API used: `@Service(Service.Level.PROJECT)` annotation
-- Project-level services accessed via: `project.service<MyProjectService>()`
-- Dependency injection handled by IntelliJ platform
+## Package Organization
 
-**Annotation-Driven Configuration:**
-- `@NonNls` - Non-NLS string constants marked
-- `@PropertyKey` - Resource bundle keys annotated
-- `@JvmStatic` - For Java interop in object companions
-- `@TestDataPath` - Test fixtures annotated in test classes
+**Structure:**
+- Base plugin package: `com.github.kimuth.jetbrainsmakotemplateplugin`
+- Core language support: `...lang` (lexer, parser, PSI)
+- Features grouped by concern:
+  - `...lang.psi` — PSI element interfaces (generated + `MakoFile.kt`)
+  - `...lang.psi.impl` — Mixins for generated PSI classes
+  - `...lang.highlighting` — Syntax highlighting, color schemes, bracket matching
+  - `...lang.structure` — Structure view/outline
+  - `...lang.folding` — Code folding
+  - `...lang.editing` — Editor features (commenter)
+
+**Mixin Location Pattern:**
+- Mixins in `src/main/kotlin/.../lang/psi/impl/`
+- Referenced by BNF `mixin` attribute: `mixin="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl.MakoDefTagMixin"`
 
 ---
 
-*Convention analysis: 2026-02-19*
+*Convention analysis: 2026-02-21*

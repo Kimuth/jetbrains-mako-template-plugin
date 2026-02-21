@@ -1,237 +1,232 @@
 # Testing Patterns
 
-**Analysis Date:** 2026-02-19
+**Analysis Date:** 2026-02-21
 
 ## Test Framework
 
 **Runner:**
-- IntelliJ Platform Test Framework (TestFrameworkType.Platform)
-- Configuration: `build.gradle.kts` lines 50
-- Base class: `BasePlatformTestCase` from IntelliJ Platform
+- JUnit 4 (via `libs.junit` in `build.gradle.kts`)
+- IntelliJ Platform Test Framework via `TestFrameworkType.Platform`
+- ParsingTestCase for lexer/parser tests
+- BasePlatformTestCase for plugin/UI tests
 
 **Assertion Library:**
-- JUnit 4.13.2 (stdlib assertions)
-- OpenTest4j 1.3.0 (advanced test assertions)
-- IntelliJ Platform testing utilities: `assertInstanceOf()`, `assertNotNull()`, `assertFalse()`, `assertEquals()`
+- JUnit 4 assertions: `assertEquals()`, `assertTrue()`, `assertFalse()`, `assertNotNull()`
+- OpenTest4j via `libs.opentest4j` (dependency specified in `build.gradle.kts`)
 
 **Run Commands:**
 ```bash
-./gradlew test                    # Run unit tests via check task
-./gradlew check                   # Run tests + verification (includes test task)
-./gradlew buildPlugin             # Build plugin (runs tests as dependency)
-./gradlew runIdeForUiTests        # Run IDE with UI test server on port 8082
+./gradlew test                             # Run all tests
+./gradlew test --tests MakoParsingTest     # Run specific test class
+./gradlew test --tests MakoLexerTest       # Run lexer tests only
+./gradlew check                            # Run tests + code verification (includes Kover coverage)
+./gradlew runIde                           # Launch test IDE with plugin loaded
 ```
-
-**CI/CD Test Execution:**
-- Build workflow: `./gradlew check` (line 112 in `.github/workflows/build.yml`)
-- Plugin verification: `./gradlew verifyPlugin` (line 200 in `.github/workflows/build.yml`)
-- Coverage reporting: Kover coverage report uploaded to CodeCov (line 126)
 
 ## Test File Organization
 
 **Location:**
-- Tests co-located with source: `src/test/kotlin/` mirrors `src/main/kotlin/` package structure
-- Test data files: `src/test/testData/` directory
-- Example: `src/test/kotlin/com/github/kimuth/jetbrainsmakotemplateplugin/MyPluginTest.kt`
+- Tests co-located with language-specific test infrastructure
+- Path: `src/test/kotlin/com/github/kimuth/jetbrainsmakotemplateplugin/lang/`
+- Test data in `src/test/testData/parser/` (fixture-based)
+- Test data in `src/test/testData/folding/` (folding builder tests)
 
 **Naming:**
-- Test classes use `Test` suffix: `MyPluginTest`
-- Test methods prefixed with `test`: `testXMLFile()`, `testRename()`, `testProjectService()`
-- Test data directory annotated: `@TestDataPath("\$CONTENT_ROOT/src/test/testData")`
+- Test files: `[Feature]Test.kt`
+  - `MakoLexerTest.kt` — Tokenization (all token types)
+  - `MakoParsingTest.kt` — Parser integration (PSI tree building)
+  - `MakoFoldingTest.kt` — Code folding regions
+  - `MakoStructureViewTest.kt` — Outline/structure view
+  - `MyPluginTest.kt` — Plugin loading smoke test
+- Test methods: `test[Scenario]()` — `testTemplateTextSimple()`, `testNestedBraces()`, `testDefTagFollowedByText()`
 
 **Structure:**
 ```
 src/test/
-├── kotlin/
-│   └── com/github/kimuth/jetbrainsmakotemplateplugin/
-│       └── MyPluginTest.kt
+├── kotlin/com/github/kimuth/jetbrainsmakotemplateplugin/
+│   └── lang/
+│       ├── MakoLexerTest.kt
+│       ├── MakoParsingTest.kt
+│       ├── MakoFoldingTest.kt
+│       └── MakoStructureViewTest.kt
 └── testData/
-    └── rename/
-        ├── foo.xml
-        └── foo_after.xml
+    └── parser/
+        ├── WellFormedFile.mako
+        ├── WellFormedFile.txt
+        └── [other test pairs]
 ```
 
 ## Test Structure
 
 **Suite Organization:**
 ```kotlin
-@TestDataPath("\$CONTENT_ROOT/src/test/testData")
-class MyPluginTest : BasePlatformTestCase() {
+// ParsingTestCase test (from MakoParsingTest.kt)
+class MakoParsingTest : ParsingTestCase("", "mako", MakoParserDefinition()) {
+    override fun getTestDataPath(): String = "src/test/testData/parser"
+    override fun skipSpaces(): Boolean = false
+    override fun includeRanges(): Boolean = true
 
-    fun testXMLFile() {
-        val psiFile = myFixture.configureByText(XmlFileType.INSTANCE, "<foo>bar</foo>")
-        val xmlFile = assertInstanceOf(psiFile, XmlFile::class.java)
-
-        assertFalse(PsiErrorElementUtil.hasErrors(project, xmlFile.virtualFile))
-
-        assertNotNull(xmlFile.rootTag)
-
-        xmlFile.rootTag?.let {
-            assertEquals("foo", it.name)
-            assertEquals("bar", it.value.text)
-        }
+    fun testWellFormedFile() {
+        doTest(true)  // Verifies against expected .txt fixture
     }
-
-    fun testRename() {
-        myFixture.testRename("foo.xml", "foo_after.xml", "a2")
-    }
-
-    fun testProjectService() {
-        val projectService = project.service<MyProjectService>()
-        assertNotSame(projectService.getRandomNumber(), projectService.getRandomNumber())
-    }
-
-    override fun getTestDataPath() = "src/test/testData/rename"
 }
 ```
 
 **Patterns:**
-- No explicit setUp/tearDown: `BasePlatformTestCase` provides `project` and `myFixture` fixtures automatically
-- Single method assertion style: Multiple assertions per test allowed
-- PSI (Program Structure Interface) testing via `myFixture` for file/XML parsing
-- Service injection testing via `project.service<T>()`
+- Setup: `extends ParsingTestCase` or `extends BasePlatformTestCase`
+- Tests inherit from framework base class that handles project/PSI setup
+- `parseFile(name, content): MakoFile` creates PSI tree from string (in folding/structure tests)
+- `doTest(checkResult)` compares generated PSI tree to fixture (parser tests)
+- No explicit teardown methods; framework handles cleanup
+
+**Test Data (Fixture-Based):**
+- Each parser test maps to pair: `src/test/testData/parser/TestName.mako` (input) + `TestName.txt` (expected PSI tree)
+- First test run generates `.txt` if missing — developer verifies correctness before commit
+- Example: `WellFormedFile.mako` (input template) → `WellFormedFile.txt` (PSI tree structure)
 
 ## Mocking
 
-**Framework:** IntelliJ Platform test utilities (no explicit mocking library like Mockito observed)
+**Framework:**
+- No mocking framework detected (no mockito, mockk, etc. in dependencies)
+- Tests use real IntelliJ Platform components via test framework
 
 **Patterns:**
-- `myFixture.configureByText()` - Create in-memory PSI files for testing
-- `myFixture.testRename()` - Rename refactoring test helper
-- Real component injection: `project.service<MyProjectService>()` - Uses actual service instance
-- No mock objects created; real IntelliJ platform services used
+- Direct instantiation of classes under test: `MakoLexerAdapter()`, `MakoFoldingBuilder()`
+- No external dependencies to mock (lexer/parser tests are isolated to token/tree structures)
+- IntelliJ test framework provides fake `Project`, `Document`, `FileViewProvider`
+
+**Example (Lexer Test):**
+```kotlin
+private fun tokenize(text: String): List<Pair<IElementType, String>> {
+    val lexer = MakoLexerAdapter()  // Real instance, no mock
+    lexer.start(text)
+    val tokens = mutableListOf<Pair<IElementType, String>>()
+    while (lexer.tokenType != null) {
+        tokens.add(lexer.tokenType!! to lexer.tokenText)
+        lexer.advance()
+    }
+    return tokens
+}
+```
 
 **What to Mock:**
-- External file systems: use `myFixture.configureByText()` for in-memory PSI
-- Editor interactions: myFixture provides virtual editor context
+- Nothing currently mocked; real IntelliJ test framework used
 
 **What NOT to Mock:**
-- IntelliJ Platform core services (Service.Level.PROJECT): Instantiated by platform
-- PSI (Program Structure Interface): Real parsed structure tested
-- Project context: Use `project` from `BasePlatformTestCase`
+- Lexer/parser components — test with real implementations
+- PSI tree structures — rely on generated GrammarKit output
 
 ## Fixtures and Factories
 
 **Test Data:**
+- Inline string literals in test methods for small inputs
+- `.mako` fixture files for larger/complex scenarios
+
+**Example from MakoFoldingTest:**
 ```kotlin
-// From MyPluginTest.kt
-val psiFile = myFixture.configureByText(XmlFileType.INSTANCE, "<foo>bar</foo>")
-myFixture.testRename("foo.xml", "foo_after.xml", "a2")
+private val SAMPLE_MAKO = """<%doc>
+This documentation should be collapsed by default.
+</%doc>
+
+<%def name="greet">
+Hello ${"$"}{name}!
+</%def>
+% for item in items:
+    ${"$"}{item}
+% endfor"""
+
+private fun buildFolds(content: String): Int {
+    val file = parseFile("test", content)
+    val doc = DocumentImpl(content)
+    val builder = MakoFoldingBuilder()
+    return builder.buildFoldRegions(file, doc, false).size
+}
 ```
 
 **Location:**
-- Fixture files: `src/test/testData/rename/` directory
-- Inline fixtures: `myFixture.configureByText()` for simple cases
-- XML test data: `foo.xml` (before), `foo_after.xml` (after rename)
-
-**Patterns:**
-- Before/after file pairs for refactoring tests
-- `myFixture` is auto-provided by `BasePlatformTestCase`
-- `project` fixture is auto-provided for service testing
+- Fixtures in `src/test/testData/` organized by feature
+- Inline test constants as private members in test class
+- Helper methods (`tokenize()`, `buildFolds()`, `parseFile()`) as private members
 
 ## Coverage
 
 **Requirements:**
-- Informational only (codecov.yml line 6: `informational: true`)
-- No threshold enforced (line 6: `threshold: 0%`)
-- Coverage tracking via Kover (build.gradle.kts lines 120-127)
+- Gradle Kover plugin configured: `alias(libs.plugins.kover)` in `build.gradle.kts`
+- XML report generated on check: `kover { reports { total { xml { onCheck = true } } } }`
 
 **View Coverage:**
 ```bash
-./gradlew koverReport                    # Generate coverage report
-cat build/reports/kover/report.xml       # View XML report
-# HTML report generated at: build/reports/kover/html/
+./gradlew koverHtmlReport   # Generate HTML coverage report (build/reports/kover/html)
+./gradlew check             # Run tests + generate XML coverage
 ```
-
-**Coverage Configuration:**
-- Enabled in `build.gradle.kts` (lines 120-127)
-- Kover plugin: 0.9.5
-- XML output enabled for CodeCov integration
-- Report uploaded in CI: `.github/workflows/build.yml` (lines 123-127)
 
 ## Test Types
 
 **Unit Tests:**
-- Scope: Kotlin functions, service logic, bundle messages
-- Approach: Direct method calls with assertions
-- Example: `testProjectService()` verifies `getRandomNumber()` generates different values
-- Framework: JUnit 4 with platform assertions
+- **Lexer Tests** (`MakoLexerTest.kt`): 25+ test methods covering all token types
+  - Token sequence generation
+  - Nested brace handling (`testNestedBraces()`)
+  - State persistence across tokens (`testRestartStateAfterExpression()`)
+  - Edge cases (unclosed constructs, single char at EOF)
+  - All tests use direct lexer instance, no PSI/parsing involved
+
+- **Parser Tests** (`MakoParsingTest.kt`): Fixture-based PSI tree comparison
+  - Well-formed input produces correct typed nodes (`testWellFormedFile()`)
+  - Malformed input produces error recovery nodes (`testMalformedTag()`)
+  - Regression tests for specific parser issues (`testConsecutiveExpressions()`, `testExpressionFollowedByText()`)
 
 **Integration Tests:**
-- Scope: PSI (Program Structure Interface) parsing, XML file handling, refactoring operations
-- Approach: Use IntelliJ virtual filesystem and PSI infrastructure
-- Example: `testXMLFile()` parses XML and validates structure; `testRename()` performs actual refactoring
-- Framework: `BasePlatformTestCase` with myFixture
+- **Folding Tests** (`MakoFoldingTest.kt`): Full PSI trees with folding builder
+  - Individual fold regions created for all construct types
+  - Fold ranges don't bleed into subsequent content (`testCodeBlockFoldRange()`)
+  - Control flow nesting (for/if/while) with stack handling
+  - Malformed files don't crash (`testMalformedControlFlowNoCrash()`)
 
-**E2E Tests:**
-- Framework: UI Tests via Robot Server plugin
-- Configuration: `.github/workflows/run-ui-tests.yml` (separate workflow)
-- Runtime setup: `intellijPlatformTesting.runIde.register("runIdeForUiTests")` (build.gradle.kts lines 141-159)
-- JVM args: Robot server on port 8082, disabled privacy dialogs
+- **Structure View Tests** (`MakoStructureViewTest.kt`): PSI navigation/outline
+  - Named elements (def/block) appear in structure view
+  - Only def/block nodes visible (not expressions, control flow, template text)
+  - Unnamed blocks use `<unnamed>` fallback
 
-**Plugin Verification:**
-- IntelliJ Plugin Verifier runs during CI (line 200 in build.yml)
-- Validates plugin against multiple IDE versions
-- Results: `build/reports/pluginVerifier/`
+**Plugin Tests:**
+- **Smoke Test** (`MyPluginTest.kt`): Minimal test that plugin loads
+  - Verifies project fixture initializes
 
 ## Common Patterns
 
 **Async Testing:**
-- Not explicitly tested in current codebase
-- IntelliJ Platform handles async via `ProjectActivity.execute()` suspend function
-- Suspend function test pattern for ProjectActivity available but not demonstrated
+Not applicable — no async code in plugin.
 
 **Error Testing:**
 ```kotlin
-// From testXMLFile()
-assertFalse(PsiErrorElementUtil.hasErrors(project, xmlFile.virtualFile))
-```
+// Parser error recovery (MakoParsingTest)
+fun testMalformedTag() {
+    doTest(true)  // Expects .txt to contain PsiErrorElement nodes
+}
 
-**PSI File Testing:**
-```kotlin
-// From testXMLFile()
-val psiFile = myFixture.configureByText(XmlFileType.INSTANCE, "<foo>bar</foo>")
-val xmlFile = assertInstanceOf(psiFile, XmlFile::class.java)
-assertNotNull(xmlFile.rootTag)
-xmlFile.rootTag?.let {
-    assertEquals("foo", it.name)
-    assertEquals("bar", it.value.text)
+// Lexer graceful degradation
+fun testUnclosedCodeBlock() {
+    val tokens = tokenize("<%\nblabla = \"foo\"")
+    assertTrue("Must contain CODE_OPEN", tokens.any { it.first == MakoTokenTypes.CODE_OPEN })
+    assertFalse("Must NOT contain CODE_CLOSE", tokens.any { it.first == MakoTokenTypes.CODE_CLOSE })
+}
+
+// Parser recovery verification (regression tests)
+fun testExpressionFollowedByText() {
+    doTest(true)  // Verifies TEMPLATE_TEXT not absorbed into EXPRESSION as PsiErrorElement
 }
 ```
 
-**Service Injection Testing:**
-```kotlin
-// From testProjectService()
-val projectService = project.service<MyProjectService>()
-assertNotSame(projectService.getRandomNumber(), projectService.getRandomNumber())
-```
+**Regression Testing:**
+- Each regression fix has dedicated test case
+- PARS-06 through PARS-09 regression tests in `MakoParsingTest`
+- Specific EOF handling for CODE_BLOCK (`testCodeBlockSingleCharContentAtEof()`)
+- State encoding verification (`testBraceDepthEncodedInState()`, `testBraceDepthRestoredOnRestart()`)
 
-**Refactoring Operation Testing:**
-```kotlin
-// From testRename()
-myFixture.testRename("foo.xml", "foo_after.xml", "a2")
-```
-
-## Test Execution in CI
-
-**Build Workflow:**
-- Triggers: push to main, pull requests
-- Jobs: build → test → inspectCode → verify → releaseDraft
-- Test results archived if failure: `build/reports/tests`
-
-**Coverage Reporting:**
-```bash
-# Generated by: ./gradlew check (koverReport runs as dependency)
-# Uploaded to: CodeCov via codecov/codecov-action@v5
-# Token: secrets.CODECOV_TOKEN
-# Report file: build/reports/kover/report.xml
-```
-
-**Code Inspection:**
-- Qodana runs separately from tests (`.github/workflows/build.yml` lines 129-165)
-- Generates report on pull requests
-- Profile: `qodana.recommended` for JVM projects
+**Test Isolation:**
+- No shared state between tests (each test creates fresh parser/lexer)
+- Inline content for small cases, fixtures for complex scenarios
+- No cross-test dependencies
 
 ---
 
-*Testing analysis: 2026-02-19*
+*Testing analysis: 2026-02-21*

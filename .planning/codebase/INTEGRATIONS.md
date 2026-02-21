@@ -1,111 +1,111 @@
 # External Integrations
 
-**Analysis Date:** 2026-02-19
+**Analysis Date:** 2025-02-21
 
 ## APIs & External Services
 
-**JetBrains Marketplace:**
-- JetBrains Plugin Marketplace - Distribution and hosting for IntelliJ plugins
-  - SDK/Client: IntelliJ Platform Gradle Plugin (via `intellijPlatform` configuration)
-  - Auth: `PUBLISH_TOKEN` environment variable (configured in `build.gradle.kts` lines 98)
-  - Publishing endpoint: Configured via `publishing { token }` block
+**None** - This plugin does not integrate with external APIs or third-party services.
 
-**GitHub:**
-- GitHub Actions CI/CD pipelines (`.github/workflows/`)
-- GitHub Releases for manual plugin distribution
-- Code repository hosting
+The plugin is a language support tool that provides:
+- Lexical analysis and syntax highlighting for Mako templates
+- Parser and PSI tree construction for IDE features
+- IDE feature implementations (code folding, structure view, comment toggling)
+
+All functionality is self-contained within the IntelliJ Platform plugin infrastructure.
 
 ## Data Storage
 
-**Databases:**
-- None detected - This is a plugin, not a service with persistent data requirements
+**Databases:** None
 
-**File Storage:**
-- Local IDE filesystem only
-- Plugin stores configuration in IntelliJ's standard plugin directories
+**File Storage:** Local filesystem only
+- No remote cloud storage
+- Plugin reads/writes project files through IntelliJ's VirtualFile API
+- Generated code placed in `src/main/gen/` directory
 
-**Caching:**
-- None detected in integrations
+**Caching:** None
+- No persistent caching layer
+- Lexer/parser state is ephemeral (per-session)
 
 ## Authentication & Identity
 
-**Auth Provider:**
-- Custom - JetBrains account-based (implicit)
-  - Implementation: Marketplace authentication handled by IntelliJ IDE itself
-  - Plugin publishing uses marketplace tokens (`PUBLISH_TOKEN`)
-  - End-user authentication handled by IDE
+**Auth Provider:** None required
+
+The plugin operates within the user's IntelliJ IDE environment. No external authentication or identity services are used.
 
 ## Monitoring & Observability
 
-**Error Tracking:**
-- None detected
+**Error Tracking:** None
+- No error reporting service (Sentry, Rollbar, etc.)
+- No usage/telemetry collection
 
 **Logs:**
-- IntelliJ Logger API (`com.intellij.openapi.diagnostic.thisLogger()`)
-  - Used in `MyProjectService.kt` (line 13)
-  - Used in `MyProjectActivity.kt`
-  - Used in `MyToolWindowFactory.kt`
-  - Logs written to IntelliJ IDE log file, not external service
-
-**Code Quality Inspection:**
-- Qodana (JetBrains static analysis) - Optional quality checks via `qodana.yml`
+- Standard Java logging (java.util.logging)
+- Writes to IntelliJ IDE logs directory
+- No remote log aggregation
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- GitHub Actions (Ubuntu latest runners) - Main CI/CD platform
-  - Build workflow: `.github/workflows/build.yml`
-  - Release workflow: `.github/workflows/release.yml`
-  - UI test workflow: `.github/workflows/run-ui-tests.yml`
+- GitHub (repository: https://github.com/Kimuth/jetbrains-mako-template-plugin)
+- JetBrains Marketplace (plugin distribution) - Not yet published (MARKETPLACE_ID placeholder in README)
 
 **CI Pipeline:**
-- Gradle tasks executed via GitHub Actions:
-  - `test` - Run unit tests
-  - `verifyPlugin` - Validate plugin structure
-  - `buildPlugin` - Create distribution JAR
-  - `runPluginVerifier` - Verify compatibility across IntelliJ versions
-  - Qodana analysis via Gradle plugin
-
-**Deployment Target:**
-- Primary: JetBrains Marketplace (automatic via `publishPlugin` task)
-- Secondary: GitHub Releases (manual download)
-- Tertiary: Manual installation from disk
+- GitHub Actions (workflow: Build)
+- Tasks: ./gradlew buildPlugin, ./gradlew check, ./gradlew test
+- Artifact: Plugin JAR published to JetBrains Marketplace via ./gradlew publishPlugin
 
 ## Environment Configuration
 
-**Required env vars:**
-- `PUBLISH_TOKEN` - JetBrains Marketplace authentication (required for publishing)
-- `CERTIFICATE_CHAIN` - Plugin signing certificate (required for marketplace publishing)
-- `PRIVATE_KEY` - Plugin signing private key (required for marketplace publishing)
-- `PRIVATE_KEY_PASSWORD` - Private key password (required for marketplace publishing)
+**Required env vars for publishing:**
+- `CERTIFICATE_CHAIN` - Plugin signing certificate (PEM or PKCS12 format)
+- `PRIVATE_KEY` - Plugin signing private key
+- `PRIVATE_KEY_PASSWORD` - Password for private key
+- `PUBLISH_TOKEN` - JetBrains Marketplace API authentication token
 
 **Optional env vars:**
-- `CODECOV_TOKEN` - Code coverage reporting to Codecov (referenced in README.md)
+- `CODECOV_TOKEN` - Code coverage reporting (configured in GitHub secrets)
 
 **Secrets location:**
-- GitHub Secrets (configured in repository settings)
-- Referenced in `build.gradle.kts` via `providers.environmentVariable()`
-- Published in CI/CD workflows (`.github/workflows/`)
+- GitHub Actions secrets (not in version control)
+- `.env` file pattern not used
 
 ## Webhooks & Callbacks
 
-**Incoming:**
-- None detected
+**Incoming:** None
 
-**Outgoing:**
-- GitHub Actions workflow triggers: Push to `main` branch, pull requests
-- Marketplace publish notifications (handled by JetBrains, not this plugin)
+**Outgoing:** None
 
-## External Dependencies Resolution
+The plugin does not send outbound webhooks or callbacks to external systems.
 
-**Repositories:**
-- Maven Central Repository (via `mavenCentral()`)
-- IntelliJ Platform Gradle Plugin Repositories Extension (`intellijPlatform { defaultRepositories() }`)
+## IDE Feature APIs
 
-**Dependency Sources:**
-- JetBrains plugin marketplace (for IntelliJ platform)
-- Maven Central (for JUnit, OpenTest4J, Kotlin stdlib)
+**IntelliJ Platform Dependencies:**
+- `com.intellij.modules.platform` - Core IDE services
+- `com.intellij.modules.python` - Python language integration
+
+**Bundled Dependencies:**
+- PythonCore - Bundled plugin providing Python language features
+
+**Extension Points Used (registered in plugin.xml):**
+- `com.intellij.fileType` - Register Mako template file type
+- `com.intellij.lang.parserDefinition` - Register parser/lexer
+- `com.intellij.lang.syntaxHighlighterFactory` - Register syntax highlighter
+- `com.intellij.colorSettingsPage` - Register color settings UI
+- `com.intellij.additionalTextAttributes` - Register color scheme XML files
+- `com.intellij.lang.braceMatcher` - Register brace pair matching
+- `com.intellij.lang.commenter` - Register comment toggle behavior
+- `com.intellij.lang.foldingBuilder` - Register code folding regions
+- `com.intellij.lang.psiStructureViewFactory` - Register structure view outline
+
+## Build Infrastructure
+
+**Gradle Plugins (via Gradle Plugin Portal):**
+- org.gradle.toolchains.foojay-resolver-convention 1.0.0 - Toolchain resolution
+
+**No third-party Maven repositories besides:**
+- mavenCentral() - Standard Maven Central
+- IntelliJ Platform Gradle Plugin repositories (via defaultRepositories())
 
 ---
 
-*Integration audit: 2026-02-19*
+*Integration audit: 2025-02-21*

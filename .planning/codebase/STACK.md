@@ -1,101 +1,108 @@
 # Technology Stack
 
-**Analysis Date:** 2026-02-19
+**Analysis Date:** 2025-02-21
 
 ## Languages
 
 **Primary:**
-- Kotlin 2.3.0 - Plugin logic and main implementation
-- Java 21 (JVM) - Runtime compilation target
+- Kotlin 2.3.0 - Plugin implementation, PSI mixins, syntax highlighting, code structure
+- Java 21 - JVM target and build configuration
+- JFlex - Lexer grammar (hand-written in `src/main/grammars/MakoLexer.flex`)
+- BNF - Parser grammar (hand-written in `src/main/grammars/Mako.bnf`)
 
 **Secondary:**
-- XML - Plugin configuration files (`src/main/resources/META-INF/plugin.xml`)
-- Properties - Message bundle configuration (`src/main/resources/messages/MyBundle.properties`)
+- XML - Plugin configuration (`src/main/resources/META-INF/plugin.xml`)
 
 ## Runtime
 
 **Environment:**
-- Java 21 (JVM Toolchain)
+- JVM (Java 21) - Build and execution target
+- IntelliJ Platform 2025.2.5 - Host IDE runtime for plugin
+- PyCharm Community 2025.2.5 (build 252+) - Supported IDE
 
 **Package Manager:**
 - Gradle 9.3.1
-- Lockfile: Present (Gradle wrapper managed via `gradle/wrapper/gradle-wrapper.jar`)
+- Lockfile: Present (gradle wrapper binaries)
 
 ## Frameworks
 
-**Core:**
-- IntelliJ Platform 2025.2.5 - JetBrains plugin framework for IDE integration
-- IntelliJ Platform Gradle Plugin 2.11.0 - Build and plugin configuration for IntelliJ ecosystem
+**Core IntelliJ Platform:**
+- IntelliJ Platform Gradle Plugin 2.11.0 - Plugin development and publication
+- GrammarKit 2023.3.0.2 - Parser/lexer code generation from BNF and JFlex
 
 **Testing:**
-- JUnit 4.13.2 - Unit test framework
-- OpenTest4J 1.3.0 - Test assertion and reporting library
-- IntelliJ Platform Test Framework - Provided by IntelliJ Platform (extends `BasePlatformTestCase`)
+- JUnit 4.13.2 - Test framework
+- OpenTest4J 1.3.0 - Assertion/exception library
+- IntelliJ Platform Test Framework (bundled) - Platform testing utilities
+- BasePlatformTestCase - Base test harness for lexer/parser unit tests
+- ParsingTestCase - Fixture-based parser testing (for `.mako` → `.txt` PSI tree tests)
 
-**Build/Dev:**
-- Gradle Changelog Plugin 2.5.0 - CHANGELOG management and versioning
-- Gradle Kover Plugin 0.9.5 - Code coverage reporting for Kotlin
-- Gradle Qodana Plugin 2025.3.1 - Static analysis and code quality inspection
+**Build & Code Quality:**
+- Gradle Changelog Plugin 2.5.0 - Changelog management for releases
+- Gradle Qodana Plugin 2025.3.1 - Code quality/static analysis
+- Gradle Kover 0.9.5 - Test code coverage (XML reports enabled)
 
 ## Key Dependencies
 
 **Critical:**
-- IntelliJ Platform (via `intellijIdea()`) - Provides core IDE APIs and plugin runtime
-  - Versioning: Build 252 minimum (set in `gradle.properties`)
-  - Includes bundled plugins and modules based on `gradle.properties` configuration
+- IntelliJ Platform SDK (2025.2.5) - Core IDE APIs (lexing, parsing, PSI, syntax highlighting)
+  - com.intellij.modules.platform - Platform module dependency
+  - com.intellij.modules.python - Python module dependency (for PyCharm)
+  - PythonCore (bundled plugin) - Python language support
 
-**Infrastructure:**
-- IntelliJ Annotations (org.jetbrains.annotations) - Type safety and null-safety annotations used in `MyBundle.kt`
-- Kotlin Standard Library - Bundled via `kotlin.stdlib.default.dependency = false` (opt-out)
+**Build/Generation:**
+- JetBrains GrammarKit 2.11.0 - Generates MakoParser.java and MakoTypes.java from Mako.bnf
+- JFlex-based lexer generation - Generates _MakoLexer.java from MakoLexer.flex
 
 ## Configuration
 
-**Environment:**
-- Configuration via `gradle.properties`:
-  - `pluginGroup`: Package namespace (`com.github.kimuth.jetbrainsmakotemplateplugin`)
-  - `pluginName`: Display name (`jetbrains-mako-template-plugin`)
-  - `pluginVersion`: Semantic version (`0.0.1`)
-  - `platformVersion`: IntelliJ Platform version (`2025.2.5`)
-  - `platformBundledPlugins`: Built-in plugins to include (empty)
-  - `platformPlugins`: Marketplace plugins to include (empty)
-  - `platformBundledModules`: IntelliJ modules to include (empty)
+**Build Configuration:**
+- `build.gradle.kts` - Main build script with Gradle tasks and IntelliJ platform configuration
+- `gradle.properties` - Plugin metadata and platform versions
+- `settings.gradle.kts` - Gradle settings and toolchain resolution
+- `gradle/libs.versions.toml` - Dependency version catalog
 
-**Build:**
-- `build.gradle.kts`: Main build configuration
-- `settings.gradle.kts`: Gradle settings and toolchain resolver
-- Version catalog: `gradle/libs.versions.toml` - Centralized dependency versioning
+**Environment Variables (Build):**
+- `CERTIFICATE_CHAIN` - Plugin signing certificate (for publishing)
+- `PRIVATE_KEY` - Plugin signing private key (for publishing)
+- `PRIVATE_KEY_PASSWORD` - Private key password (for publishing)
+- `PUBLISH_TOKEN` - JetBrains Marketplace API token (for publishing)
+- `org.gradle.java.home` - JDK 21 home directory (configured in gradle.properties)
 
-**Signing & Publishing (Environment Variables):**
-- `CERTIFICATE_CHAIN` - Plugin signing certificate chain
-- `PRIVATE_KEY` - Plugin signing private key
-- `PRIVATE_KEY_PASSWORD` - Private key password
-- `PUBLISH_TOKEN` - JetBrains Marketplace publishing token
+**Color Schemes:**
+- `src/main/resources/colorSchemes/MakoDefault.xml` - Light theme syntax highlighting
+- `src/main/resources/colorSchemes/MakoDarcula.xml` - Dark theme syntax highlighting
 
 ## Platform Requirements
 
 **Development:**
-- Gradle 9.3.1 or compatible wrapper
-- Java 21 JDK (configured via `kotlin.jvmToolchain(21)`)
-- IntelliJ IDEA or compatible IDE for testing
+- JDK 21+ (Microsoft JDK 21.0.10 configured in gradle.properties)
+- Gradle 9.3.1
+- IntelliJ IDEA or PyCharm Community (for GrammarKit parser generation via IDE action)
 
-**Production:**
-- IntelliJ IDEA 2025.2.5 or compatible (build 252+)
-- Plugin deployment: JetBrains Marketplace
-- Alternative manual installation via downloaded `.jar` file
+**Production/Deployment:**
+- PyCharm Community 2025.2.5+ (build 252+)
+- IntelliJ Platform minimum build: 252
 
-## Gradle Configuration Features
+## Generated Code Management
 
-**Caching & Performance:**
-- Configuration cache enabled: `org.gradle.configuration-cache = true`
-- Build cache enabled: `org.gradle.caching = true`
+**Lexer Generation:**
+- Task: `./gradlew generateMakoLexer`
+- Input: `src/main/grammars/MakoLexer.flex`
+- Output: `src/main/gen/com/github/kimuth/jetbrainsmakotemplateplugin/lang/_MakoLexer.java`
+- Committed: No (regenerated on every build, consumed by MakoLexerAdapter)
+- Encoding: Lexer state encodes both JFlex state (bits 0-3) and brace nesting depth (bits 4+) for incremental re-lexing
 
-**Plugin Verification:**
-- Automated compatibility testing with recommended IntelliJ build versions via `pluginVerifier`
-
-**UI Testing Support:**
-- Robot server plugin enabled for GUI testing (`robotServerPlugin()`)
-- Custom run task: `runIdeForUiTests` with custom JVM arguments and robot server configuration
+**Parser Generation:**
+- Task: Manual via `Tools → Generate Parser Code` in IntelliJ IDE (not automated in Gradle)
+- Input: `src/main/grammars/Mako.bnf`
+- Outputs:
+  - `src/main/gen/com/github/kimuth/jetbrainsmakotemplateplugin/lang/parser/MakoParser.java`
+  - `src/main/gen/com/github/kimuth/jetbrainsmakotemplateplugin/lang/psi/MakoTypes.java`
+  - `src/main/gen/com/github/kimuth/jetbrainsmakotemplateplugin/lang/psi/impl/*.java` (50+ PSI element implementations)
+- Committed: Yes (committed to git for CI/CD without requiring IDE)
+- Warning: MakoTypes.java contains hand-added token delegates that would be purged if regenerated with default settings
 
 ---
 
-*Stack analysis: 2026-02-19*
+*Stack analysis: 2025-02-21*
