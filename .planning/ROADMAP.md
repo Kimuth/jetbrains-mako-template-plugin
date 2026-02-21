@@ -156,4 +156,4 @@ Plans:
 | 13. Editor Behavior Fixes | 1/1 | Complete    | 2026-02-21 | - |
 | 14. Completion Fixes | 1/1 | Complete    | 2026-02-21 | - |
 | 15. Annotator Fixes | 1/1 | Complete    | 2026-02-21 | - |
-| 16. Dead Code Cleanup | 1/1 | Complete   | 2026-02-21 | - |
+| 16. Dead Code Cleanup | 1/1 | Complete    | 2026-02-21 | - |
