@@ -55,5 +55,9 @@
         <completion.contributor
             language="any"
             implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.completion.MakoCompletionContributor"/>
+
+        <!-- Phase 8: Error Annotations -->
+        <annotator language="Mako Template"
+                   implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.annotation.MakoAnnotator"/>
     </extensions>
 </idea-plugin>
