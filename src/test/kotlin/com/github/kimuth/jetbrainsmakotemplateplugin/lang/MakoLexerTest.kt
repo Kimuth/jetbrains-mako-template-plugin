@@ -365,9 +365,39 @@ Hello ${'$'}{name | h}!
     }
 
     fun testCodeBlockWithOnlyOpen() {
-        // Just <% followed by space and EOF
+        // Regression test for IndexOutOfBoundsException: `<% ` (space after CODE_OPEN) at EOF.
+        //
+        // The JFlex combined rule `[^%]+ | "%" / [^>]` generated a DFA where a single non-`%`
+        // char at EOF hit a non-accepting intermediate state, causing ZZ_NO_MATCH (then
+        // FlexAdapter caught the Error and returned BAD_CHARACTER with myTokenEnd=bufferEnd).
+        // Fix: split into two separate rules so `[^%]+` gets its own simple accepting DFA.
         val tokens = tokenize("<% ")
         assertTrue("Must contain CODE_OPEN", tokens.any { it.first == MakoTokenTypes.CODE_OPEN })
+        // The space must tokenize as CODE_CONTENT, never as BAD_CHARACTER.
+        assertFalse(
+            "Space inside CODE_BLOCK must NOT produce BAD_CHARACTER (was crashing with IndexOutOfBoundsException)",
+            tokens.any { it.first == TokenType.BAD_CHARACTER }
+        )
+        assertTrue("Space inside CODE_BLOCK must produce CODE_CONTENT", tokens.any { it.first == MakoTokenTypes.CODE_CONTENT })
+    }
+
+    fun testCodeBlockSingleCharContentAtEof() {
+        // Regression: single non-% character at EOF inside CODE_BLOCK must not throw.
+        // The CODE_OPEN rule requires `<%` followed by whitespace/newline, so we put a
+        // valid CODE_OPEN first (`<% `) and then a trailing content char at EOF.
+        // The critical case is a single trailing char that follows CODE_OPEN with no `%>`.
+        for (ch in listOf("a", "x", "z", "\t", "!")) {
+            val input = "<% $ch"
+            val tokens = tokenize(input)
+            assertFalse(
+                "Single char '$ch' at EOF inside CODE_BLOCK must NOT produce BAD_CHARACTER (input: '$input')",
+                tokens.any { it.first == TokenType.BAD_CHARACTER }
+            )
+            assertTrue(
+                "Single char '$ch' at EOF inside CODE_BLOCK must produce CODE_CONTENT (input: '$input')",
+                tokens.any { it.first == MakoTokenTypes.CODE_CONTENT }
+            )
+        }
     }
 
     fun testCodeBlockPercentAtEof() {

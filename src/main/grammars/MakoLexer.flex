@@ -150,8 +150,13 @@ WhiteSpace     = [ \t]+
   // End of anonymous code block
   "%>"                             { yybegin(YYINITIAL); return CODE_CLOSE; }
 
-  // Code content — everything until %>
-  [^%]+ | "%" / [^>]              { return CODE_CONTENT; }
+  // Code content — non-% runs.
+  // Split from the lookahead alternative to prevent JFlex from generating
+  // a combined DFA where a single non-% char at EOF is non-accepting.
+  [^%]+                            { return CODE_CONTENT; }
+
+  // % followed by something other than > (lookahead keeps the > for CODE_CLOSE)
+  "%" / [^>]                       { return CODE_CONTENT; }
 
   // Lone % at end of input
   "%"                              { return CODE_CONTENT; }
@@ -161,8 +166,12 @@ WhiteSpace     = [ \t]+
   // End of module-level code block (reuse CODE_CLOSE token)
   "%>"                             { yybegin(YYINITIAL); return CODE_CLOSE; }
 
-  // Module content — everything until %>
-  [^%]+ | "%" / [^>]              { return MODULE_CONTENT; }
+  // Module content — non-% runs.
+  // Split from the lookahead alternative (same JFlex combined-DFA fix as CODE_BLOCK).
+  [^%]+                            { return MODULE_CONTENT; }
+
+  // % followed by something other than >
+  "%" / [^>]                       { return MODULE_CONTENT; }
 
   // Lone % at end of input
   "%"                              { return MODULE_CONTENT; }
@@ -172,10 +181,14 @@ WhiteSpace     = [ \t]+
   // End of doc comment
   "</%doc>"                        { yybegin(YYINITIAL); return DOC_CLOSE; }
 
-  // Doc comment content — everything until </%doc>
-  [^<]+ | "<" / [^/]              { return DOC_CONTENT; }
+  // Doc comment content — non-< runs.
+  // Split from the lookahead alternative (same JFlex combined-DFA fix as CODE_BLOCK).
+  [^<]+                            { return DOC_CONTENT; }
 
-  // Partial close </ that isn't <%
+  // < followed by something other than /
+  "<" / [^/]                       { return DOC_CONTENT; }
+
+  // Partial close </ that isn't </%
   "</" / [^%]                     { return DOC_CONTENT; }
 
   // Lone < at end
