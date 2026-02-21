@@ -37,8 +37,8 @@ All requirements derived from the v0.1.0 code review (`.docs/code-review.md`, re
 
 ### Annotator
 
-- [ ] **ANNOT-01**: `MakoAnnotator` and `MakoCompletionContributor` language guard uses `element.containingFile.language != MakoLanguage.INSTANCE` identity comparison instead of `language.id != "Mako Template"` string literal
-- [ ] **ANNOT-02**: A parser fixture test covers an unknown directive (e.g., `<%bogus>`) to guard against future lexer changes silently breaking `checkForInvalidDirective` detection
+- [x] **ANNOT-01**: `MakoAnnotator` and `MakoCompletionContributor` language guard uses `element.containingFile.language != MakoLanguage.INSTANCE` identity comparison instead of `language.id != "Mako Template"` string literal
+- [x] **ANNOT-02**: A parser fixture test covers an unknown directive (e.g., `<%bogus>`) to guard against future lexer changes silently breaking `checkForInvalidDirective` detection
 
 ### Cleanup
 
@@ -76,8 +76,8 @@ All requirements derived from the v0.1.0 code review (`.docs/code-review.md`, re
 | VIEW-06 | Phase 13 | Complete |
 | COMP-01 | Phase 14 | Complete |
 | COMP-02 | Phase 14 | Complete |
-| ANNOT-01 | Phase 15 | Pending |
-| ANNOT-02 | Phase 15 | Pending |
+| ANNOT-01 | Phase 15 | Complete |
+| ANNOT-02 | Phase 15 | Complete |
 | CLEAN-01 | Phase 16 | Pending |
 | CLEAN-02 | Phase 16 | Pending |
 | CLEAN-03 | Phase 16 | Pending |
