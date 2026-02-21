@@ -50,7 +50,7 @@ Full details: `.planning/milestones/v0.1.0-ROADMAP.md`
 **Plans**: 1 plan
 
 Plans:
-- [ ] 10-01-PLAN.md — TDD: Fix getName attribute pairing and setName throws in PSI mixins
+- [x] 10-01-PLAN.md — TDD: Fix getName attribute pairing and setName throws in PSI mixins
 
 ### Phase 11: Python Injection Fixes
 **Goal**: Injection host mixins fail loudly on unsupported round-trip edits, and injection ranges exclude filter names
@@ -63,7 +63,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 11-01-PLAN.md — TDD: Make updateText() throw UnsupportedOperationException in injection host mixins
+- [x] 11-01-PLAN.md — TDD: Make updateText() throw UnsupportedOperationException in injection host mixins
 - [ ] 11-02-PLAN.md — Fix MakoPythonInjector injection range to exclude filter names
 
 ### Phase 12: Code Folding and Structure View
@@ -134,8 +134,8 @@ Plans:
 | 7. Completion | v0.1.0 | 2/2 | Complete | 2026-02-21 |
 | 8. Error Annotations and Release Readiness | v0.1.0 | 3/3 | Complete | 2026-02-21 |
 | 9. Marketplace Branding | v0.1.0 | 3/3 | Complete | 2026-02-21 |
-| 10. PSI Correctness | 1/1 | Complete    | 2026-02-21 | - |
-| 11. Python Injection Fixes | v0.2.0 | 0/2 | Not started | - |
+| 10. PSI Correctness | v0.2.0 | 1/1 | Complete | 2026-02-21 |
+| 11. Python Injection Fixes | v0.2.0 | 1/2 | In progress | - |
 | 12. Code Folding and Structure View | v0.2.0 | 0/TBD | Not started | - |
 | 13. Editor Behavior Fixes | v0.2.0 | 0/TBD | Not started | - |
 | 14. Completion Fixes | v0.2.0 | 0/TBD | Not started | - |

@@ -18,7 +18,7 @@ All requirements derived from the v0.1.0 code review (`.docs/code-review.md`, re
 
 ### Python Injection
 
-- [ ] **INJECT-01**: `updateText()` in `MakoExpressionMixin`, `MakoCodeBlockMixin`, and `MakoModuleBlockMixin` throws `UnsupportedOperationException` instead of silently returning `this`
+- [x] **INJECT-01**: `updateText()` in `MakoExpressionMixin`, `MakoCodeBlockMixin`, and `MakoModuleBlockMixin` throws `UnsupportedOperationException` instead of silently returning `this`
 - [ ] **INJECT-02**: Python injection range in `MakoPythonInjector` stops at the first `FILTER_SEP` token, so filter names (e.g., `h`, `trim` in `${x | h, trim}`) are excluded from the injected Python fragment
 
 ### Editor Views
@@ -66,7 +66,7 @@ All requirements derived from the v0.1.0 code review (`.docs/code-review.md`, re
 | PSI-01 | Phase 10 | Complete |
 | PSI-02 | Phase 10 | Complete |
 | FOLD-01 | Phase 12 | Pending |
-| INJECT-01 | Phase 11 | Pending |
+| INJECT-01 | Phase 11 | Complete |
 | INJECT-02 | Phase 11 | Pending |
 | VIEW-01 | Phase 13 | Pending |
 | VIEW-02 | Phase 12 | Pending |

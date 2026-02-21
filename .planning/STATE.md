@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-21 after v0.2.0 milestone start)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** v0.2.0 — Phase 10: PSI Correctness
+**Current focus:** v0.2.0 — Phase 11: Python Injection Fixes
 
 ## Current Position
 
-Phase: 10 of 16 (PSI Correctness)
-Plan: 1 of 1 in current phase (COMPLETE)
-Status: Phase 10 complete
-Last activity: 2026-02-21 — Phase 10 Plan 01 complete (PSI mixin getName/setName fixes)
+Phase: 11 of 16 (Python Injection Fixes)
+Plan: 1 of N in current phase (COMPLETE)
+Status: Phase 11 Plan 01 complete
+Last activity: 2026-02-21 — Phase 11 Plan 01 complete (INJECT-01: updateText() throws UnsupportedOperationException)
 
-Progress: [█░░░░░░░░░] 14% (v0.2.0 — Phase 10 complete, 1/7 phases done)
+Progress: [██░░░░░░░░] 28% (v0.2.0 — Phase 10+11p01 complete, 1+ phases done)
 
 ## Performance Metrics
 
@@ -37,6 +37,7 @@ Progress: [█░░░░░░░░░] 14% (v0.2.0 — Phase 10 complete, 1/
 | 08-error-annotations | 3 | 76 | 25.3 |
 | 09-marketplace-branding | 3 | 9 | 3 |
 | Phase 10-psi-correctness P01 | 3 | 2 tasks | 3 files |
+| Phase 11-python-injection-fixes P01 | 2 | 5 min | 4 files |
 
 ## Accumulated Context
 
@@ -44,6 +45,7 @@ Progress: [█░░░░░░░░░] 14% (v0.2.0 — Phase 10 complete, 1/
 
 - [10-01] Skipped MakoPsiUtil.kt refactor: 15-line duplication across 2 files is acceptable without extraction
 - [10-01] setName() throws UnsupportedOperationException to give callers clear failure signal vs misleading no-op
+- [11-01] updateText() throws UnsupportedOperationException to give callers clear failure signal, matching setName() from Phase 10
 
 All key decisions logged in PROJECT.md Key Decisions table.
 
@@ -59,7 +61,7 @@ All key decisions logged in PROJECT.md Key Decisions table.
 
 ### Known Tech Debt (being addressed in v0.2.0)
 
-- `updateText()` no-op on injection host mixins — INJECT-01 (Phase 11)
+- ~~`updateText()` no-op on injection host mixins — INJECT-01 (Phase 11)~~ FIXED
 - ~~`getName()` wrong attribute pairing — PSI-01 (Phase 10)~~ FIXED
 - ~~`setName()` silent no-op — PSI-02 (Phase 10)~~ FIXED
 - `FILTER_NAME` token dead constant — CLEAN-01 (Phase 16)
@@ -71,5 +73,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 10-01-PLAN.md — Phase 10 PSI Correctness complete
-Resume with: `/gsd:plan-phase 11`
+Stopped at: Completed 11-01-PLAN.md — INJECT-01 updateText() throws UnsupportedOperationException in all three injection host mixins
+Resume with: `/gsd:execute-phase 11`
