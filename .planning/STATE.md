@@ -2,18 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-21 after v0.1.0 milestone)
+See: .planning/PROJECT.md (updated 2026-02-21 after v0.2.0 milestone start)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Planning next milestone — run `/gsd:new-milestone` to define v0.2.0
+**Current focus:** v0.2.0 — Bug Fixing & Cleanup
 
 ## Current Position
 
-Phase: v0.1.0 COMPLETE — all 9 phases shipped
-Status: Milestone archived. Plugin is Marketplace-ready as `com.schtilig.mako` v0.1.0.
-Last activity: 2026-02-21 — v0.1.0 milestone archived; git tag v0.1.0 created
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-21 — Milestone v0.2.0 started
 
-Progress: [██████████] 100% (v0.1.0 complete)
+Progress: [░░░░░░░░░░] 0% (v0.2.0 in progress)
 
 ## Performance Metrics
 
@@ -62,5 +63,5 @@ All key decisions logged in PROJECT.md Key Decisions table.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: v0.1.0 milestone archived — all phases complete, git tag created
-Resume with: `/gsd:new-milestone` to plan v0.2.0
+Stopped at: v0.2.0 milestone started — requirements being defined
+Resume with: `/gsd:plan-phase [N]` after roadmap is created

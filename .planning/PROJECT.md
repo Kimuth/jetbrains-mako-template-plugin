@@ -29,9 +29,39 @@ Mako template files get the same rich editing experience as native Python and HT
 - ✓ Error annotations for unclosed tags and invalid directive names — v0.1.0 (COMP-03)
 - ✓ Plugin Verifier passing for PC-252/PY-253/PY-261; Marketplace-ready as `com.schtilig.mako` v0.1.0 — v0.1.0
 
+## Current Milestone: v0.2.0 Bug Fixing & Cleanup
+
+**Goal:** Fix all known bugs identified in the v0.1.0 code review and eliminate dead code/housekeeping gaps.
+
+**Target fixes:**
+- PSI correctness: `getName()` wrong attribute, `setName()` silent no-op
+- Code folding: nested doc/code/module blocks inside def/block skipped
+- Python injection: `updateText()` silent no-op, filter content injected as Python
+- Editor views: code content STRING color, structure view order/icons, MODULE_OPEN brace pair, DUMMY_BLOCK fragile check, braceDepth overflow silent
+- Completion: `<%doc` insert offset math, full-file text allocation per keystroke
+- Annotator: language ID string literal guards, missing regression test for directive detection
+- Cleanup: FILTER_NAME dead token, unused token sets, IncompleteCodeBlock missing fixture
+
 ### Active
 
-*(Next milestone requirements — to be defined via `/gsd:new-milestone`)*
+- [ ] PSI-01: `getName()` finds `name=` attribute by pairing TAG_ATTR_NAME/TAG_ATTR_VALUE, not first value
+- [ ] PSI-02: `setName()` throws `UnsupportedOperationException` instead of silent no-op
+- [ ] FOLD-01: Doc/code/module block folds use recursive descent inside def/block tags
+- [ ] INJECT-01: `updateText()` in all three injection host mixins throws `UnsupportedOperationException`
+- [ ] INJECT-02: Python injection range stops at first `FILTER_SEP` token
+- [ ] VIEW-01: `MAKO_CODE_CONTENT` default color changed from `STRING` to `IDENTIFIER`
+- [ ] VIEW-02: Structure view interleaves defs and blocks in document order
+- [ ] VIEW-03: `MODULE_OPEN` added to `PairedBraceMatcher`
+- [ ] VIEW-04: Structure view def/block nodes use function icon not file icon
+- [ ] VIEW-05: `DUMMY_BLOCK` detection uses language identity not class name string
+- [ ] VIEW-06: `braceDepth` clamping logs a warning before discarding overflow
+- [ ] COMP-01: `<%doc` insert handler replacement start accounts for partial text already typed
+- [ ] COMP-02: Completion uses `document.charsSequence` view instead of full text copy + substring
+- [ ] ANNOT-01: `MakoAnnotator` and `MakoCompletionContributor` use `MakoLanguage.INSTANCE` for language guard
+- [ ] ANNOT-02: Regression test covering unknown directive detection (e.g., `<%bogus>`)
+- [ ] CLEAN-01: `FILTER_NAME` removed from `MakoTokenTypes`; unreachable branch removed from `MakoSyntaxHighlighter`
+- [ ] CLEAN-02: Unused `TEMPLATE_CONTENT` and `TAG_OPENS` removed from `MakoTokenSets`
+- [ ] CLEAN-03: `IncompleteCodeBlock.mako` gets verified `.txt` companion committed (or fixture deleted)
 
 ### Out of Scope
 
@@ -96,4 +126,4 @@ Mako template files get the same rich editing experience as native Python and HT
 | addFileToProject + configureFromExistingVirtualFile for completion tests | configureByText(FileType) creates in-memory file before MakoFileType registered; physical temp file ensures correct file type after registration | ✓ Good — completion tests reliably detect Mako file type |
 
 ---
-*Last updated: 2026-02-21 after v0.1.0 milestone*
+*Last updated: 2026-02-21 after v0.2.0 milestone start*
