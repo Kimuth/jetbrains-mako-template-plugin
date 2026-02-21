@@ -74,7 +74,6 @@ All key decisions logged in PROJECT.md Key Decisions table.
 ### Pending Todos
 
 - [highlighting] Reference TextMate/VS Code Mako bundles for syntax decisions — `.planning/todos/pending/2026-02-20-reference-textmate-vscode-mako-bundles.md`
-- [completion] Fix insert handler offset bug in all non-doc tag completions — `.planning/todos/pending/2026-02-21-fix-insert-handler-offset-bug-in-all-non-doc-tag-completions.md`
 
 ### Known Tech Debt (being addressed in v0.2.0)
 
