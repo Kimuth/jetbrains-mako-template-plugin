@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.*;
 
-public class MakoCodeBlockImpl extends ASTWrapperPsiElement implements MakoCodeBlock {
+public class MakoCodeBlockImpl extends MakoCodeBlockMixin implements MakoCodeBlock {
 
   public MakoCodeBlockImpl(@NotNull ASTNode node) {
     super(node);

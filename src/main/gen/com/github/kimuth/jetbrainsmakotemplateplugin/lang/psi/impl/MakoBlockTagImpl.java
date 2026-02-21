@@ -12,7 +12,7 @@ import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.*;
 
 public class MakoBlockTagImpl extends MakoBlockTagMixin implements MakoBlockTag {
 
-  public MakoBlockTagImpl(ASTNode node) {
+  public MakoBlockTagImpl(@NotNull ASTNode node) {
     super(node);
   }
 

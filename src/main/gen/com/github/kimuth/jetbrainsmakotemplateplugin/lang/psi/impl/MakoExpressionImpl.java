@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.*;
 
-public class MakoExpressionImpl extends ASTWrapperPsiElement implements MakoExpression {
+public class MakoExpressionImpl extends MakoExpressionMixin implements MakoExpression {
 
   public MakoExpressionImpl(@NotNull ASTNode node) {
     super(node);

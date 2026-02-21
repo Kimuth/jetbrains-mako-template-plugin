@@ -12,7 +12,7 @@ import com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.*;
 
 public class MakoDefTagImpl extends MakoDefTagMixin implements MakoDefTag {
 
-  public MakoDefTagImpl(ASTNode node) {
+  public MakoDefTagImpl(@NotNull ASTNode node) {
     super(node);
   }
 

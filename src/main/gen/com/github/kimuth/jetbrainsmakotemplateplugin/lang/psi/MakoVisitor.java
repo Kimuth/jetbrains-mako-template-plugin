@@ -5,6 +5,7 @@ import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.PsiLanguageInjectionHost;
 
 public class MakoVisitor extends PsiElementVisitor {
 
@@ -13,7 +14,7 @@ public class MakoVisitor extends PsiElementVisitor {
   }
 
   public void visitCodeBlock(@NotNull MakoCodeBlock o) {
-    visitPsiElement(o);
+    visitPsiLanguageInjectionHost(o);
   }
 
   public void visitControlLineStmt(@NotNull MakoControlLineStmt o) {
@@ -29,7 +30,7 @@ public class MakoVisitor extends PsiElementVisitor {
   }
 
   public void visitExpression(@NotNull MakoExpression o) {
-    visitPsiElement(o);
+    visitPsiLanguageInjectionHost(o);
   }
 
   public void visitIncludeTag(@NotNull MakoIncludeTag o) {
@@ -45,7 +46,7 @@ public class MakoVisitor extends PsiElementVisitor {
   }
 
   public void visitModuleBlock(@NotNull MakoModuleBlock o) {
-    visitPsiElement(o);
+    visitPsiLanguageInjectionHost(o);
   }
 
   public void visitNamespaceTag(@NotNull MakoNamespaceTag o) {
@@ -58,6 +59,10 @@ public class MakoVisitor extends PsiElementVisitor {
 
   public void visitTemplateTextContent(@NotNull MakoTemplateTextContent o) {
     visitPsiElement(o);
+  }
+
+  public void visitPsiLanguageInjectionHost(@NotNull PsiLanguageInjectionHost o) {
+    visitElement(o);
   }
 
   public void visitPsiNamedElement(@NotNull PsiNamedElement o) {
