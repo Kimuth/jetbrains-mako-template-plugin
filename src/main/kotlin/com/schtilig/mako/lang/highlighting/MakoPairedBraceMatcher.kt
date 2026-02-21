@@ -14,7 +14,8 @@ class MakoPairedBraceMatcher : PairedBraceMatcher {
         BracePair(MakoTokenTypes.TAG_OPEN_BLOCK,  MakoTokenTypes.END_TAG,   false),
         BracePair(MakoTokenTypes.DOC_OPEN,        MakoTokenTypes.DOC_CLOSE, false),
         BracePair(MakoTokenTypes.EXPR_START,      MakoTokenTypes.EXPR_END,  false),
-        BracePair(MakoTokenTypes.CODE_OPEN,       MakoTokenTypes.CODE_CLOSE, false)
+        BracePair(MakoTokenTypes.CODE_OPEN,       MakoTokenTypes.CODE_CLOSE, false),
+        BracePair(MakoTokenTypes.MODULE_OPEN,     MakoTokenTypes.CODE_CLOSE, false)
     )
 
     override fun getPairs(): Array<BracePair> = PAIRS
