@@ -1,8 +1,15 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
-# Mako Template Support Changelog
+# Mako Changelog
 
 ## [Unreleased]
+
+## [0.1.0]
+### Changed
+- Renamed plugin to **Mako** (was: Mako Template Support) following JetBrains Marketplace naming guidelines
+- Plugin ID changed to `com.schtilig.mako` (was: `com.github.kimuth.jetbrainsmakotemplateplugin`)
+- Vendor updated to **Schtilig**
+- Source packages renamed to `com.schtilig.mako`
 
 ## [0.0.1]
 ### Added

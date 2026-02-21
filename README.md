@@ -1,4 +1,4 @@
-# jetbrains-mako-template-plugin
+# Mako
 
 ![Build](https://github.com/Kimuth/jetbrains-mako-template-plugin/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
@@ -18,12 +18,12 @@
 - [ ] Configure the [CODECOV_TOKEN](https://docs.codecov.com/docs/quick-start) secret for automated test coverage reports on PRs
 
 <!-- Plugin description -->
-**Mako Template Support** provides first-class language support for [Mako](https://www.makotemplates.org/) templates in PyCharm and other JetBrains IDEs.
+**Mako** adds language support for [Mako](https://www.makotemplates.org/) templates in PyCharm and other JetBrains IDEs.
 
 ### Features
 
-- **Syntax highlighting** — distinct colors for Mako directives (`<%def>`, `<%block>`, `<%inherit>`, etc.), expressions (`${...}`), control lines (`% for`, `% if`), and comments (`##`, `<%doc>`)
-- **Code folding** — collapse `<%def>`, `<%block>`, and control flow blocks; `<%doc>` and `<%!>` fold by default on file open
+- **Syntax highlighting** — distinct colors for `<%def>`, `<%block>`, `<%inherit>`, `${...}` expressions, control lines (`% for`, `% if`), and comments (`##`, `<%doc>`)
+- **Code folding** — collapse `<%def>`, `<%block>`, and control flow blocks; `<%doc>` and `<%!>` sections fold by default on file open
 - **Structure view** — navigate all `<%def>` and `<%block>` declarations in the Structure panel (Ctrl+F12)
 - **Brace matching** — `${` and `}` are highlighted as matched pairs
 - **Comment toggling** — `##` line comments via Ctrl+/ and `<%doc>` block comments via Ctrl+Shift+/
@@ -31,16 +31,14 @@
 - **Tag completion** — autocomplete for Mako directive names after `<%` and attribute names inside open tags
 - **Error annotations** — red squiggles for unclosed `<%def>` and `<%block>` tags
 
-### Requirements
-
-- PyCharm Community or Professional 2025.2+
+Requires PyCharm Community or Professional 2025.2+.
 <!-- Plugin description end -->
 
 ## Installation
 
 - Using the IDE built-in plugin system:
 
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "jetbrains-mako-template-plugin"</kbd> >
+  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "Mako"</kbd> >
   <kbd>Install</kbd>
 
 - Using JetBrains Marketplace:
