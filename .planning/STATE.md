@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-21 after v0.2.0 milestone start)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** v0.2.0 — Phase 16: Dead Code Cleanup (COMPLETE)
+**Current focus:** Phase 17: Clean Up Orphaned Test Fixtures (COMPLETE)
 
 ## Current Position
 
-Phase: 16 of 16 (Dead Code Cleanup)
+Phase: 17 of 17 (Clean Up Orphaned Test Fixtures)
 Plan: 1 of 1 in current phase (COMPLETE)
-Status: Phase 16 Plan 01 complete — v0.2.0 ALL PHASES COMPLETE
-Last activity: 2026-02-22 — Phase 16 Plan 01 complete (CLEAN-01: FILTER_NAME removed, CLEAN-02/03: unused token sets and orphaned fixture resolved)
+Status: Phase 17 Plan 01 complete — 5 orphaned test fixtures deleted, testData/ clean
+Last activity: 2026-02-22 — Phase 17 Plan 01 complete (deleted rename/ scaffold, 3 annotator fixtures, 1 folding fixture; ./gradlew check passes)
 
-Progress: [██████████] 100% (v0.2.0 — All phases 10–16 complete)
+Progress: [██████████] 100% (Phase 17 complete — all orphaned fixtures removed)
 
 ## Performance Metrics
 
@@ -45,6 +45,7 @@ Progress: [██████████] 100% (v0.2.0 — All phases 10–16 c
 | Phase 14-completion-fixes P01 | 2 | 2 tasks | 1 files |
 | Phase 15-annotator-fixes P01 | 2 | 2 tasks | 5 files |
 | Phase 16-dead-code-cleanup P01 | 3 | 15 min | 4 files |
+| Phase 17-clean-up-orphaned-test-fixtures P01 | 2 | 5 min | 5 files deleted |
 
 ## Accumulated Context
 
@@ -70,12 +71,16 @@ All key decisions logged in PROJECT.md Key Decisions table.
 - [Phase 15-01]: UnknownDirective.txt fixture confirms annotator operates at semantic layer: three TEMPLATE_TEXT tokens for <%bogus>, not a typed tag node
 - [Phase 16-01]: IncompleteCodeBlock.mako deleted rather than completing — file was never committed to git and MakoParsingTest had no corresponding test method; fixture was completely unreachable
 - [Phase 16-01]: FILTER_SEP retained in all files — lexer emits this token and Python injector (Phase 11-02) uses it to determine injection boundaries
+- [Phase 17-01]: Retain annotator/WellFormedDefTag.mako — only fixture still loaded from disk; testWellFormedDefTagNoError uses configureByFile + checkHighlighting for negative assertion
+- [Phase 17-01]: Delete three annotator fixtures (InvalidDirective, UnclosedBlockTag, UnclosedDefTag) — all tests migrated to configureMakoFile() inline string content
+- [Phase 17-01]: Delete folding/FoldingTestData.mako — MakoFoldingTest uses SAMPLE_MAKO inline string; configureByFile never called
 
 ### Roadmap Evolution
 
 - v0.1.0 complete: 9 phases, 23 plans, all requirements shipped
 - v0.2.0 roadmap created: 7 phases (10–16), 18 requirements, all mapped
 - v0.2.0 COMPLETE: all 7 phases (10–16) executed, all requirements satisfied
+- Phase 17 added: Clean up orphaned test fixtures
 
 ### Pending Todos
 
@@ -95,5 +100,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 16-01-PLAN.md — CLEAN-01: FILTER_NAME removed from MakoTokenTypes/MakoSyntaxHighlighter/MakoTypes, CLEAN-02/03: TEMPLATE_CONTENT and TAG_OPENS removed from MakoTokenSets, orphaned IncompleteCodeBlock.mako deleted
-Resume with: v0.2.0 complete — plan next milestone or prepare marketplace release
+Stopped at: Completed 17-01-PLAN.md — 5 orphaned test fixtures deleted (rename/ scaffold + 3 annotator + 1 folding); testData/ contains exactly 15 files all actively loaded by tests
+Resume with: Phase 17 complete — testData/ is clean; all phases complete

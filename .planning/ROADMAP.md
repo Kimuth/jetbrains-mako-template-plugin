@@ -3,7 +3,8 @@
 ## Milestones
 
 - ✅ **v0.1.0 Initial Release** — Phases 1–9 (shipped 2026-02-21)
-- 🚧 **v0.2.0 Bug Fixing & Cleanup** — Phases 10–16 (in progress)
+- ✅ **v0.2.0 Bug Fixing & Cleanup** — Phases 10–16 (shipped 2026-02-22)
+- ✅ **Phase 17: Cleanup** — Orphaned test fixtures removed (shipped 2026-02-22)
 
 ## Phases
 
@@ -157,6 +158,7 @@ Plans:
 | 14. Completion Fixes | 1/1 | Complete    | 2026-02-21 | - |
 | 15. Annotator Fixes | 1/1 | Complete    | 2026-02-21 | - |
 | 16. Dead Code Cleanup | 1/1 | Complete    | 2026-02-21 | - |
+| 17. Clean Up Orphaned Test Fixtures | v0.2.0+ | 1/1 | Complete | 2026-02-22 |
 
 ### Phase 17: Clean up orphaned test fixtures
 
@@ -165,4 +167,4 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 17-01-PLAN.md — Delete rename/ scaffold, orphaned annotator fixtures, and unused FoldingTestData.mako
+- [x] 17-01-PLAN.md — Delete rename/ scaffold, orphaned annotator fixtures, and unused FoldingTestData.mako
