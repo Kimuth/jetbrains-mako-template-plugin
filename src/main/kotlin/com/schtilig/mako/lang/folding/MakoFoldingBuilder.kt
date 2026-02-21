@@ -90,9 +90,23 @@ class MakoFoldingBuilder : FoldingBuilderEx(), DumbAware {
         }
     }
 
+    /**
+     * Walk all ASTNodes depth-first. The [visitor] returns true to recurse into children,
+     * false to skip children of the visited node (used when the composite is already folded).
+     */
+    private fun walkAllNodes(node: ASTNode?, visitor: (ASTNode) -> Boolean) {
+        var current = node
+        while (current != null) {
+            val recurse = visitor(current)
+            if (recurse) {
+                walkAllNodes(current.firstChildNode, visitor)
+            }
+            current = current.treeNext
+        }
+    }
+
     private fun buildDocCommentFolds(root: PsiElement, descriptors: MutableList<FoldingDescriptor>) {
-        var node = root.node.firstChildNode
-        while (node != null) {
+        walkAllNodes(root.node.firstChildNode) { node ->
             if (node.elementType == MakoTokenTypes.DOC_OPEN) {
                 var sibling = node.treeNext
                 while (sibling != null && sibling.elementType != MakoTokenTypes.DOC_CLOSE) {
@@ -107,8 +121,10 @@ class MakoFoldingBuilder : FoldingBuilderEx(), DumbAware {
                         )
                     )
                 }
+                false // DOC_OPEN is a leaf; no children to recurse into
+            } else {
+                true
             }
-            node = node.treeNext
         }
     }
 
@@ -118,34 +134,38 @@ class MakoFoldingBuilder : FoldingBuilderEx(), DumbAware {
      * For raw tokens, scan forward siblings for CODE_CLOSE.
      */
     private fun buildModuleBlockFolds(root: PsiElement, descriptors: MutableList<FoldingDescriptor>) {
-        var node = root.node.firstChildNode
-        while (node != null) {
-            if (node.elementType == MakoTypes.MODULE_BLOCK) {
-                val endOffset = findClosingTokenEnd(node, MakoTokenTypes.CODE_CLOSE)
-                if (endOffset > node.startOffset) {
-                    descriptors.add(
-                        FoldingDescriptor(
-                            node, TextRange(node.startOffset, endOffset), null,
-                            Collections.emptySet(), false, "<%!...%>", true
+        walkAllNodes(root.node.firstChildNode) { node ->
+            when {
+                node.elementType == MakoTypes.MODULE_BLOCK -> {
+                    val endOffset = findClosingTokenEnd(node, MakoTokenTypes.CODE_CLOSE)
+                    if (endOffset > node.startOffset) {
+                        descriptors.add(
+                            FoldingDescriptor(
+                                node, TextRange(node.startOffset, endOffset), null,
+                                Collections.emptySet(), false, "<%!...%>", true
+                            )
                         )
-                    )
+                    }
+                    false // already folded the composite; skip children to avoid double-fold
                 }
-            } else if (node.elementType == MakoTokenTypes.MODULE_OPEN) {
-                var sibling = node.treeNext
-                while (sibling != null && sibling.elementType != MakoTokenTypes.CODE_CLOSE) {
-                    sibling = sibling.treeNext
-                }
-                if (sibling != null) {
-                    val range = TextRange(node.startOffset, sibling.startOffset + sibling.textLength)
-                    descriptors.add(
-                        FoldingDescriptor(
-                            node, range, null, Collections.emptySet(),
-                            false, "<%!...%>", true
+                node.elementType == MakoTokenTypes.MODULE_OPEN -> {
+                    var sibling = node.treeNext
+                    while (sibling != null && sibling.elementType != MakoTokenTypes.CODE_CLOSE) {
+                        sibling = sibling.treeNext
+                    }
+                    if (sibling != null) {
+                        val range = TextRange(node.startOffset, sibling.startOffset + sibling.textLength)
+                        descriptors.add(
+                            FoldingDescriptor(
+                                node, range, null, Collections.emptySet(),
+                                false, "<%!...%>", true
+                            )
                         )
-                    )
+                    }
+                    false // leaf token; no children
                 }
+                else -> true
             }
-            node = node.treeNext
         }
     }
 
@@ -155,24 +175,28 @@ class MakoFoldingBuilder : FoldingBuilderEx(), DumbAware {
      * For raw tokens, scan forward siblings for CODE_CLOSE.
      */
     private fun buildCodeBlockFolds(root: PsiElement, descriptors: MutableList<FoldingDescriptor>) {
-        var node = root.node.firstChildNode
-        while (node != null) {
-            if (node.elementType == MakoTypes.CODE_BLOCK) {
-                val endOffset = findClosingTokenEnd(node, MakoTokenTypes.CODE_CLOSE)
-                if (endOffset > node.startOffset) {
-                    descriptors.add(FoldingDescriptor(node, TextRange(node.startOffset, endOffset)))
+        walkAllNodes(root.node.firstChildNode) { node ->
+            when {
+                node.elementType == MakoTypes.CODE_BLOCK -> {
+                    val endOffset = findClosingTokenEnd(node, MakoTokenTypes.CODE_CLOSE)
+                    if (endOffset > node.startOffset) {
+                        descriptors.add(FoldingDescriptor(node, TextRange(node.startOffset, endOffset)))
+                    }
+                    false // already folded the composite; skip children to avoid double-fold
                 }
-            } else if (node.elementType == MakoTokenTypes.CODE_OPEN) {
-                var sibling = node.treeNext
-                while (sibling != null && sibling.elementType != MakoTokenTypes.CODE_CLOSE) {
-                    sibling = sibling.treeNext
+                node.elementType == MakoTokenTypes.CODE_OPEN -> {
+                    var sibling = node.treeNext
+                    while (sibling != null && sibling.elementType != MakoTokenTypes.CODE_CLOSE) {
+                        sibling = sibling.treeNext
+                    }
+                    if (sibling != null) {
+                        val range = TextRange(node.startOffset, sibling.startOffset + sibling.textLength)
+                        descriptors.add(FoldingDescriptor(node, range))
+                    }
+                    false // leaf token; no children
                 }
-                if (sibling != null) {
-                    val range = TextRange(node.startOffset, sibling.startOffset + sibling.textLength)
-                    descriptors.add(FoldingDescriptor(node, range))
-                }
+                else -> true
             }
-            node = node.treeNext
         }
     }
 
