@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 6 - Python Language Injection — Plan 1 complete, Plan 2 pending
+**Current focus:** Phase 6 - Python Language Injection — COMPLETE (both plans done)
 
 ## Current Position
 
-Phase: 6 of 8 (Python Language Injection) — IN PROGRESS
-Plan: 1 of 2 complete
-Status: Phase 6 Plan 1 complete — PsiLanguageInjectionHost mixin classes for expression/code_block/module_block; Mako.bnf updated; parser regenerated; 57 tests green
-Last activity: 2026-02-21 — Plan 01 complete (three injection host mixins + BNF wiring + IDE parser regen; generated *Impl classes extend mixins; MakoTypes.java token delegates intact)
+Phase: 6 of 8 (Python Language Injection) — COMPLETE
+Plan: 2 of 2 complete
+Status: Phase 6 complete — MakoPythonInjector MultiHostInjector registered; Python injection wired for ${...}, <% %>, <%! %>; 57 tests green
+Last activity: 2026-02-21 — Plan 02 complete (MakoPythonInjector + plugin.xml multiHostInjector registration; ./gradlew check 57 tests green)
 
-Progress: [████████░░] 78%
+Progress: [█████████░] 88%
 
 ## Performance Metrics
 
@@ -51,6 +51,7 @@ Progress: [████████░░] 78%
 | Phase 05-structural-features P02 | 13 | 2 tasks | 5 files |
 | Phase 05-structural-features P03 | 20 | 2 tasks | 11 files |
 | Phase 06-python-language-injection P01 | 30 | 3 tasks | 10 files |
+| Phase 06-python-language-injection P02 | 3 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -110,6 +111,10 @@ Recent decisions affecting current work:
 - [Phase 06-01]: Injection host mixin classes must be abstract (required by GrammarKit); generated *Impl extends mixin so host contract flows through class hierarchy automatically
 - [Phase 06-01]: LiteralTextEscaper.createSimple() is available in 2025.2 SDK — fallback anonymous class implementation not needed
 - [Phase 06-01]: MakoTypes.java token delegate constants survived parser regeneration unchanged — generateTokens=false pattern established in Phase 3 continues to hold
+- [Phase 06-02]: elementsToInjectIn() must use PSI interface classes (MakoExpression::class.java), not generated *Impl classes — platform injection dispatch works on interface types
+- [Phase 06-02]: end > start guard prevents addPlace() calls on empty/malformed host nodes (${} with no content, truncated <%)
+- [Phase 06-02]: Language.findLanguageByID("Python") called per-invocation — cheap lookup, avoids initialization-order issues with language registry population
+- [Phase 06-02]: Filter expressions (${x | h}) inject full content as-is; Python sees x | h as valid bitwise-OR — filter refinement deferred to Phase 7
 
 ### Roadmap Evolution
 
@@ -130,5 +135,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 06-python-language-injection/06-01-PLAN.md (PsiLanguageInjectionHost mixins for expression/code_block/module_block; BNF wired; parser regenerated; 57 tests green)
-Resume file: .planning/phases/06-python-language-injection/06-02-PLAN.md (Phase 6, Plan 2 — MakoPythonInjector)
+Stopped at: Completed 06-python-language-injection/06-02-PLAN.md (MakoPythonInjector MultiHostInjector; plugin.xml registration; 57 tests green; Phase 6 complete)
+Resume file: .planning/phases/07-completion/07-01-PLAN.md (Phase 7, Plan 1 — next phase)
