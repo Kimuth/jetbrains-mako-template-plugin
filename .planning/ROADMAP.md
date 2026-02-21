@@ -108,7 +108,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 - [x] 06-01-PLAN.md — Write PsiLanguageInjectionHost mixins for expression/code_block/module_block, update BNF grammar, regenerate parser
-- [ ] 06-02-PLAN.md — Create MakoPythonInjector and register multiHostInjector in plugin.xml
+- [x] 06-02-PLAN.md — Create MakoPythonInjector and register multiHostInjector in plugin.xml
 
 ### Phase 7: Completion
 **Goal**: Users receive accurate autocomplete suggestions when typing Mako tag names and attributes, reducing typos and reference lookups
@@ -118,7 +118,10 @@ Plans:
   1. Typing `<%` inside a `.mako` file triggers a completion popup listing all Mako directive names (`<%def`, `<%block`, `<%inherit`, `<%include`, `<%namespace`, `<%page`, `<%doc`)
   2. Typing inside the opening tag of a Mako directive (e.g., `<%def `) triggers attribute completions appropriate to that tag (`name=` for `<%def>`, `file=` for `<%inherit>`, `buffered=` for `<%def>`)
   3. Completion suggestions do not appear for plain HTML regions outside Mako constructs (no false positives)
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 07-01-PLAN.md — Create MakoCompletionContributor with tag-name and attribute providers, register in plugin.xml
+- [ ] 07-02-PLAN.md — Write MakoCompletionTest covering COMP-01, COMP-02, and no-false-positives
 
 ### Phase 8: Error Annotations and Release Readiness
 **Goal**: Definitively malformed Mako syntax is flagged with inline error indicators, and the plugin passes Plugin Verifier and is Marketplace-ready
@@ -143,7 +146,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 3. Parser and PSI Tree | 3/3 | Complete    | 2026-02-19 |
 | 4. Syntax Highlighting and Comment Support | 2/2 | Complete   | 2026-02-19 |
 | 5. Structural Features | 3/3 | Complete   | 2026-02-20 |
-| 6. Python Language Injection | 1/2 | In progress | - |
+| 6. Python Language Injection | 2/2 | Complete    | 2026-02-21 |
 | 7. Completion | 0/TBD | Not started | - |
 | 8. Error Annotations and Release Readiness | 0/TBD | Not started | - |
 
