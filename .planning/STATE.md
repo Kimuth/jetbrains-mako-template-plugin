@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 8 - Error Annotations and Release Readiness (All 3 plans complete)
+**Current focus:** Phase 9 - Marketplace Branding (Plan 1 of 3 complete)
 
 ## Current Position
 
-Phase: 8 of 8 (Error Annotations and Release Readiness) — IN PROGRESS
-Plan: 3 of 3 complete
-Status: Phase 8 complete — MakoAnnotator (plan 01), annotator tests (plan 02), README/CHANGELOG/pluginIcon/verifyPlugin (plan 03); all 3 plans complete; COMP-03 satisfied
-Last activity: 2026-02-21 — Plan 03 complete (README description, CHANGELOG 0.0.1, pluginIcon.svg, verifyPlugin Compatible on PC-252/PY-253/PY-261; human checkpoint approved)
+Phase: 9 of 9 (Marketplace Branding — rename plugin to follow JetBrains Marketplace naming conventions) — IN PROGRESS
+Plan: 1 of 3 complete
+Status: Phase 9 Plan 01 complete — build config and grammar files renamed to com.schtilig.mako namespace (gradle.properties, settings.gradle.kts, build.gradle.kts, Mako.bnf, MakoLexer.flex, plugin.xml)
+Last activity: 2026-02-21 — Plan 01 complete (pluginGroup=com.schtilig.mako, pluginName=Mako, pluginVersion=0.1.0; plugin.xml id/name/vendor/implementationClass FQCNs updated)
 
 Progress: [██████████] 100%
 
@@ -57,6 +57,7 @@ Progress: [██████████] 100%
 | Phase 08-error-annotations-and-release-readiness P01 | 1 | 1 tasks | 2 files |
 | Phase 08-error-annotations-and-release-readiness P03 | 65 | 3 tasks | 3 files |
 | Phase 08-error-annotations-and-release-readiness P02 | 10 | 1 tasks | 6 files |
+| Phase 09 P01 | 2 | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -133,6 +134,8 @@ Recent decisions affecting current work:
 - [Phase 08]: verifyPlugin recommended() checks PC-252, PY-253, PY-261 — all Compatible; no binary errors on any build
 - [Phase 08-error-annotations-and-release-readiness]: doHighlighting()+filter over checkHighlighting() for annotator error tests — unclosed tags produce both annotator and PSI parse-error annotations; checkHighlighting sees both, making fixture calibration complex; doHighlighting+filter targets annotator message specifically
 - [Phase 08-error-annotations-and-release-readiness]: Invalid directive detection fixed: regex <%([a-zA-Z]+) searched single token but lexer emits '<','%','name...' as 3 separate TEMPLATE_TEXT tokens; fixed via sibling traversal on '<' node
+- [Phase 09]: pluginGroup=com.schtilig.mako, pluginName=Mako, pluginVersion=0.1.0 — JetBrains Marketplace naming conventions
+- [Phase 09]: language='Mako Template' kept unchanged — it is a platform Language ID registry key, not a Java package FQCN
 
 ### Roadmap Evolution
 
@@ -153,5 +156,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Phase 9 context gathered (plugin name → Mako, ID → com.schtilig.mako, full package rename, version 0.1.0)
-Resume file: .planning/phases/09-marketplace-branding-rename-plugin-to-follow-jetbrains-marketplace-naming-conventions/09-CONTEXT.md
+Stopped at: Completed 09-01-PLAN.md (build config and grammar rename to com.schtilig.mako)
+Resume file: .planning/phases/09-marketplace-branding-rename-plugin-to-follow-jetbrains-marketplace-naming-conventions/09-01-SUMMARY.md
