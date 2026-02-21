@@ -56,6 +56,7 @@ Progress: [██████████] 100%
 | Phase 07-completion P02 | 27 | 1 tasks | 4 files |
 | Phase 08-error-annotations-and-release-readiness P01 | 1 | 1 tasks | 2 files |
 | Phase 08-error-annotations-and-release-readiness P03 | 65 | 3 tasks | 3 files |
+| Phase 08-error-annotations-and-release-readiness P02 | 10 | 1 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -130,6 +131,8 @@ Recent decisions affecting current work:
 - [Phase 08-error-annotations-and-release-readiness]: Annotate openToken.textRange for unclosed tags (firstChild = <%def/<%block keyword) to avoid red underlining multi-line content bodies
 - [Phase 08]: pluginIcon uses teal #2B6B6B rounded square with 'M' — matches file type icon color family for brand consistency
 - [Phase 08]: verifyPlugin recommended() checks PC-252, PY-253, PY-261 — all Compatible; no binary errors on any build
+- [Phase 08-error-annotations-and-release-readiness]: doHighlighting()+filter over checkHighlighting() for annotator error tests — unclosed tags produce both annotator and PSI parse-error annotations; checkHighlighting sees both, making fixture calibration complex; doHighlighting+filter targets annotator message specifically
+- [Phase 08-error-annotations-and-release-readiness]: Invalid directive detection fixed: regex <%([a-zA-Z]+) searched single token but lexer emits '<','%','name...' as 3 separate TEMPLATE_TEXT tokens; fixed via sibling traversal on '<' node
 
 ### Roadmap Evolution
 
