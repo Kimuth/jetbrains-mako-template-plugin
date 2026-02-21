@@ -1,8 +1,8 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.kimuth.jetbrainsmakotemplateplugin</id>
-    <name>Mako Template Support</name>
-    <vendor>kimuth</vendor>
+    <id>com.schtilig.mako</id>
+    <name>Mako</name>
+    <vendor url="https://github.com/Kimuth/jetbrains-mako-template-plugin">Schtilig</vendor>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.python</depends>
@@ -10,41 +10,41 @@
     <extensions defaultExtensionNs="com.intellij">
         <fileType
             name="Mako Template"
-            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.MakoFileType"
+            implementationClass="com.schtilig.mako.MakoFileType"
             fieldName="INSTANCE"
             language="Mako Template"
             extensions="mako;mak"
             patterns="*.html.mako"/>
         <lang.parserDefinition language="Mako Template"
-            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoParserDefinition"/>
+            implementationClass="com.schtilig.mako.lang.MakoParserDefinition"/>
 
         <!-- Phase 4: Syntax Highlighting -->
         <lang.syntaxHighlighterFactory language="Mako Template"
-            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.highlighting.MakoSyntaxHighlighterFactory"/>
+            implementationClass="com.schtilig.mako.lang.highlighting.MakoSyntaxHighlighterFactory"/>
         <colorSettingsPage
-            implementation="com.github.kimuth.jetbrainsmakotemplateplugin.lang.highlighting.MakoColorSettingsPage"/>
+            implementation="com.schtilig.mako.lang.highlighting.MakoColorSettingsPage"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/MakoDefault.xml"/>
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/MakoDarcula.xml"/>
 
         <!-- Phase 4: Tag Pair Matching -->
         <lang.braceMatcher language="Mako Template"
-            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.highlighting.MakoPairedBraceMatcher"/>
+            implementationClass="com.schtilig.mako.lang.highlighting.MakoPairedBraceMatcher"/>
 
         <!-- Phase 4: Comment Toggling -->
         <lang.commenter language="Mako Template"
-            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.editing.MakoCommenter"/>
+            implementationClass="com.schtilig.mako.lang.editing.MakoCommenter"/>
 
         <!-- Phase 5: Code Folding -->
         <lang.foldingBuilder language="Mako Template"
-            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.folding.MakoFoldingBuilder"/>
+            implementationClass="com.schtilig.mako.lang.folding.MakoFoldingBuilder"/>
 
         <!-- Phase 5: Structure View -->
         <lang.psiStructureViewFactory language="Mako Template"
-            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.structure.MakoStructureViewFactory"/>
+            implementationClass="com.schtilig.mako.lang.structure.MakoStructureViewFactory"/>
 
         <!-- Phase 6: Python Language Injection -->
         <multiHostInjector
-            implementation="com.github.kimuth.jetbrainsmakotemplateplugin.lang.injection.MakoPythonInjector"/>
+            implementation="com.schtilig.mako.lang.injection.MakoPythonInjector"/>
 
         <!-- Phase 7: Completion -->
         <!-- language="any" so the contributor fires for all element positions in Mako files,
@@ -54,10 +54,10 @@
              the contributor for elements in template data language positions. -->
         <completion.contributor
             language="any"
-            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.completion.MakoCompletionContributor"/>
+            implementationClass="com.schtilig.mako.lang.completion.MakoCompletionContributor"/>
 
         <!-- Phase 8: Error Annotations -->
         <annotator language="Mako Template"
-                   implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.annotation.MakoAnnotator"/>
+                   implementationClass="com.schtilig.mako.lang.annotation.MakoAnnotator"/>
     </extensions>
 </idea-plugin>
