@@ -18,11 +18,22 @@
 - [ ] Configure the [CODECOV_TOKEN](https://docs.codecov.com/docs/quick-start) secret for automated test coverage reports on PRs
 
 <!-- Plugin description -->
-This Fancy IntelliJ Platform Plugin is going to be your implementation of the brilliant ideas that you have.
+**Mako Template Support** provides first-class language support for [Mako](https://www.makotemplates.org/) templates in PyCharm and other JetBrains IDEs.
 
-This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
+### Features
 
-To keep everything working, do not remove `<!-- ... -->` sections. 
+- **Syntax highlighting** — distinct colors for Mako directives (`<%def>`, `<%block>`, `<%inherit>`, etc.), expressions (`${...}`), control lines (`% for`, `% if`), and comments (`##`, `<%doc>`)
+- **Code folding** — collapse `<%def>`, `<%block>`, and control flow blocks; `<%doc>` and `<%!>` fold by default on file open
+- **Structure view** — navigate all `<%def>` and `<%block>` declarations in the Structure panel (Ctrl+F12)
+- **Brace matching** — `${` and `}` are highlighted as matched pairs
+- **Comment toggling** — `##` line comments via Ctrl+/ and `<%doc>` block comments via Ctrl+Shift+/
+- **Python injection** — Python syntax highlighting and analysis inside `${...}`, `<% %>`, and `<%! %>` regions
+- **Tag completion** — autocomplete for Mako directive names after `<%` and attribute names inside open tags
+- **Error annotations** — red squiggles for unclosed `<%def>` and `<%block>` tags
+
+### Requirements
+
+- PyCharm Community or Professional 2025.2+
 <!-- Plugin description end -->
 
 ## Installation
