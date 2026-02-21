@@ -1,5 +1,6 @@
 package com.schtilig.mako.lang.injection
 
+import com.schtilig.mako.lang.MakoTokenTypes
 import com.schtilig.mako.lang.psi.MakoCodeBlock
 import com.schtilig.mako.lang.psi.MakoExpression
 import com.schtilig.mako.lang.psi.MakoModuleBlock
@@ -41,7 +42,24 @@ class MakoPythonInjector : MultiHostInjector {
                 // Node text: ${<python>}
                 // Exclude ${ (2 chars) at start and } (1 char) at end.
                 val start = 2
-                val end = nodeText.length - 1
+                // Stop injection at the first FILTER_SEP child so filter names (e.g., h, trim in
+                // ${x | h, trim}) are not presented to the Python language service as Python code.
+                val filterSep = context.node.firstChildNode?.let { first ->
+                    var child = first
+                    var found: com.intellij.lang.ASTNode? = null
+                    while (found == null) {
+                        if (child.elementType == MakoTokenTypes.FILTER_SEP) found = child
+                        child = child.treeNext ?: break
+                    }
+                    found
+                }
+                // filterSep?.startOffset is document-absolute; subtract context.textRange.startOffset
+                // to get offset relative to this host node.
+                val end = if (filterSep != null) {
+                    filterSep.startOffset - context.textRange.startOffset
+                } else {
+                    nodeText.length - 1
+                }
                 if (end > start) {
                     registrar.startInjecting(python)
                         .addPlace(null, null, context as PsiLanguageInjectionHost,
