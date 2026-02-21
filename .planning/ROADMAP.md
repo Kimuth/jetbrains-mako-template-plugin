@@ -141,7 +141,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -156,9 +156,11 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 
 ### Phase 9: Marketplace Branding: rename plugin to follow JetBrains Marketplace naming conventions
 
-**Goal:** [To be planned]
+**Goal:** Rename all plugin identity metadata to follow JetBrains Marketplace naming conventions. Plugin display name becomes "Mako", ID becomes "com.schtilig.mako", packages renamed to com.schtilig.mako, version bumped to 0.1.0. No new functionality.
 **Depends on:** Phase 8
-**Plans:** 3/3 plans complete
+**Plans:** 3 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 9 to break down)
+- [ ] 09-01-PLAN.md — Update Gradle config, grammar files, and plugin.xml to com.schtilig.mako identity
+- [ ] 09-02-PLAN.md — Rename source package directories and update all package declarations/imports
+- [ ] 09-03-PLAN.md — Update README.md description and CHANGELOG.md, run ./gradlew clean check, human verify
