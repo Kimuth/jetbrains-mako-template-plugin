@@ -17,9 +17,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Parser and PSI Tree** - GrammarKit-generated parser with distinct typed PSI nodes for every Mako construct (completed 2026-02-19)
 - [x] **Phase 4: Syntax Highlighting and Comment Support** - Distinct colors for all Mako constructs, brace matching, comment toggling, and color scheme settings (completed 2026-02-19)
 - [x] **Phase 5: Structural Features** - Code folding and structure view panel for navigating defs and blocks (completed 2026-02-20)
-- [ ] **Phase 6: Python Language Injection** - Inject Python into expression and code block regions via MultiHostInjector
+- [x] **Phase 6: Python Language Injection** - Inject Python into expression and code block regions via MultiHostInjector
 - [x] **Phase 7: Completion** - Autocomplete for Mako tag names and tag attributes (completed 2026-02-21)
-- [ ] **Phase 8: Error Annotations and Release Readiness** - Red squiggles for malformed Mako syntax and Marketplace-ready build
+- [x] **Phase 8: Error Annotations and Release Readiness** - Red squiggles for malformed Mako syntax and Marketplace-ready build (completed 2026-02-21)
 
 ## Phase Details
 
@@ -134,9 +134,9 @@ Plans:
   4. The plugin installs and operates on a clean PyCharm 2025.2.x installation without exceptions in the event log
 **Plans**: 3 plans
 Plans:
-- [ ] 08-01-PLAN.md — Implement MakoAnnotator for unclosed tags, register in plugin.xml
-- [ ] 08-02-PLAN.md — Write MakoAnnotatorTest covering unclosed def/block and well-formed negative case
-- [ ] 08-03-PLAN.md — Update README/CHANGELOG/pluginIcon.svg for Marketplace, run verifyPlugin
+- [x] 08-01-PLAN.md — Implement MakoAnnotator for unclosed tags, register in plugin.xml
+- [x] 08-02-PLAN.md — Write MakoAnnotatorTest covering unclosed def/block and well-formed negative case
+- [x] 08-03-PLAN.md — Update README/CHANGELOG/pluginIcon.svg for Marketplace, run verifyPlugin
 
 ## Progress
 
@@ -152,7 +152,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 5. Structural Features | 3/3 | Complete   | 2026-02-20 |
 | 6. Python Language Injection | 2/2 | Complete    | 2026-02-21 |
 | 7. Completion | 2/2 | Complete   | 2026-02-21 |
-| 8. Error Annotations and Release Readiness | 1/3 | In Progress|  |
+| 8. Error Annotations and Release Readiness | 3/3 | Complete   | 2026-02-21 |
 
 ### Phase 9: Marketplace Branding: rename plugin to follow JetBrains Marketplace naming conventions
 
