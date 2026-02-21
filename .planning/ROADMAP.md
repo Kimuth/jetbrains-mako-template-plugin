@@ -153,6 +153,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 | 6. Python Language Injection | 2/2 | Complete    | 2026-02-21 |
 | 7. Completion | 2/2 | Complete   | 2026-02-21 |
 | 8. Error Annotations and Release Readiness | 3/3 | Complete   | 2026-02-21 |
+| 9. Marketplace Branding | 3/3 | Complete   | 2026-02-21 |
 
 ### Phase 9: Marketplace Branding: rename plugin to follow JetBrains Marketplace naming conventions
 
@@ -161,6 +162,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 **Plans:** 3/3 plans complete
 
 Plans:
-- [ ] 09-01-PLAN.md — Update Gradle config, grammar files, and plugin.xml to com.schtilig.mako identity
-- [ ] 09-02-PLAN.md — Rename source package directories and update all package declarations/imports
-- [ ] 09-03-PLAN.md — Update README.md description and CHANGELOG.md, run ./gradlew clean check, human verify
+- [x] 09-01-PLAN.md — Update Gradle config, grammar files, and plugin.xml to com.schtilig.mako identity
+- [x] 09-02-PLAN.md — Rename source package directories and update all package declarations/imports
+- [x] 09-03-PLAN.md — Update README.md description and CHANGELOG.md, run ./gradlew clean check, human verify

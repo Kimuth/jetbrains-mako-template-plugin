@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 9 - Marketplace Branding (Plan 2 of 3 complete)
+**Current focus:** Phase 9 - Marketplace Branding (All 3 plans complete — Phase 9 done)
 
 ## Current Position
 
-Phase: 9 of 9 (Marketplace Branding — rename plugin to follow JetBrains Marketplace naming conventions) — IN PROGRESS (checkpoint pending)
-Plan: 3 of 3 auto tasks complete (checkpoint:human-verify pending)
-Status: Phase 9 Plan 03 auto tasks complete — README.md and CHANGELOG.md updated for Marketplace, ./gradlew clean check BUILD SUCCESSFUL (23 tasks, all tests pass), zero old package references in src/
-Last activity: 2026-02-21 — Plan 03 Tasks 1-2 complete; checkpoint awaiting human verification
+Phase: 9 of 9 (Marketplace Branding — rename plugin to follow JetBrains Marketplace naming conventions) — COMPLETE
+Plan: 3 of 3 complete (all plans done, checkpoint approved)
+Status: Phase 9 fully complete — plugin renamed to com.schtilig.mako / "Mako" / 0.1.0, README.md and CHANGELOG.md updated for Marketplace, ./gradlew clean check BUILD SUCCESSFUL, checkpoint approved
+Last activity: 2026-02-21 — Phase 9 Plan 03 checkpoint approved; all 9 phases complete
 
 Progress: [██████████] 100%
 
@@ -162,5 +162,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 09-03-PLAN.md auto tasks (Tasks 1-2) — README.md and CHANGELOG.md updated, ./gradlew clean check BUILD SUCCESSFUL; checkpoint:human-verify pending
-Resume file: .planning/phases/09-marketplace-branding-rename-plugin-to-follow-jetbrains-marketplace-naming-conventions/09-03-SUMMARY.md
+Stopped at: Completed 09-03-PLAN.md — all tasks done, checkpoint approved, Phase 9 complete — all 9 phases done
+Resume file: N/A (all phases complete)
