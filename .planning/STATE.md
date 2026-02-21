@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-21 after v0.2.0 milestone start)
 ## Current Position
 
 Phase: 11 of 16 (Python Injection Fixes)
-Plan: 1 of N in current phase (COMPLETE)
-Status: Phase 11 Plan 01 complete
-Last activity: 2026-02-21 — Phase 11 Plan 01 complete (INJECT-01: updateText() throws UnsupportedOperationException)
+Plan: 2 of N in current phase (COMPLETE)
+Status: Phase 11 Plan 02 complete
+Last activity: 2026-02-21 — Phase 11 Plan 02 complete (INJECT-02: injection range stops at FILTER_SEP for filtered expressions)
 
 Progress: [██░░░░░░░░] 28% (v0.2.0 — Phase 10+11p01 complete, 1+ phases done)
 
@@ -38,6 +38,7 @@ Progress: [██░░░░░░░░] 28% (v0.2.0 — Phase 10+11p01 comple
 | 09-marketplace-branding | 3 | 9 | 3 |
 | Phase 10-psi-correctness P01 | 3 | 2 tasks | 3 files |
 | Phase 11-python-injection-fixes P01 | 2 | 5 min | 4 files |
+| Phase 11-python-injection-fixes P02 | 5 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -48,6 +49,8 @@ Progress: [██░░░░░░░░] 28% (v0.2.0 — Phase 10+11p01 comple
 - [11-01] updateText() throws UnsupportedOperationException to give callers clear failure signal, matching setName() from Phase 10
 
 All key decisions logged in PROJECT.md Key Decisions table.
+- [Phase 11-02]: Injector uses ASTNode child walk with filterSep.startOffset - context.textRange.startOffset to stop MakoExpression injection before FILTER_SEP
+- [Phase 11-02]: Lexer-level tests chosen for injection range validation (INJECT-02) — FILTER_SEP position is fully determined by lexer, no full platform wiring needed
 
 ### Roadmap Evolution
 
@@ -73,5 +76,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 11-01-PLAN.md — INJECT-01 updateText() throws UnsupportedOperationException in all three injection host mixins
+Stopped at: Completed 11-02-PLAN.md — INJECT-02 injection range stops at FILTER_SEP for filtered expressions
 Resume with: `/gsd:execute-phase 11`
