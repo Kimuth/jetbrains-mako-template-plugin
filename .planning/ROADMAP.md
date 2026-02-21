@@ -105,7 +105,10 @@ Plans:
   2. Python code inside `<% ... %>` and `<%! ... %>` blocks is fully highlighted as Python
   3. The injected Python ranges are visible in the Language Injection debug panel, confirming correct offset boundaries
   4. No exceptions related to Python PSI access appear in the IDE event log when editing a `.mako` file
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 06-01-PLAN.md — Write PsiLanguageInjectionHost mixins for expression/code_block/module_block, update BNF grammar, regenerate parser
+- [ ] 06-02-PLAN.md — Create MakoPythonInjector and register multiHostInjector in plugin.xml
 
 ### Phase 7: Completion
 **Goal**: Users receive accurate autocomplete suggestions when typing Mako tag names and attributes, reducing typos and reference lookups
