@@ -13,7 +13,6 @@ class MakoAnnotator : Annotator {
 
     companion object {
         private val VALID_DIRECTIVES = setOf("def", "block", "inherit", "include", "namespace", "page", "doc")
-        private val INVALID_DIRECTIVE_REGEX = Regex("""<%([a-zA-Z]+)""")
     }
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
@@ -43,11 +42,24 @@ class MakoAnnotator : Annotator {
     }
 
     private fun checkForInvalidDirective(element: PsiElement, holder: AnnotationHolder) {
-        // The lexer emits TEMPLATE_TEXT (and thus MakoTemplateTextContent PSI nodes) for unrecognized
-        // directive-like sequences such as <%bogus> because they never match a valid grammar rule.
-        // Scan the element text for <%name patterns and flag any name not in the known directive set.
-        val match = INVALID_DIRECTIVE_REGEX.find(element.text) ?: return
-        val name = match.groupValues[1]
+        // The Mako lexer emits '<', '%', and 'name...' as three separate TEMPLATE_TEXT tokens
+        // for an unrecognized directive sequence such as <%bogus attr="x">. The '<' character
+        // matches the single-char rule [$<%#], '%' matches the same rule, and 'name...' matches
+        // the run rule [^$<%\r\n#]+. No single token ever contains the full "<%name" string.
+        //
+        // Detection strategy: when the current node text is '<', inspect the immediately following
+        // sibling for '%' and then the sibling after that for a leading alphabetic directive name.
+        // Annotate the '<' token range to flag the start of the invalid directive sequence.
+        if (element.text != "<") return
+
+        val percentSibling = element.nextSibling
+        if (percentSibling !is MakoTemplateTextContent || percentSibling.text != "%") return
+
+        val nameSibling = percentSibling.nextSibling
+        if (nameSibling !is MakoTemplateTextContent) return
+
+        val nameMatch = Regex("""^([a-zA-Z]+)""").find(nameSibling.text) ?: return
+        val name = nameMatch.groupValues[1]
         if (name !in VALID_DIRECTIVES) {
             holder.newAnnotation(HighlightSeverity.ERROR, "Unknown Mako directive: <%$name>")
                 .range(element.textRange)
