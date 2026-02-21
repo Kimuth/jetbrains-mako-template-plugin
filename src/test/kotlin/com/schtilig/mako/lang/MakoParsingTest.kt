@@ -91,4 +91,18 @@ class MakoParsingTest : ParsingTestCase("", "mako", MakoParserDefinition()) {
     fun testBlockTagFollowedByText() {
         doTest(true)
     }
+
+    /**
+     * ANNOT-02: An unknown Mako directive (<%bogus>) produces no typed tag node;
+     * the lexer emits '<', '%', and 'bogus attr="x">' as separate TEMPLATE_TEXT tokens.
+     * The PSI tree contains only MakoTemplateTextContentImpl nodes — no special error
+     * node is injected by the parser itself (the annotator detects the invalid directive
+     * at the semantic layer, not the syntactic layer).
+     *
+     * This fixture locks in the current PSI structure so future lexer changes that cause
+     * the three separate TEMPLATE_TEXT tokens to merge (or split differently) are caught.
+     */
+    fun testUnknownDirective() {
+        doTest(true)
+    }
 }

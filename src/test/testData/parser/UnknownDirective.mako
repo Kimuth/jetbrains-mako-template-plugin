@@ -1,0 +1,2 @@
+<%bogus attr="x">
+content
