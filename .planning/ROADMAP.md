@@ -116,7 +116,10 @@ Plans:
   1. `MakoAnnotator` and `MakoCompletionContributor` guard against non-Mako files using `element.containingFile.language != MakoLanguage.INSTANCE` (not a string literal comparison against `"Mako Template"`)
   2. A parser fixture test exists for a `.mako` file containing `<%bogus>`, and the PSI tree produced includes an error node or invalid-directive marker
   3. The regression test is committed so future lexer changes that break `checkForInvalidDirective` are caught automatically
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 15-01-PLAN.md — Fix language guards (identity comparison) and add unknown-directive parser fixture test
 
 ### Phase 16: Dead Code Cleanup
 **Goal**: Dead token constants, unused token sets, and orphaned test fixtures are removed from the codebase
