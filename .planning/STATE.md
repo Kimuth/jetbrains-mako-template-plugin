@@ -127,6 +127,8 @@ Recent decisions affecting current work:
 - [Phase 07-02]: com.intellij.modules.json added to platformBundledPlugins — PythonCore depends on intellij.json.backend module (from JSON plugin); without it PythonCore fails to load, preventing our plugin (which depends on PythonCore) from loading in tests
 - [Phase 08-error-annotations-and-release-readiness]: language='Mako Template' (not 'any') for annotator registration — annotators receive correct PSI elements when scoped to specific language ID
 - [Phase 08-error-annotations-and-release-readiness]: Annotate openToken.textRange for unclosed tags (firstChild = <%def/<%block keyword) to avoid red underlining multi-line content bodies
+- [Phase 08]: pluginIcon uses teal #2B6B6B rounded square with 'M' — matches file type icon color family for brand consistency
+- [Phase 08]: verifyPlugin recommended() checks PC-252, PY-253, PY-261 — all Compatible; no binary errors on any build
 
 ### Roadmap Evolution
 
