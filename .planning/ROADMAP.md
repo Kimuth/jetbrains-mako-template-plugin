@@ -29,7 +29,7 @@ Full details: `.planning/milestones/v0.1.0-ROADMAP.md`
 **Milestone Goal:** Fix all known bugs from the v0.1.0 code review and eliminate dead code/housekeeping gaps so the codebase is correct and clean.
 
 - [x] **Phase 10: PSI Correctness** — Fix getName/setName mixin bugs so named element contract is correct (completed 2026-02-21)
-- [x] **Phase 11: Python Injection Fixes** — Fix updateText no-op and filter-name injection boundary (completed 2026-02-21)
+- [x] **Phase 11: Python Injection Fixes** — Fix updateText no-op and filter-name injection boundary (completed 2026-02-21)
 - [ ] **Phase 12: Code Folding and Structure View** — Fix nested folding and structure view ordering, icon, and DUMMY_BLOCK detection
 - [ ] **Phase 13: Editor Behavior Fixes** — Fix code content color, MODULE_OPEN brace pair, and braceDepth overflow warning
 - [ ] **Phase 14: Completion Fixes** — Fix doc-insert offset math and eliminate full-file text allocation
@@ -76,7 +76,11 @@ Plans:
   3. Structure View lists `<%def>` and `<%block>` entries interleaved in document order, not all defs before all blocks
   4. Def and block entries in Structure View display a function/method icon, not the Mako file icon
   5. `DUMMY_BLOCK` detection in `MakoFoldingBuilder` uses a language identity check (`element.language == Language.ANY`) rather than a string comparison against class name
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 12-01-PLAN.md — Fix MakoFoldingBuilder: recursive nested fold descent and Language.ANY DUMMY_BLOCK check
+- [ ] 12-02-PLAN.md — Fix MakoStructureViewElement: document-order children and AllIcons.Nodes.Function icon
 
 ### Phase 13: Editor Behavior Fixes
 **Goal**: Code content tokens use the correct default color, the module block brace pair is matched, and brace depth overflow is logged
@@ -136,7 +140,7 @@ Plans:
 | 9. Marketplace Branding | v0.1.0 | 3/3 | Complete | 2026-02-21 |
 | 10. PSI Correctness | v0.2.0 | 1/1 | Complete | 2026-02-21 |
 | 11. Python Injection Fixes | 2/2 | Complete    | 2026-02-21 | - |
-| 12. Code Folding and Structure View | v0.2.0 | 0/TBD | Not started | - |
+| 12. Code Folding and Structure View | v0.2.0 | 0/2 | Not started | - |
 | 13. Editor Behavior Fixes | v0.2.0 | 0/TBD | Not started | - |
 | 14. Completion Fixes | v0.2.0 | 0/TBD | Not started | - |
 | 15. Annotator Fixes | v0.2.0 | 0/TBD | Not started | - |
