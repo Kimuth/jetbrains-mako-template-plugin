@@ -106,6 +106,10 @@ Recent decisions affecting current work:
 - [Phase 05-structural-features]: Test content for structure view must use empty tag bodies — TEMPLATE_TEXT inside tags triggers pin=1 error recovery that consumes END_TAG of subsequent sibling tags [RESOLVED by 05-03: grammar fix means this is no longer required; TEMPLATE_TEXT bodies now parse correctly]
 - [Phase 05-structural-features]: template_text_content FIRST in item_ alternatives: root fix is alternative ordering not just naming the rule; bare consumeToken in later position causes GrammarKit recovery from failed pinned rules to consume TEMPLATE_TEXT before item_() alternative can match it
 
+### Roadmap Evolution
+
+- Phase 9 added: Marketplace Branding — rename pluginGroup, pluginName, and related metadata to follow JetBrains Marketplace naming best practices (no generic terms like "Support", "Tool", "Integration")
+
 ### Pending Todos
 
 - [highlighting] Reference TextMate/VS Code Mako bundles for syntax decisions (Phase 5+) — `.planning/todos/pending/2026-02-20-reference-textmate-vscode-mako-bundles.md`
