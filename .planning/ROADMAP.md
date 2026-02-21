@@ -103,7 +103,10 @@ Plans:
   1. Accepting the `<%doc` completion item when partial text (e.g., `<%d`) is already typed replaces the correct range and does not leave stale characters
   2. Completion contribution reads `document.charsSequence` (a view) instead of copying the full file text, so no unnecessary string allocation occurs per keystroke
   3. Existing completion tests pass without regression
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 14-01-PLAN.md — Fix <%doc insert handler offset math and eliminate full-file text allocation
 
 ### Phase 15: Annotator Fixes
 **Goal**: Language guards use type-safe identity comparison, and unknown-directive detection is covered by a regression test
