@@ -14,7 +14,7 @@ All requirements derived from the v0.1.0 code review (`.docs/code-review.md`, re
 
 ### Code Folding
 
-- [ ] **FOLD-01**: `buildDocCommentFolds()`, `buildModuleBlockFolds()`, and `buildCodeBlockFolds()` use recursive descent (via `PsiTreeUtil`) so that doc comments, code blocks, and module blocks nested inside `<%def>` or `<%block>` tags produce fold regions
+- [x] **FOLD-01**: `buildDocCommentFolds()`, `buildModuleBlockFolds()`, and `buildCodeBlockFolds()` use recursive descent (via `PsiTreeUtil`) so that doc comments, code blocks, and module blocks nested inside `<%def>` or `<%block>` tags produce fold regions
 
 ### Python Injection
 
@@ -27,7 +27,7 @@ All requirements derived from the v0.1.0 code review (`.docs/code-review.md`, re
 - [x] **VIEW-02**: `MakoStructureViewElement` collects defs and blocks together sorted by source offset, preserving document order instead of showing all defs before all blocks
 - [ ] **VIEW-03**: `MakoPairedBraceMatcher` includes a `BracePair(MODULE_OPEN, CODE_CLOSE, false)` entry so `<%!...%>` blocks get bracket highlighting
 - [x] **VIEW-04**: `MakoStructureViewElement` fallback `ItemPresentation` returns `AllIcons.Nodes.Function` (or equivalent method icon) instead of `MakoIcons.FILE` for def/block nodes
-- [ ] **VIEW-05**: `MakoFoldingBuilder` DUMMY_BLOCK detection uses a language-based check (e.g., `element.language == Language.ANY`) instead of brittle `toString()` / `javaClass.simpleName` string comparison
+- [x] **VIEW-05**: `MakoFoldingBuilder` DUMMY_BLOCK detection uses a language-based check (e.g., `element.language == Language.ANY`) instead of brittle `toString()` / `javaClass.simpleName` string comparison
 - [ ] **VIEW-06**: `MakoLexerAdapter` logs a warning via `Logger` when `braceDepth` exceeds 15 before clamping to 0xF
 
 ### Code Completion
@@ -65,14 +65,14 @@ All requirements derived from the v0.1.0 code review (`.docs/code-review.md`, re
 |-------------|-------|--------|
 | PSI-01 | Phase 10 | Complete |
 | PSI-02 | Phase 10 | Complete |
-| FOLD-01 | Phase 12 | Pending |
+| FOLD-01 | Phase 12 | Complete |
 | INJECT-01 | Phase 11 | Complete |
 | INJECT-02 | Phase 11 | Complete |
 | VIEW-01 | Phase 13 | Pending |
 | VIEW-02 | Phase 12 | Complete |
 | VIEW-03 | Phase 13 | Pending |
 | VIEW-04 | Phase 12 | Complete |
-| VIEW-05 | Phase 12 | Pending |
+| VIEW-05 | Phase 12 | Complete |
 | VIEW-06 | Phase 13 | Pending |
 | COMP-01 | Phase 14 | Pending |
 | COMP-02 | Phase 14 | Pending |

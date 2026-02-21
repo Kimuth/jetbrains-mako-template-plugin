@@ -40,6 +40,7 @@ Progress: [███░░░░░░░] 35% (v0.2.0 — Phase 10+11+12p01+12p
 | Phase 11-python-injection-fixes P01 | 2 | 5 min | 4 files |
 | Phase 11-python-injection-fixes P02 | 5 | 2 tasks | 2 files |
 | Phase 12-code-folding-and-structure-view P02 | 3 | 2 tasks | 2 files |
+| Phase 12-code-folding-and-structure-view P01 | 5 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -54,6 +55,8 @@ All key decisions logged in PROJECT.md Key Decisions table.
 - [Phase 11-02]: Lexer-level tests chosen for injection range validation (INJECT-02) — FILTER_SEP position is fully determined by lexer, no full platform wiring needed
 - [12-02]: (childDefs + childBlocks).sortedBy { it.textOffset } chosen for document-order children — cleaner than mutable accumulator
 - [12-02]: AllIcons.Nodes.Function replaces MakoIcons.FILE as fallback icon — gives visual semantic signal for callable definitions
+- [Phase 12-01]: walkAllNodes returns Boolean from visitor to control child recursion — prevents double-fold when composite and its child token are both visited
+- [Phase 12-01]: Language.ANY identity check for DUMMY_BLOCK: node.psi.language == Language.ANY is stable against JetBrains type renames
 
 ### Roadmap Evolution
 
@@ -79,5 +82,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 12-02-PLAN.md — VIEW-02+VIEW-04 structure view document order and function icon
+Stopped at: Completed 12-01-PLAN.md — FOLD-01 recursive fold discovery with walkAllNodes and Language.ANY DUMMY_BLOCK check
 Resume with: `/gsd:execute-phase 12`
