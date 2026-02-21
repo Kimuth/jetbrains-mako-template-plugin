@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 7 - Completion — COMPLETE (both plans done)
+**Current focus:** Phase 8 - Error Annotations and Release Readiness (Plan 01 complete)
 
 ## Current Position
 
-Phase: 7 of 8 (Completion) — COMPLETE
-Plan: 2 of 2 complete
-Status: Phase 7 Plan 02 complete — MakoCompletionTest 7 tests green; 64 total tests green; COMP-01 and COMP-02 verified end-to-end
-Last activity: 2026-02-21 — Plan 02 complete (MakoCompletionTest + 3 contributor bug fixes + com.intellij.modules.json bundled plugin fix; ./gradlew check 64 tests green)
+Phase: 8 of 8 (Error Annotations and Release Readiness) — IN PROGRESS
+Plan: 1 of 2 complete
+Status: Phase 8 Plan 01 complete — MakoAnnotator implemented; unclosed tag detection + invalid directive detection; 64 tests green; COMP-03 verified
+Last activity: 2026-02-21 — Plan 01 complete (MakoAnnotator.kt created; annotator registered in plugin.xml; ./gradlew check 64 tests green)
 
 Progress: [██████████] 100%
 
@@ -54,6 +54,7 @@ Progress: [██████████] 100%
 | Phase 06-python-language-injection P02 | 3 | 2 tasks | 2 files |
 | Phase 07-completion P01 | 6 | 2 tasks | 2 files |
 | Phase 07-completion P02 | 27 | 1 tasks | 4 files |
+| Phase 08-error-annotations-and-release-readiness P01 | 1 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -124,6 +125,8 @@ Recent decisions affecting current work:
 - [Phase 07-02]: completion.contributor language='any' required — TEMPLATE_TEXT tokens fall in the template-data-language layer; language='Mako Template' filter prevented contributor from firing for those positions
 - [Phase 07-02]: attrsForTag() uses Kotlin is (instanceof) checks — original Class equality via element.javaClass vs MakoDefTag::class.java failed because impl classes (MakoDefTagImpl) differ from interface classes (MakoDefTag)
 - [Phase 07-02]: com.intellij.modules.json added to platformBundledPlugins — PythonCore depends on intellij.json.backend module (from JSON plugin); without it PythonCore fails to load, preventing our plugin (which depends on PythonCore) from loading in tests
+- [Phase 08-error-annotations-and-release-readiness]: language='Mako Template' (not 'any') for annotator registration — annotators receive correct PSI elements when scoped to specific language ID
+- [Phase 08-error-annotations-and-release-readiness]: Annotate openToken.textRange for unclosed tags (firstChild = <%def/<%block keyword) to avoid red underlining multi-line content bodies
 
 ### Roadmap Evolution
 
@@ -144,5 +147,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 07-completion/07-02-PLAN.md (MakoCompletionTest; 7 tests green; 64 total tests green; Phase 7 complete)
-Resume file: .planning/phases/08-marketplace-branding/ (Phase 8 — Marketplace Branding, if applicable)
+Stopped at: Completed 08-error-annotations-and-release-readiness/08-01-PLAN.md (MakoAnnotator; 64 tests green; COMP-03 satisfied)
+Resume file: .planning/phases/08-error-annotations-and-release-readiness/ (Phase 8 Plan 02 — annotator tests)

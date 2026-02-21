@@ -41,7 +41,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **COMP-01**: User gets autocomplete suggestions for Mako tag names (`<%def`, `<%block`, `<%inherit`, etc.)
 - [x] **COMP-02**: User gets autocomplete suggestions for Mako tag attributes (`name=`, `file=`, `buffered=`)
-- [ ] **COMP-03**: Malformed Mako syntax (unclosed tags, invalid directives) shows error annotations in the editor
+- [x] **COMP-03**: Malformed Mako syntax (unclosed tags, invalid directives) shows error annotations in the editor
 
 ## v2 Requirements
 
@@ -111,7 +111,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EDIT-03 | Phase 5 | Complete |
 | COMP-01 | Phase 7 | Complete |
 | COMP-02 | Phase 7 | Complete |
-| COMP-03 | Phase 8 | Pending |
+| COMP-03 | Phase 8 | Complete |
 
 **Coverage:**
 - v1 requirements: 21 total

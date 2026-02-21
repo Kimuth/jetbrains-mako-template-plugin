@@ -152,13 +152,13 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 5. Structural Features | 3/3 | Complete   | 2026-02-20 |
 | 6. Python Language Injection | 2/2 | Complete    | 2026-02-21 |
 | 7. Completion | 2/2 | Complete   | 2026-02-21 |
-| 8. Error Annotations and Release Readiness | 0/3 | Not started | - |
+| 8. Error Annotations and Release Readiness | 1/3 | In Progress|  |
 
 ### Phase 9: Marketplace Branding: rename plugin to follow JetBrains Marketplace naming conventions
 
 **Goal:** [To be planned]
 **Depends on:** Phase 8
-**Plans:** 2/2 plans complete
+**Plans:** 1/3 plans executed
 
 Plans:
 - [ ] TBD (run /gsd:plan-phase 9 to break down)
