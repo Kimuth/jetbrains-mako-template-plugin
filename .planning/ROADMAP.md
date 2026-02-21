@@ -34,7 +34,7 @@ Full details: `.planning/milestones/v0.1.0-ROADMAP.md`
 - [x] **Phase 13: Editor Behavior Fixes** — Fix code content color, MODULE_OPEN brace pair, and braceDepth overflow warning (completed 2026-02-21)
 - [x] **Phase 14: Completion Fixes** — Fix doc-insert offset math and eliminate full-file text allocation (completed 2026-02-21)
 - [x] **Phase 15: Annotator Fixes** — Fix language guard and add unknown-directive regression test (completed 2026-02-21)
-- [ ] **Phase 16: Dead Code Cleanup** — Remove FILTER_NAME token, unused token sets, and resolve orphaned fixture
+- [x] **Phase 16: Dead Code Cleanup** — Remove FILTER_NAME token, unused token sets, and resolve orphaned fixture (completed 2026-02-21)
 
 ## Phase Details
 
@@ -156,4 +156,4 @@ Plans:
 | 13. Editor Behavior Fixes | 1/1 | Complete    | 2026-02-21 | - |
 | 14. Completion Fixes | 1/1 | Complete    | 2026-02-21 | - |
 | 15. Annotator Fixes | 1/1 | Complete    | 2026-02-21 | - |
-| 16. Dead Code Cleanup | v0.2.0 | 0/1 | Not started | - |
+| 16. Dead Code Cleanup | 1/1 | Complete   | 2026-02-21 | - |

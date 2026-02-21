@@ -42,9 +42,9 @@ All requirements derived from the v0.1.0 code review (`.docs/code-review.md`, re
 
 ### Cleanup
 
-- [ ] **CLEAN-01**: `FILTER_NAME` token type removed from `MakoTokenTypes`; unreachable highlighter branch for `FILTER_NAME` removed from `MakoSyntaxHighlighter`
-- [ ] **CLEAN-02**: `TEMPLATE_CONTENT` and `TAG_OPENS` token sets removed from `MakoTokenSets` (confirmed unused in codebase)
-- [ ] **CLEAN-03**: `IncompleteCodeBlock.mako` test fixture either gets a verified `.txt` companion committed, or the fixture file is deleted
+- [x] **CLEAN-01**: `FILTER_NAME` token type removed from `MakoTokenTypes`; unreachable highlighter branch for `FILTER_NAME` removed from `MakoSyntaxHighlighter`
+- [x] **CLEAN-02**: `TEMPLATE_CONTENT` and `TAG_OPENS` token sets removed from `MakoTokenSets` (confirmed unused in codebase)
+- [x] **CLEAN-03**: `IncompleteCodeBlock.mako` test fixture either gets a verified `.txt` companion committed, or the fixture file is deleted
 
 ## Future Requirements
 
@@ -78,9 +78,9 @@ All requirements derived from the v0.1.0 code review (`.docs/code-review.md`, re
 | COMP-02 | Phase 14 | Complete |
 | ANNOT-01 | Phase 15 | Complete |
 | ANNOT-02 | Phase 15 | Complete |
-| CLEAN-01 | Phase 16 | Pending |
-| CLEAN-02 | Phase 16 | Pending |
-| CLEAN-03 | Phase 16 | Pending |
+| CLEAN-01 | Phase 16 | Complete |
+| CLEAN-02 | Phase 16 | Complete |
+| CLEAN-03 | Phase 16 | Complete |
 
 **Coverage:**
 - v0.2.0 requirements: 18 total

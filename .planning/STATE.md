@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-21 after v0.2.0 milestone start)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** v0.2.0 — Phase 15: Annotator Fixes
+**Current focus:** v0.2.0 — Phase 16: Dead Code Cleanup (COMPLETE)
 
 ## Current Position
 
-Phase: 15 of 16 (Annotator Fixes)
+Phase: 16 of 16 (Dead Code Cleanup)
 Plan: 1 of 1 in current phase (COMPLETE)
-Status: Phase 15 Plan 01 complete
-Last activity: 2026-02-21 — Phase 15 Plan 01 complete (ANNOT-01: MakoLanguage identity guards, ANNOT-02: UnknownDirective parser fixture)
+Status: Phase 16 Plan 01 complete — v0.2.0 ALL PHASES COMPLETE
+Last activity: 2026-02-22 — Phase 16 Plan 01 complete (CLEAN-01: FILTER_NAME removed, CLEAN-02/03: unused token sets and orphaned fixture resolved)
 
-Progress: [██████░░░░] 55% (v0.2.0 — Phase 10+11+12p01+12p02+13p01+14p01+15p01 complete)
+Progress: [██████████] 100% (v0.2.0 — All phases 10–16 complete)
 
 ## Performance Metrics
 
@@ -44,6 +44,7 @@ Progress: [██████░░░░] 55% (v0.2.0 — Phase 10+11+12p01+12p
 | Phase 13-editor-behavior-fixes P01 | 2 | 3 tasks | 3 files |
 | Phase 14-completion-fixes P01 | 2 | 2 tasks | 1 files |
 | Phase 15-annotator-fixes P01 | 2 | 2 tasks | 5 files |
+| Phase 16-dead-code-cleanup P01 | 3 | 15 min | 4 files |
 
 ## Accumulated Context
 
@@ -67,12 +68,14 @@ All key decisions logged in PROJECT.md Key Decisions table.
 - [Phase 14-01]: document.charsSequence backward scan replaces file.text.substring allocation — CharSequence view backed by document buffer with no heap allocation per keystroke
 - [Phase 15-01]: Use language != MakoLanguage (Kotlin object identity) not language.id string comparison -- eliminates silent drift if language ID is ever renamed
 - [Phase 15-01]: UnknownDirective.txt fixture confirms annotator operates at semantic layer: three TEMPLATE_TEXT tokens for <%bogus>, not a typed tag node
+- [Phase 16-01]: IncompleteCodeBlock.mako deleted rather than completing — file was never committed to git and MakoParsingTest had no corresponding test method; fixture was completely unreachable
+- [Phase 16-01]: FILTER_SEP retained in all files — lexer emits this token and Python injector (Phase 11-02) uses it to determine injection boundaries
 
 ### Roadmap Evolution
 
 - v0.1.0 complete: 9 phases, 23 plans, all requirements shipped
 - v0.2.0 roadmap created: 7 phases (10–16), 18 requirements, all mapped
-- Phase 16 (Cleanup) listed as depending on Phase 15 to ensure ANNOT-01 language-guard fix precedes FILTER_NAME removal
+- v0.2.0 COMPLETE: all 7 phases (10–16) executed, all requirements satisfied
 
 ### Pending Todos
 
@@ -83,14 +86,14 @@ All key decisions logged in PROJECT.md Key Decisions table.
 - ~~`updateText()` no-op on injection host mixins — INJECT-01 (Phase 11)~~ FIXED
 - ~~`getName()` wrong attribute pairing — PSI-01 (Phase 10)~~ FIXED
 - ~~`setName()` silent no-op — PSI-02 (Phase 10)~~ FIXED
-- `FILTER_NAME` token dead constant — CLEAN-01 (Phase 16)
+- ~~`FILTER_NAME` token dead constant — CLEAN-01 (Phase 16)~~ FIXED
 
 ### Blockers/Concerns
 
-None yet.
+None.
 
 ## Session Continuity
 
-Last session: 2026-02-21
-Stopped at: Completed 15-01-PLAN.md — ANNOT-01: MakoLanguage identity guards in annotator and completion contributor, ANNOT-02: UnknownDirective parser fixture
-Resume with: `/gsd:execute-phase 16`
+Last session: 2026-02-22
+Stopped at: Completed 16-01-PLAN.md — CLEAN-01: FILTER_NAME removed from MakoTokenTypes/MakoSyntaxHighlighter/MakoTypes, CLEAN-02/03: TEMPLATE_CONTENT and TAG_OPENS removed from MakoTokenSets, orphaned IncompleteCodeBlock.mako deleted
+Resume with: v0.2.0 complete — plan next milestone or prepare marketplace release
