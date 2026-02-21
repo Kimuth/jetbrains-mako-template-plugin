@@ -47,7 +47,10 @@ Full details: `.planning/milestones/v0.1.0-ROADMAP.md`
   2. `MakoBlockTagMixin.getName()` behaves identically to the def mixin fix
   3. `setName()` in both mixins throws `UnsupportedOperationException` so callers receive a clear failure signal instead of a silent no-op
   4. Existing PSI tests pass without regression
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 10-01-PLAN.md — TDD: Fix getName attribute pairing and setName throws in PSI mixins
 
 ### Phase 11: Python Injection Fixes
 **Goal**: Injection host mixins fail loudly on unsupported round-trip edits, and injection ranges exclude filter names
@@ -127,7 +130,7 @@ Full details: `.planning/milestones/v0.1.0-ROADMAP.md`
 | 7. Completion | v0.1.0 | 2/2 | Complete | 2026-02-21 |
 | 8. Error Annotations and Release Readiness | v0.1.0 | 3/3 | Complete | 2026-02-21 |
 | 9. Marketplace Branding | v0.1.0 | 3/3 | Complete | 2026-02-21 |
-| 10. PSI Correctness | v0.2.0 | 0/TBD | Not started | - |
+| 10. PSI Correctness | v0.2.0 | 0/1 | Not started | - |
 | 11. Python Injection Fixes | v0.2.0 | 0/TBD | Not started | - |
 | 12. Code Folding and Structure View | v0.2.0 | 0/TBD | Not started | - |
 | 13. Editor Behavior Fixes | v0.2.0 | 0/TBD | Not started | - |
