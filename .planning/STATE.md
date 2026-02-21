@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 7 - Completion — Plan 01 complete
+**Current focus:** Phase 7 - Completion — COMPLETE (both plans done)
 
 ## Current Position
 
-Phase: 7 of 8 (Completion) — IN PROGRESS
-Plan: 1 of 2 complete
-Status: Phase 7 Plan 01 complete — MakoCompletionContributor registered; tag-name completion (COMP-01) and attribute completion (COMP-02) implemented; 57 tests green
-Last activity: 2026-02-21 — Plan 01 complete (MakoCompletionContributor + plugin.xml completion.contributor registration; ./gradlew check 57 tests green)
+Phase: 7 of 8 (Completion) — COMPLETE
+Plan: 2 of 2 complete
+Status: Phase 7 Plan 02 complete — MakoCompletionTest 7 tests green; 64 total tests green; COMP-01 and COMP-02 verified end-to-end
+Last activity: 2026-02-21 — Plan 02 complete (MakoCompletionTest + 3 contributor bug fixes + com.intellij.modules.json bundled plugin fix; ./gradlew check 64 tests green)
 
-Progress: [█████████░] 90%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [█████████░] 90%
 | Phase 06-python-language-injection P01 | 30 | 3 tasks | 10 files |
 | Phase 06-python-language-injection P02 | 3 | 2 tasks | 2 files |
 | Phase 07-completion P01 | 6 | 2 tasks | 2 files |
+| Phase 07-completion P02 | 27 | 1 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -119,6 +120,10 @@ Recent decisions affecting current work:
 - [Phase 07-01]: Raw text inspection (file.text.substring(offset-2, offset)) chosen for tag-name completion — dummy identifier disrupts lexer before TAG_OPEN_xxx tokens appear; PSI-pattern matching unreliable for this use case
 - [Phase 07-01]: result.withPrefixMatcher("") required for tag-name completion — platform filters items whose lookup string doesn't match typed prefix; empty matcher bypasses this for <% prefix items
 - [Phase 07-01]: TAG_ATTRIBUTES map uses PSI interface .java class; parent walk uses element.javaClass against the interface-keyed map — works because impl class identity matches the interface key in Kotlin's mapOf()
+- [Phase 07-02]: addFileToProject + configureFromExistingVirtualFile used instead of configureByText(FileType) — the latter creates an in-memory file before MakoFileType is registered in the test JVM, resulting in PLAIN_TEXT; addFileToProject creates a physical temp file whose extension is recognized after file type registration completes
+- [Phase 07-02]: completion.contributor language='any' required — TEMPLATE_TEXT tokens fall in the template-data-language layer; language='Mako Template' filter prevented contributor from firing for those positions
+- [Phase 07-02]: attrsForTag() uses Kotlin is (instanceof) checks — original Class equality via element.javaClass vs MakoDefTag::class.java failed because impl classes (MakoDefTagImpl) differ from interface classes (MakoDefTag)
+- [Phase 07-02]: com.intellij.modules.json added to platformBundledPlugins — PythonCore depends on intellij.json.backend module (from JSON plugin); without it PythonCore fails to load, preventing our plugin (which depends on PythonCore) from loading in tests
 
 ### Roadmap Evolution
 
@@ -139,5 +144,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 07-completion/07-01-PLAN.md (MakoCompletionContributor; plugin.xml completion.contributor registration; 57 tests green)
-Resume file: .planning/phases/07-completion/07-02-PLAN.md (Phase 7, Plan 2 — MakoCompletionTest)
+Stopped at: Completed 07-completion/07-02-PLAN.md (MakoCompletionTest; 7 tests green; 64 total tests green; Phase 7 complete)
+Resume file: .planning/phases/08-marketplace-branding/ (Phase 8 — Marketplace Branding, if applicable)
