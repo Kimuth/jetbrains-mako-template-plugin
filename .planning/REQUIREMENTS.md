@@ -9,8 +9,8 @@ All requirements derived from the v0.1.0 code review (`.docs/code-review.md`, re
 
 ### PSI Correctness
 
-- [ ] **PSI-01**: `getName()` in `MakoDefTagMixin` and `MakoBlockTagMixin` returns the value paired with the `name=` attribute, not the first `TAG_ATTR_VALUE` found
-- [ ] **PSI-02**: `setName()` in `MakoDefTagMixin` and `MakoBlockTagMixin` throws `UnsupportedOperationException` instead of silently returning `this`
+- [x] **PSI-01**: `getName()` in `MakoDefTagMixin` and `MakoBlockTagMixin` returns the value paired with the `name=` attribute, not the first `TAG_ATTR_VALUE` found
+- [x] **PSI-02**: `setName()` in `MakoDefTagMixin` and `MakoBlockTagMixin` throws `UnsupportedOperationException` instead of silently returning `this`
 
 ### Code Folding
 
@@ -63,8 +63,8 @@ All requirements derived from the v0.1.0 code review (`.docs/code-review.md`, re
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PSI-01 | Phase 10 | Pending |
-| PSI-02 | Phase 10 | Pending |
+| PSI-01 | Phase 10 | Complete |
+| PSI-02 | Phase 10 | Complete |
 | FOLD-01 | Phase 12 | Pending |
 | INJECT-01 | Phase 11 | Pending |
 | INJECT-02 | Phase 11 | Pending |

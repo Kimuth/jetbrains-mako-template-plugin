@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-21 after v0.2.0 milestone start)
 ## Current Position
 
 Phase: 10 of 16 (PSI Correctness)
-Plan: — of — in current phase
-Status: Ready to plan
-Last activity: 2026-02-21 — v0.2.0 roadmap created (7 phases, 18 requirements mapped)
+Plan: 1 of 1 in current phase (COMPLETE)
+Status: Phase 10 complete
+Last activity: 2026-02-21 — Phase 10 Plan 01 complete (PSI mixin getName/setName fixes)
 
-Progress: [░░░░░░░░░░] 0% (v0.2.0 — Phase 10 not started)
+Progress: [█░░░░░░░░░] 14% (v0.2.0 — Phase 10 complete, 1/7 phases done)
 
 ## Performance Metrics
 
@@ -36,10 +36,14 @@ Progress: [░░░░░░░░░░] 0% (v0.2.0 — Phase 10 not started)
 | 07-completion | 2 | 33 | 16.5 |
 | 08-error-annotations | 3 | 76 | 25.3 |
 | 09-marketplace-branding | 3 | 9 | 3 |
+| Phase 10-psi-correctness P01 | 3 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
 ### Decisions
+
+- [10-01] Skipped MakoPsiUtil.kt refactor: 15-line duplication across 2 files is acceptable without extraction
+- [10-01] setName() throws UnsupportedOperationException to give callers clear failure signal vs misleading no-op
 
 All key decisions logged in PROJECT.md Key Decisions table.
 
@@ -56,8 +60,8 @@ All key decisions logged in PROJECT.md Key Decisions table.
 ### Known Tech Debt (being addressed in v0.2.0)
 
 - `updateText()` no-op on injection host mixins — INJECT-01 (Phase 11)
-- `getName()` wrong attribute pairing — PSI-01 (Phase 10)
-- `setName()` silent no-op — PSI-02 (Phase 10)
+- ~~`getName()` wrong attribute pairing — PSI-01 (Phase 10)~~ FIXED
+- ~~`setName()` silent no-op — PSI-02 (Phase 10)~~ FIXED
 - `FILTER_NAME` token dead constant — CLEAN-01 (Phase 16)
 
 ### Blockers/Concerns
@@ -67,5 +71,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: v0.2.0 roadmap created — ready to plan Phase 10
-Resume with: `/gsd:plan-phase 10`
+Stopped at: Completed 10-01-PLAN.md — Phase 10 PSI Correctness complete
+Resume with: `/gsd:plan-phase 11`

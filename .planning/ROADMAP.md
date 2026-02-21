@@ -28,7 +28,7 @@ Full details: `.planning/milestones/v0.1.0-ROADMAP.md`
 
 **Milestone Goal:** Fix all known bugs from the v0.1.0 code review and eliminate dead code/housekeeping gaps so the codebase is correct and clean.
 
-- [ ] **Phase 10: PSI Correctness** — Fix getName/setName mixin bugs so named element contract is correct
+- [x] **Phase 10: PSI Correctness** — Fix getName/setName mixin bugs so named element contract is correct (completed 2026-02-21)
 - [ ] **Phase 11: Python Injection Fixes** — Fix updateText no-op and filter-name injection boundary
 - [ ] **Phase 12: Code Folding and Structure View** — Fix nested folding and structure view ordering, icon, and DUMMY_BLOCK detection
 - [ ] **Phase 13: Editor Behavior Fixes** — Fix code content color, MODULE_OPEN brace pair, and braceDepth overflow warning
@@ -130,7 +130,7 @@ Plans:
 | 7. Completion | v0.1.0 | 2/2 | Complete | 2026-02-21 |
 | 8. Error Annotations and Release Readiness | v0.1.0 | 3/3 | Complete | 2026-02-21 |
 | 9. Marketplace Branding | v0.1.0 | 3/3 | Complete | 2026-02-21 |
-| 10. PSI Correctness | v0.2.0 | 0/1 | Not started | - |
+| 10. PSI Correctness | 1/1 | Complete   | 2026-02-21 | - |
 | 11. Python Injection Fixes | v0.2.0 | 0/TBD | Not started | - |
 | 12. Code Folding and Structure View | v0.2.0 | 0/TBD | Not started | - |
 | 13. Editor Behavior Fixes | v0.2.0 | 0/TBD | Not started | - |
