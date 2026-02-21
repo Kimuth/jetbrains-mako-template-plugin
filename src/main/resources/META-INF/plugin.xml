@@ -45,5 +45,10 @@
         <!-- Phase 6: Python Language Injection -->
         <multiHostInjector
             implementation="com.github.kimuth.jetbrainsmakotemplateplugin.lang.injection.MakoPythonInjector"/>
+
+        <!-- Phase 7: Completion -->
+        <completion.contributor
+            language="Mako Template"
+            implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.completion.MakoCompletionContributor"/>
     </extensions>
 </idea-plugin>
