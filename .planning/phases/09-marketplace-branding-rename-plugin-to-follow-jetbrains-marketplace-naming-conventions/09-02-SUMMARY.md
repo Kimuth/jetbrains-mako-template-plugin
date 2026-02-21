@@ -135,3 +135,12 @@ None - no external service configuration required.
 ---
 *Phase: 09-marketplace-branding-rename-plugin-to-follow-jetbrains-marketplace-naming-conventions*
 *Completed: 2026-02-21*
+
+## Self-Check: PASSED
+
+- FOUND: src/main/kotlin/com/schtilig/mako/MakoLanguage.kt
+- FOUND: src/main/kotlin/com/schtilig/mako/lang/MakoParserDefinition.kt
+- FOUND: src/main/gen/com/schtilig/mako/lang/psi/MakoTypes.java
+- FOUND: src/test/kotlin/com/schtilig/mako/lang/MakoParsingTest.kt
+- FOUND: 09-02-SUMMARY.md
+- FOUND commit: 106ada0 (refactor: update package declarations and imports)
