@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-21 after v0.2.0 milestone start)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** v0.2.0 — Phase 12: Code Folding and Structure View
+**Current focus:** v0.2.0 — Phase 13: Editor Behavior Fixes
 
 ## Current Position
 
-Phase: 12 of 16 (Code Folding and Structure View)
-Plan: 2 of N in current phase (COMPLETE)
-Status: Phase 12 Plan 02 complete
-Last activity: 2026-02-21 — Phase 12 Plan 02 complete (VIEW-02, VIEW-04: structure view document order + function icon)
+Phase: 13 of 16 (Editor Behavior Fixes)
+Plan: 1 of N in current phase (COMPLETE)
+Status: Phase 13 Plan 01 complete
+Last activity: 2026-02-21 — Phase 13 Plan 01 complete (VIEW-01, VIEW-03, VIEW-06: code content color, MODULE_OPEN brace pair, braceDepth overflow logger)
 
-Progress: [███░░░░░░░] 35% (v0.2.0 — Phase 10+11+12p01+12p02 complete)
+Progress: [████░░░░░░] 40% (v0.2.0 — Phase 10+11+12p01+12p02+13p01 complete)
 
 ## Performance Metrics
 
@@ -41,6 +41,7 @@ Progress: [███░░░░░░░] 35% (v0.2.0 — Phase 10+11+12p01+12p
 | Phase 11-python-injection-fixes P02 | 5 | 2 tasks | 2 files |
 | Phase 12-code-folding-and-structure-view P02 | 3 | 2 tasks | 2 files |
 | Phase 12-code-folding-and-structure-view P01 | 5 | 2 tasks | 2 files |
+| Phase 13-editor-behavior-fixes P01 | 2 | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -57,6 +58,9 @@ All key decisions logged in PROJECT.md Key Decisions table.
 - [12-02]: AllIcons.Nodes.Function replaces MakoIcons.FILE as fallback icon — gives visual semantic signal for callable definitions
 - [Phase 12-01]: walkAllNodes returns Boolean from visitor to control child recursion — prevents double-fold when composite and its child token are both visited
 - [Phase 12-01]: Language.ANY identity check for DUMMY_BLOCK: node.psi.language == Language.ANY is stable against JetBrains type renames
+- [Phase 13-01]: MAKO_CODE_CONTENT fallback changed from STRING to IDENTIFIER — code block tokens represent executable code, not string literals
+- [Phase 13-01]: MODULE_OPEN pairs with CODE_CLOSE using structural=false — consistent with CODE_OPEN pair since both share the same close token
+- [Phase 13-01]: Logger placed in companion object of MakoLexerAdapter — follows IntelliJ platform convention for per-class diagnostic loggers
 
 ### Roadmap Evolution
 
@@ -82,5 +86,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 12-01-PLAN.md — FOLD-01 recursive fold discovery with walkAllNodes and Language.ANY DUMMY_BLOCK check
-Resume with: `/gsd:execute-phase 12`
+Stopped at: Completed 13-01-PLAN.md — VIEW-01/VIEW-03/VIEW-06: MAKO_CODE_CONTENT color fix, MODULE_OPEN brace pair, braceDepth overflow logger
+Resume with: `/gsd:execute-phase 13`
