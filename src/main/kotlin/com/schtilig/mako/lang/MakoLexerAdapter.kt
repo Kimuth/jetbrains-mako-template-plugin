@@ -16,6 +16,10 @@ import com.intellij.lexer.FlexAdapter
  */
 class MakoLexerAdapter : FlexAdapter(_MakoLexer()) {
 
+    companion object {
+        private val LOG = com.intellij.openapi.diagnostic.Logger.getInstance(MakoLexerAdapter::class.java)
+    }
+
     private val makoFlex: _MakoLexer get() = flex as _MakoLexer
 
     override fun start(buffer: CharSequence, startOffset: Int, endOffset: Int, initialState: Int) {
@@ -27,7 +31,11 @@ class MakoLexerAdapter : FlexAdapter(_MakoLexer()) {
 
     override fun getState(): Int {
         val jflexState = super.getState()
-        val depth = makoFlex.braceDepth.coerceIn(0, 0xF)
+        val rawDepth = makoFlex.braceDepth
+        if (rawDepth > 0xF) {
+            LOG.warn("MakoLexerAdapter: braceDepth=$rawDepth exceeds max (15); clamping to 0xF")
+        }
+        val depth = rawDepth.coerceIn(0, 0xF)
         return jflexState or (depth shl 4)
     }
 }
