@@ -108,10 +108,19 @@ class MakoCompletionContributor : CompletionContributor() {
 
             // Raw-text inspection: search back from caret for "<%" followed by optional partial tag letters.
             // Handles both "<%<caret>" (offset-2 check) and "<%d<caret>" (partial tag name already typed).
-            val textBefore = file.text.substring(0, offset)
-            val ltPos = textBefore.lastIndexOf("<%")
+            // Uses document.charsSequence (a CharSequence view) instead of allocating a full file text copy.
+            val chars = parameters.editor.document.charsSequence
+            var ltPos = -1
+            var i = offset - 1
+            while (i > 0) {
+                if (chars[i] == '%' && chars[i - 1] == '<') {
+                    ltPos = i - 1
+                    break
+                }
+                i--
+            }
             if (ltPos < 0) return
-            val partial = textBefore.substring(ltPos + 2) // text between "<%" and caret
+            val partial = chars.subSequence(ltPos + 2, offset).toString() // text between "<%" and caret
             // Only trigger if partial is either empty or consists solely of tag-name characters
             // (letters only — tag names have no digits or underscores after the <% prefix).
             if (partial.isNotEmpty() && !partial.all { it.isLetter() }) return
