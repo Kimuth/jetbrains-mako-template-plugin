@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 5 - Structural Features — ALL 3 PLANS COMPLETE
+**Current focus:** Phase 6 - Python Language Injection — Plan 1 complete, Plan 2 pending
 
 ## Current Position
 
-Phase: 5 of 8 (Structural Features) — COMPLETE
-Plan: 3 of 3 complete
-Status: Phase 5 Plan 3 complete — Grammar fix for TEMPLATE_TEXT-body folding; template_text_content rule + item_ reordering; 52 tests green; SYNX-06 satisfied
-Last activity: 2026-02-20 — Plan 03 complete (grammar fix: END_TAG now always consumed in def/block PSI composites regardless of body content; 5 regression tests added)
+Phase: 6 of 8 (Python Language Injection) — IN PROGRESS
+Plan: 1 of 2 complete
+Status: Phase 6 Plan 1 complete — PsiLanguageInjectionHost mixin classes for expression/code_block/module_block; Mako.bnf updated; parser regenerated; 57 tests green
+Last activity: 2026-02-21 — Plan 01 complete (three injection host mixins + BNF wiring + IDE parser regen; generated *Impl classes extend mixins; MakoTypes.java token delegates intact)
 
-Progress: [████████░░] 75%
+Progress: [████████░░] 78%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
-- Average duration: 8 min
-- Total execution time: ~91 min
+- Total plans completed: 12
+- Average duration: 9 min
+- Total execution time: ~121 min
 
 **By Phase:**
 
@@ -50,6 +50,7 @@ Progress: [████████░░] 75%
 | Phase 05-structural-features P01 | 45 | 2 tasks | 5 files |
 | Phase 05-structural-features P02 | 13 | 2 tasks | 5 files |
 | Phase 05-structural-features P03 | 20 | 2 tasks | 11 files |
+| Phase 06-python-language-injection P01 | 30 | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -105,6 +106,10 @@ Recent decisions affecting current work:
 - [Phase 05-structural-features]: Parser flattens nested <%def> tags into file-level siblings — structure view reflects actual PSI tree (no artificial nesting added)
 - [Phase 05-structural-features]: Test content for structure view must use empty tag bodies — TEMPLATE_TEXT inside tags triggers pin=1 error recovery that consumes END_TAG of subsequent sibling tags [RESOLVED by 05-03: grammar fix means this is no longer required; TEMPLATE_TEXT bodies now parse correctly]
 - [Phase 05-structural-features]: template_text_content FIRST in item_ alternatives: root fix is alternative ordering not just naming the rule; bare consumeToken in later position causes GrammarKit recovery from failed pinned rules to consume TEMPLATE_TEXT before item_() alternative can match it
+- [Phase 06-01]: GrammarKit implements= attribute on BNF rules causes generated PSI interfaces to extend PsiLanguageInjectionHost — no manual interface file editing needed after regen
+- [Phase 06-01]: Injection host mixin classes must be abstract (required by GrammarKit); generated *Impl extends mixin so host contract flows through class hierarchy automatically
+- [Phase 06-01]: LiteralTextEscaper.createSimple() is available in 2025.2 SDK — fallback anonymous class implementation not needed
+- [Phase 06-01]: MakoTypes.java token delegate constants survived parser regeneration unchanged — generateTokens=false pattern established in Phase 3 continues to hold
 
 ### Roadmap Evolution
 
@@ -124,6 +129,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-02-20
-Stopped at: Completed 05-structural-features/05-03-PLAN.md (Grammar fix for TEMPLATE_TEXT-body folding; 52 tests green; SYNX-06 satisfied; Phase 5 ALL PLANS COMPLETE)
-Resume file: .planning/phases/06-navigation/ (Phase 6, Plan 1)
+Last session: 2026-02-21
+Stopped at: Completed 06-python-language-injection/06-01-PLAN.md (PsiLanguageInjectionHost mixins for expression/code_block/module_block; BNF wired; parser regenerated; 57 tests green)
+Resume file: .planning/phases/06-python-language-injection/06-02-PLAN.md (Phase 6, Plan 2 — MakoPythonInjector)

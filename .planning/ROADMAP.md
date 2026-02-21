@@ -107,7 +107,7 @@ Plans:
   4. No exceptions related to Python PSI access appear in the IDE event log when editing a `.mako` file
 **Plans**: 2 plans
 Plans:
-- [ ] 06-01-PLAN.md — Write PsiLanguageInjectionHost mixins for expression/code_block/module_block, update BNF grammar, regenerate parser
+- [x] 06-01-PLAN.md — Write PsiLanguageInjectionHost mixins for expression/code_block/module_block, update BNF grammar, regenerate parser
 - [ ] 06-02-PLAN.md — Create MakoPythonInjector and register multiHostInjector in plugin.xml
 
 ### Phase 7: Completion
@@ -143,7 +143,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 3. Parser and PSI Tree | 3/3 | Complete    | 2026-02-19 |
 | 4. Syntax Highlighting and Comment Support | 2/2 | Complete   | 2026-02-19 |
 | 5. Structural Features | 3/3 | Complete   | 2026-02-20 |
-| 6. Python Language Injection | 0/TBD | Not started | - |
+| 6. Python Language Injection | 1/2 | In progress | - |
 | 7. Completion | 0/TBD | Not started | - |
 | 8. Error Annotations and Release Readiness | 0/TBD | Not started | - |
 
