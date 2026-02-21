@@ -21,33 +21,46 @@ import com.intellij.util.ProcessingContext
 
 private val TAG_NAMES = listOf("<%def", "<%block", "<%inherit", "<%include", "<%namespace", "<%page", "<%doc")
 
-private val TAG_ATTRIBUTES: Map<Class<out PsiElement>, List<String>> = mapOf(
-    MakoDefTag::class.java to listOf(
+/**
+ * Returns the attribute list for the given PSI tag element, or null if the element
+ * is not a recognised Mako open-tag composite.
+ *
+ * Uses Kotlin `is` (JVM instanceof) checks so that generated *Impl classes are matched
+ * via their PSI interface — javaClass equality would fail because the impl class differs
+ * from the interface class.
+ */
+private fun attrsForTag(element: PsiElement): List<String>? = when (element) {
+    is MakoDefTag -> listOf(
         "name", "buffered", "cached", "cache_key",
         "cache_timeout", "cache_type", "cache_url",
         "cache_dir", "cache_region", "filter", "decorator"
-    ),
-    MakoBlockTag::class.java to listOf(
+    )
+    is MakoBlockTag -> listOf(
         "name", "filter", "cached", "cache_key",
         "cache_timeout", "cache_type", "cache_url",
         "cache_dir", "cache_region"
-    ),
-    MakoInheritTag::class.java to listOf("file"),
-    MakoIncludeTag::class.java to listOf("file", "args"),
-    MakoNamespaceTag::class.java to listOf("name", "file", "import", "module"),
-    MakoPageTag::class.java to listOf(
+    )
+    is MakoInheritTag -> listOf("file")
+    is MakoIncludeTag -> listOf("file", "args")
+    is MakoNamespaceTag -> listOf("name", "file", "import", "module")
+    is MakoPageTag -> listOf(
         "args", "expression_filter", "cached", "cache_key",
         "cache_timeout", "cache_type", "cache_url",
         "cache_dir", "cache_region"
     )
-)
+    else -> null
+}
 
 /**
  * Provides Mako-specific completions:
  * - COMP-01: Tag-name completion after `<%` (e.g., <%def, <%block, <%inherit, ...)
  * - COMP-02: Tag-attribute completion inside open tags (e.g., name="", file="", ...)
  *
- * Registered via <completion.contributor language="Mako Template"> in plugin.xml.
+ * Registered via <completion.contributor language="any"> in plugin.xml.
+ * The `language="any"` registration is required because the caret position when typing
+ * after "<%<caret>" falls on a TEMPLATE_TEXT token which may be associated with the
+ * template data language rather than the Mako Template language. Using language="any"
+ * ensures the contributor fires; the internal language guard restricts output to Mako files.
  */
 class MakoCompletionContributor : CompletionContributor() {
 
@@ -93,9 +106,18 @@ class MakoCompletionContributor : CompletionContributor() {
             val offset = parameters.offset
             if (offset < 2) return
 
-            // Raw-text inspection: look for "<%" immediately before the caret
-            val twoCharPrefix = file.text.substring(offset - 2, offset)
-            if (twoCharPrefix != "<%") return
+            // Raw-text inspection: search back from caret for "<%" followed by optional partial tag letters.
+            // Handles both "<%<caret>" (offset-2 check) and "<%d<caret>" (partial tag name already typed).
+            val textBefore = file.text.substring(0, offset)
+            val ltPos = textBefore.lastIndexOf("<%")
+            if (ltPos < 0) return
+            val partial = textBefore.substring(ltPos + 2) // text between "<%" and caret
+            // Only trigger if partial is either empty or consists solely of tag-name characters
+            // (letters only — tag names have no digits or underscores after the <% prefix).
+            if (partial.isNotEmpty() && !partial.all { it.isLetter() }) return
+            // Ensure there's no whitespace between "<%" and the caret (would indicate an
+            // anonymous code block, not a tag name position).
+            if (partial.any { it.isWhitespace() }) return
 
             // Use empty prefix matcher so the platform does not filter out items whose
             // lookup string starts with "<%" (which the platform would treat as a non-match
@@ -140,10 +162,12 @@ class MakoCompletionContributor : CompletionContributor() {
             context: ProcessingContext,
             result: CompletionResultSet
         ) {
-            // Walk up the PSI tree to find the enclosing tag composite node
+            // Walk up the PSI tree to find the enclosing tag composite node.
+            // Uses attrsForTag() which uses Kotlin `is` (instanceof) checks against the
+            // PSI interface types — so generated *Impl classes are matched correctly.
             var element: PsiElement? = parameters.position.parent
             while (element != null && element !is PsiFile) {
-                val attrs = TAG_ATTRIBUTES[element.javaClass]
+                val attrs = attrsForTag(element)
                 if (attrs != null) {
                     for (attrName in attrs) {
                         val lookupElement = LookupElementBuilder.create(attrName)

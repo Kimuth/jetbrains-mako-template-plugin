@@ -47,8 +47,13 @@
             implementation="com.github.kimuth.jetbrainsmakotemplateplugin.lang.injection.MakoPythonInjector"/>
 
         <!-- Phase 7: Completion -->
+        <!-- language="any" so the contributor fires for all element positions in Mako files,
+             including TEMPLATE_TEXT positions where the caret is after "<%". The contributor's
+             internal language guard (file.language.id check) ensures it only produces completions
+             for Mako Template files. Using language="Mako Template" causes the platform to skip
+             the contributor for elements in template data language positions. -->
         <completion.contributor
-            language="Mako Template"
+            language="any"
             implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.completion.MakoCompletionContributor"/>
     </extensions>
 </idea-plugin>
