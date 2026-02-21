@@ -1,6 +1,6 @@
 package com.schtilig.mako.lang.structure
 
-import com.schtilig.mako.MakoIcons
+import com.intellij.icons.AllIcons
 import com.schtilig.mako.lang.psi.MakoBlockTag
 import com.schtilig.mako.lang.psi.MakoDefTag
 import com.schtilig.mako.lang.psi.MakoFile
@@ -31,7 +31,7 @@ class MakoStructureViewElement(private val element: NavigatablePsiElement) :
         val existing = (element as? NavigationItem)?.presentation
         return existing ?: object : ItemPresentation {
             override fun getPresentableText(): String = element.name ?: "<unnamed>"
-            override fun getIcon(unused: Boolean): Icon = MakoIcons.FILE
+            override fun getIcon(unused: Boolean): Icon = AllIcons.Nodes.Function
             override fun getLocationString(): String? = null
         }
     }
@@ -56,9 +56,10 @@ class MakoStructureViewElement(private val element: NavigatablePsiElement) :
             else -> return TreeElement.EMPTY_ARRAY
         }
 
-        val result = mutableListOf<TreeElement>()
-        childDefs.mapTo(result) { MakoStructureViewElement(it as NavigatablePsiElement) }
-        childBlocks.mapTo(result) { MakoStructureViewElement(it as NavigatablePsiElement) }
-        return result.toTypedArray()
+        return (childDefs + childBlocks)
+            .map { it as NavigatablePsiElement }
+            .sortedBy { it.textOffset }
+            .map { MakoStructureViewElement(it) }
+            .toTypedArray()
     }
 }
