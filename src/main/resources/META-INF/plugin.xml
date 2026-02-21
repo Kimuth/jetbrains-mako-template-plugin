@@ -41,5 +41,9 @@
         <!-- Phase 5: Structure View -->
         <lang.psiStructureViewFactory language="Mako Template"
             implementationClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.structure.MakoStructureViewFactory"/>
+
+        <!-- Phase 6: Python Language Injection -->
+        <multiHostInjector
+            implementation="com.github.kimuth.jetbrainsmakotemplateplugin.lang.injection.MakoPythonInjector"/>
     </extensions>
 </idea-plugin>
