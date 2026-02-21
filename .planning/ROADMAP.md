@@ -158,13 +158,13 @@ Plans:
 | 14. Completion Fixes | 1/1 | Complete    | 2026-02-21 | - |
 | 15. Annotator Fixes | 1/1 | Complete    | 2026-02-21 | - |
 | 16. Dead Code Cleanup | 1/1 | Complete    | 2026-02-21 | - |
-| 17. Clean Up Orphaned Test Fixtures | v0.2.0+ | 1/1 | Complete | 2026-02-22 |
+| 17. Clean Up Orphaned Test Fixtures | v0.2.0+ | Complete    | 2026-02-21 | 2026-02-22 |
 
 ### Phase 17: Clean up orphaned test fixtures
 
 **Goal:** Delete fixture files in src/test/testData/ that are no longer referenced by any test method
 **Depends on:** Phase 16
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
 - [x] 17-01-PLAN.md — Delete rename/ scaffold, orphaned annotator fixtures, and unused FoldingTestData.mako
