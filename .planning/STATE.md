@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 9 - Marketplace Branding (Plan 1 of 3 complete)
+**Current focus:** Phase 9 - Marketplace Branding (Plan 2 of 3 complete)
 
 ## Current Position
 
 Phase: 9 of 9 (Marketplace Branding — rename plugin to follow JetBrains Marketplace naming conventions) — IN PROGRESS
-Plan: 1 of 3 complete
-Status: Phase 9 Plan 01 complete — build config and grammar files renamed to com.schtilig.mako namespace (gradle.properties, settings.gradle.kts, build.gradle.kts, Mako.bnf, MakoLexer.flex, plugin.xml)
-Last activity: 2026-02-21 — Plan 01 complete (pluginGroup=com.schtilig.mako, pluginName=Mako, pluginVersion=0.1.0; plugin.xml id/name/vendor/implementationClass FQCNs updated)
+Plan: 2 of 3 complete
+Status: Phase 9 Plan 02 complete — all source file package declarations and imports updated from com.github.kimuth.jetbrainsmakotemplateplugin to com.schtilig.mako (64 files: 27 Kotlin main + 31 gen Java + 6 Kotlin test)
+Last activity: 2026-02-21 — Plan 02 complete (bulk sed replacement across all source trees; Language ID "Mako Template" unchanged; zero old package references remain)
 
 Progress: [██████████] 100%
 
@@ -58,6 +58,7 @@ Progress: [██████████] 100%
 | Phase 08-error-annotations-and-release-readiness P03 | 65 | 3 tasks | 3 files |
 | Phase 08-error-annotations-and-release-readiness P02 | 10 | 1 tasks | 6 files |
 | Phase 09 P01 | 2 | 3 tasks | 6 files |
+| Phase 09 P02 | 4 | 2 tasks | 64 files |
 
 ## Accumulated Context
 
@@ -136,6 +137,8 @@ Recent decisions affecting current work:
 - [Phase 08-error-annotations-and-release-readiness]: Invalid directive detection fixed: regex <%([a-zA-Z]+) searched single token but lexer emits '<','%','name...' as 3 separate TEMPLATE_TEXT tokens; fixed via sibling traversal on '<' node
 - [Phase 09]: pluginGroup=com.schtilig.mako, pluginName=Mako, pluginVersion=0.1.0 — JetBrains Marketplace naming conventions
 - [Phase 09]: language='Mako Template' kept unchanged — it is a platform Language ID registry key, not a Java package FQCN
+- [Phase 09-02]: sed bulk replacement across all source trees in one pass for 65-file package rename (atomic, no risk of missing a file)
+- [Phase 09-02]: Language ID 'Mako Template' unchanged during package rename — it is a platform Language registry key in extension points, not a Java FQCN
 
 ### Roadmap Evolution
 
@@ -156,5 +159,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 09-01-PLAN.md (build config and grammar rename to com.schtilig.mako)
-Resume file: .planning/phases/09-marketplace-branding-rename-plugin-to-follow-jetbrains-marketplace-naming-conventions/09-01-SUMMARY.md
+Stopped at: Completed 09-02-PLAN.md — package declarations updated in all source files (64 files); Plan 03 next
+Resume file: .planning/phases/09-marketplace-branding-rename-plugin-to-follow-jetbrains-marketplace-naming-conventions/09-02-SUMMARY.md
