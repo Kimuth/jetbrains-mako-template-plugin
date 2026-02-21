@@ -131,10 +131,10 @@ class MakoCompletionContributor : CompletionContributor() {
                         .withBoldness(true)
                         .withInsertHandler { ctx, _ ->
                             val docSnippet = "<%doc>\n</%doc>"
-                            ctx.document.replaceString(ctx.startOffset - 2, ctx.tailOffset, docSnippet)
+                            ctx.document.replaceString(ltPos, ctx.tailOffset, docSnippet)
                             ctx.commitDocument()
                             // Position caret on the blank line between the doc tags
-                            val innerOffset = ctx.startOffset - 2 + "<%doc>\n".length
+                            val innerOffset = ltPos + "<%doc>\n".length
                             ctx.editor.caretModel.moveToOffset(innerOffset)
                         }
                 } else {
