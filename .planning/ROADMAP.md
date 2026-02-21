@@ -144,7 +144,7 @@ Plans:
 | 10. PSI Correctness | v0.2.0 | 1/1 | Complete | 2026-02-21 |
 | 11. Python Injection Fixes | 2/2 | Complete    | 2026-02-21 | - |
 | 12. Code Folding and Structure View | 2/2 | Complete    | 2026-02-21 | - |
-| 13. Editor Behavior Fixes | 1/1 | Complete   | 2026-02-21 | - |
+| 13. Editor Behavior Fixes | 1/1 | Complete    | 2026-02-21 | - |
 | 14. Completion Fixes | v0.2.0 | 0/TBD | Not started | - |
 | 15. Annotator Fixes | v0.2.0 | 0/TBD | Not started | - |
 | 16. Dead Code Cleanup | v0.2.0 | 0/TBD | Not started | - |
