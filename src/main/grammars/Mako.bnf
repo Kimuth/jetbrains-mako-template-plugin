@@ -1,15 +1,15 @@
 {
-  parserClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.parser.MakoParser"
+  parserClass="com.schtilig.mako.lang.parser.MakoParser"
   parserUtilClass="com.intellij.lang.parser.GeneratedParserUtilBase"
 
   psiClassPrefix="Mako"
   psiImplClassSuffix="Impl"
-  psiPackage="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi"
-  psiImplPackage="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl"
+  psiPackage="com.schtilig.mako.lang.psi"
+  psiImplPackage="com.schtilig.mako.lang.psi.impl"
 
-  elementTypeHolderClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.MakoTypes"
-  elementTypeClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoElementType"
-  tokenTypeClass="com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoTokenType"
+  elementTypeHolderClass="com.schtilig.mako.lang.psi.MakoTypes"
+  elementTypeClass="com.schtilig.mako.lang.MakoElementType"
+  tokenTypeClass="com.schtilig.mako.lang.MakoTokenType"
 
   generateTokens=false
 
@@ -65,7 +65,7 @@ def_tag ::= TAG_OPEN_DEF tag_attribute* TAG_CLOSE item_* END_TAG
     {
       pin=1
       recoverWhile=tag_recover
-      mixin="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl.MakoDefTagMixin"
+      mixin="com.schtilig.mako.lang.psi.impl.MakoDefTagMixin"
       implements="com.intellij.psi.PsiNamedElement"
       methods=[getName setName getNameIdentifier]
     }
@@ -74,7 +74,7 @@ block_tag ::= TAG_OPEN_BLOCK tag_attribute* TAG_CLOSE item_* END_TAG
     {
       pin=1
       recoverWhile=tag_recover
-      mixin="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl.MakoBlockTagMixin"
+      mixin="com.schtilig.mako.lang.psi.impl.MakoBlockTagMixin"
       implements="com.intellij.psi.PsiNamedElement"
       methods=[getName setName getNameIdentifier]
     }
@@ -104,7 +104,7 @@ expression ::= EXPR_START EXPR_CONTENT* (FILTER_SEP EXPR_CONTENT*)* EXPR_END
     {
       pin=1
       recoverWhile=expression_recover
-      mixin="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl.MakoExpressionMixin"
+      mixin="com.schtilig.mako.lang.psi.impl.MakoExpressionMixin"
       implements="com.intellij.psi.PsiLanguageInjectionHost"
     }
 
@@ -118,7 +118,7 @@ code_block ::= CODE_OPEN CODE_CONTENT* CODE_CLOSE
     {
       pin=1
       recoverWhile=tag_recover
-      mixin="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl.MakoCodeBlockMixin"
+      mixin="com.schtilig.mako.lang.psi.impl.MakoCodeBlockMixin"
       implements="com.intellij.psi.PsiLanguageInjectionHost"
     }
 
@@ -128,7 +128,7 @@ module_block ::= MODULE_OPEN MODULE_CONTENT* CODE_CLOSE
     {
       pin=1
       recoverWhile=tag_recover
-      mixin="com.github.kimuth.jetbrainsmakotemplateplugin.lang.psi.impl.MakoModuleBlockMixin"
+      mixin="com.schtilig.mako.lang.psi.impl.MakoModuleBlockMixin"
       implements="com.intellij.psi.PsiLanguageInjectionHost"
     }
 

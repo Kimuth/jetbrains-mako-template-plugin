@@ -1,8 +1,8 @@
-package com.github.kimuth.jetbrainsmakotemplateplugin.lang;
+package com.schtilig.mako.lang;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import static com.github.kimuth.jetbrainsmakotemplateplugin.lang.MakoTokenTypes.*;
+import static com.schtilig.mako.lang.MakoTokenTypes.*;
 import com.intellij.psi.TokenType;
 
 %%
