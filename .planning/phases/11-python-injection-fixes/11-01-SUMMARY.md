@@ -98,3 +98,14 @@ None - no external service configuration required.
 ---
 *Phase: 11-python-injection-fixes*
 *Completed: 2026-02-21*
+
+## Self-Check: PASSED
+
+- FOUND: src/test/kotlin/com/schtilig/mako/lang/MakoInjectionHostTest.kt
+- FOUND: src/main/kotlin/com/schtilig/mako/lang/psi/impl/MakoExpressionMixin.kt
+- FOUND: src/main/kotlin/com/schtilig/mako/lang/psi/impl/MakoCodeBlockMixin.kt
+- FOUND: src/main/kotlin/com/schtilig/mako/lang/psi/impl/MakoModuleBlockMixin.kt
+- FOUND: .planning/phases/11-python-injection-fixes/11-01-SUMMARY.md
+- FOUND commit: 0b526fd (test RED)
+- FOUND commit: 90f3b47 (feat GREEN)
+- FOUND commit: 493efdb (docs metadata)
