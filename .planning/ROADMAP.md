@@ -130,7 +130,7 @@ Plans:
 | 7. Completion | v0.1.0 | 2/2 | Complete | 2026-02-21 |
 | 8. Error Annotations and Release Readiness | v0.1.0 | 3/3 | Complete | 2026-02-21 |
 | 9. Marketplace Branding | v0.1.0 | 3/3 | Complete | 2026-02-21 |
-| 10. PSI Correctness | 1/1 | Complete   | 2026-02-21 | - |
+| 10. PSI Correctness | 1/1 | Complete    | 2026-02-21 | - |
 | 11. Python Injection Fixes | v0.2.0 | 0/TBD | Not started | - |
 | 12. Code Folding and Structure View | v0.2.0 | 0/TBD | Not started | - |
 | 13. Editor Behavior Fixes | v0.2.0 | 0/TBD | Not started | - |
