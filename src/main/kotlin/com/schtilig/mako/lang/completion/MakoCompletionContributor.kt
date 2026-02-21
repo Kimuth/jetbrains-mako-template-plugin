@@ -152,7 +152,7 @@ class MakoCompletionContributor : CompletionContributor() {
                         .withBoldness(true)
                         .withInsertHandler { ctx, _ ->
                             // Replace the typed "<%" (and any partial letters) with the full tag name + space
-                            ctx.document.replaceString(ctx.startOffset - 2, ctx.tailOffset, "$tagName ")
+                            ctx.document.replaceString(ltPos, ctx.tailOffset, "$tagName ")
                             ctx.commitDocument()
                         }
                 }
