@@ -1,5 +1,6 @@
 package com.schtilig.mako.lang.completion
 
+import com.schtilig.mako.MakoLanguage
 import com.schtilig.mako.lang.MakoTokenTypes
 import com.schtilig.mako.lang.psi.MakoBlockTag
 import com.schtilig.mako.lang.psi.MakoDefTag
@@ -101,7 +102,7 @@ class MakoCompletionContributor : CompletionContributor() {
             val file = parameters.originalFile
 
             // Language guard: only fire in Mako Template files
-            if (file.language.id != "Mako Template") return
+            if (file.language != MakoLanguage) return
 
             val offset = parameters.offset
             if (offset < 2) return

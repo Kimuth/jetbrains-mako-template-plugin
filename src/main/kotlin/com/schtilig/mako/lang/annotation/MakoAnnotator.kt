@@ -1,5 +1,6 @@
 package com.schtilig.mako.lang.annotation
 
+import com.schtilig.mako.MakoLanguage
 import com.schtilig.mako.lang.MakoTokenTypes
 import com.schtilig.mako.lang.psi.MakoBlockTag
 import com.schtilig.mako.lang.psi.MakoDefTag
@@ -17,7 +18,7 @@ class MakoAnnotator : Annotator {
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         // Guard: only process elements in Mako Template files
-        if (element.containingFile.language.id != "Mako Template") return
+        if (element.containingFile.language != MakoLanguage) return
 
         when (element) {
             is MakoDefTag -> checkForMissingEndTag(element, holder, "<%def>")
