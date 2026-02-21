@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-21 after v0.2.0 milestone start)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** v0.2.0 — Bug Fixing & Cleanup
+**Current focus:** v0.2.0 — Phase 10: PSI Correctness
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-02-21 — Milestone v0.2.0 started
+Phase: 10 of 16 (PSI Correctness)
+Plan: — of — in current phase
+Status: Ready to plan
+Last activity: 2026-02-21 — v0.2.0 roadmap created (7 phases, 18 requirements mapped)
 
-Progress: [░░░░░░░░░░] 0% (v0.2.0 in progress)
+Progress: [░░░░░░░░░░] 0% (v0.2.0 — Phase 10 not started)
 
 ## Performance Metrics
 
@@ -23,7 +23,7 @@ Progress: [░░░░░░░░░░] 0% (v0.2.0 in progress)
 - Timeline: 3 days (2026-02-19 → 2026-02-21)
 - Files changed: 222, LOC: ~4,800 (hand-written + generated + tests)
 
-**By Phase:**
+**By Phase (v0.1.0):**
 
 | Phase | Plans | Duration (min) | Avg/Plan |
 |-------|-------|----------------|----------|
@@ -46,22 +46,26 @@ All key decisions logged in PROJECT.md Key Decisions table.
 ### Roadmap Evolution
 
 - v0.1.0 complete: 9 phases, 23 plans, all requirements shipped
-- Phase 9 (Marketplace Branding) added late to apply JetBrains naming conventions before first release
-- Archive: `.planning/milestones/v0.1.0-ROADMAP.md`
+- v0.2.0 roadmap created: 7 phases (10–16), 18 requirements, all mapped
+- Phase 16 (Cleanup) listed as depending on Phase 15 to ensure ANNOT-01 language-guard fix precedes FILTER_NAME removal
 
 ### Pending Todos
 
 - [highlighting] Reference TextMate/VS Code Mako bundles for syntax decisions — `.planning/todos/pending/2026-02-20-reference-textmate-vscode-mako-bundles.md`
 
-### Known Tech Debt (v0.1.0)
+### Known Tech Debt (being addressed in v0.2.0)
 
-- `updateText()` no-op on injection host mixins — injection round-trip editing deferred (Warning)
-- `getNameIdentifier()` skipped in mixins — rename refactoring deferred by design (Info)
-- `FILTER_NAME` token defined but never emitted — dead constant, harmless (Info)
-- See full tech debt list in `.planning/milestones/v0.1.0-MILESTONE-AUDIT.md`
+- `updateText()` no-op on injection host mixins — INJECT-01 (Phase 11)
+- `getName()` wrong attribute pairing — PSI-01 (Phase 10)
+- `setName()` silent no-op — PSI-02 (Phase 10)
+- `FILTER_NAME` token dead constant — CLEAN-01 (Phase 16)
+
+### Blockers/Concerns
+
+None yet.
 
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: v0.2.0 milestone started — requirements being defined
-Resume with: `/gsd:plan-phase [N]` after roadmap is created
+Stopped at: v0.2.0 roadmap created — ready to plan Phase 10
+Resume with: `/gsd:plan-phase 10`

@@ -61,34 +61,32 @@ All requirements derived from the v0.1.0 code review (`.docs/code-review.md`, re
 
 ## Traceability
 
-*(Populated during roadmap creation)*
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PSI-01 | — | Pending |
-| PSI-02 | — | Pending |
-| FOLD-01 | — | Pending |
-| INJECT-01 | — | Pending |
-| INJECT-02 | — | Pending |
-| VIEW-01 | — | Pending |
-| VIEW-02 | — | Pending |
-| VIEW-03 | — | Pending |
-| VIEW-04 | — | Pending |
-| VIEW-05 | — | Pending |
-| VIEW-06 | — | Pending |
-| COMP-01 | — | Pending |
-| COMP-02 | — | Pending |
-| ANNOT-01 | — | Pending |
-| ANNOT-02 | — | Pending |
-| CLEAN-01 | — | Pending |
-| CLEAN-02 | — | Pending |
-| CLEAN-03 | — | Pending |
+| PSI-01 | Phase 10 | Pending |
+| PSI-02 | Phase 10 | Pending |
+| FOLD-01 | Phase 12 | Pending |
+| INJECT-01 | Phase 11 | Pending |
+| INJECT-02 | Phase 11 | Pending |
+| VIEW-01 | Phase 13 | Pending |
+| VIEW-02 | Phase 12 | Pending |
+| VIEW-03 | Phase 13 | Pending |
+| VIEW-04 | Phase 12 | Pending |
+| VIEW-05 | Phase 12 | Pending |
+| VIEW-06 | Phase 13 | Pending |
+| COMP-01 | Phase 14 | Pending |
+| COMP-02 | Phase 14 | Pending |
+| ANNOT-01 | Phase 15 | Pending |
+| ANNOT-02 | Phase 15 | Pending |
+| CLEAN-01 | Phase 16 | Pending |
+| CLEAN-02 | Phase 16 | Pending |
+| CLEAN-03 | Phase 16 | Pending |
 
 **Coverage:**
 - v0.2.0 requirements: 18 total
-- Mapped to phases: 0
-- Unmapped: 18 ⚠️
+- Mapped to phases: 18
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-21*
-*Last updated: 2026-02-21 after initial definition*
+*Last updated: 2026-02-21 after roadmap creation*
