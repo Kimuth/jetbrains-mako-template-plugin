@@ -61,7 +61,10 @@ Full details: `.planning/milestones/v0.2.0-ROADMAP.md`
   3. HTML syntax coloring is visible in TEMPLATE_TEXT regions of `.mako` files in the running IDE (`./gradlew runIde`)
   4. HTML tag and attribute completion suggestions appear when typing `<div`, `class=`, or `href=` in a `.mako` template body region
   5. Emmet abbreviation expansion fires in a TEMPLATE_TEXT region (e.g., `div.container` expands to `<div class="container"></div>`)
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 18-01-PLAN.md — Wire TemplateLanguageFileViewProvider: add OUTER_ELEMENT_TYPE, defensive guards, MakoFileViewProvider, MakoFileViewProviderFactory, plugin.xml registration
+- [ ] 18-02-PLAN.md — Human verification of HTML features and regression check in running IDE
 
 ### Phase 19: Regression Hardening
 **Goal**: All existing plugin features — Python injection, code folding, structure view, tag completion, and error annotations — work correctly alongside the HTML PSI tree; the full automated test suite passes without modification
@@ -107,6 +110,6 @@ Full details: `.planning/milestones/v0.2.0-ROADMAP.md`
 | 15. Annotator Fixes | v0.2.0 | 1/1 | Complete | 2026-02-21 |
 | 16. Dead Code Cleanup | v0.2.0 | 1/1 | Complete | 2026-02-22 |
 | 17. Clean Up Orphaned Test Fixtures | v0.2.0 | 1/1 | Complete | 2026-02-22 |
-| 18. FileViewProvider Scaffolding | v0.3.0 | 0/? | Not started | - |
+| 18. FileViewProvider Scaffolding | v0.3.0 | 0/2 | Not started | - |
 | 19. Regression Hardening | v0.3.0 | 0/? | Not started | - |
 | 20. HTML Feature Verification and False-Positive Audit | v0.3.0 | 0/? | Not started | - |
