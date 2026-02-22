@@ -1,182 +1,209 @@
 # Stack Research
 
-**Domain:** JetBrains custom language plugin — Mako template language (HTML + Mako directives + embedded Python)
-**Researched:** 2026-02-19
-**Confidence:** MEDIUM (IntelliJ Platform APIs verified against official docs structure; GrammarKit/JFlex version pinning LOW — verify before coding)
+**Domain:** JetBrains plugin — HTML language injection via TemplateLanguageFileViewProvider for Mako template language
+**Researched:** 2026-02-22
+**Confidence:** HIGH (APIs verified directly from PyCharm 2025.2.6 JARs via javap; extension points verified from LangExtensionPoints.xml extracted from app-client.jar; RST plugin from same SDK used as canonical reference implementation)
+
+---
+
+## Context: What Already Exists
+
+This is a **subsequent milestone** research document. The existing plugin (`com.schtilig.mako` v0.2.0) already has:
+
+- `MakoLanguage` extending `TemplateLanguage` (required precondition — already done)
+- `MakoParserDefinition` with `createFile()` returning `MakoFile(viewProvider)` — must change to return HTML-aware PSI when language = HTML
+- `MakoFileType` as a `LanguageFileType`
+- `MakoPythonInjector` using `MultiHostInjector` for Python injection — preserved unchanged
+- All other features (folding, structure view, completion, annotator) — preserved unchanged
+
+The research question is specifically: what APIs enable HTML language injection into the TEMPLATE_TEXT regions?
 
 ---
 
 ## Recommended Stack
 
-### Core Technologies
+### Core APIs for HTML Injection (IntelliJ Platform 2025.2+ / build 252+)
 
-| Technology | Version | Purpose | Why Recommended |
-|------------|---------|---------|-----------------|
-| IntelliJ Platform | 2025.2.5 (build 252) | Plugin host and API surface | Already configured; provides all Language, PSI, lexer, parser, completion, reference APIs needed |
-| IntelliJ Platform Gradle Plugin | 2.11.0 | Build orchestration and plugin packaging | Already configured; 2.x line is the current official replacement for the old `gradle-intellij-plugin` 1.x |
-| Kotlin | 2.3.0 | Implementation language | Already configured; idiomatic for IntelliJ Platform plugins — Kotlin null-safety and extension functions align with platform APIs |
-| JFlex | 1.9.2 | Lexer generator | Generates Java/Kotlin-compatible scanner from `.flex` grammar files; IntelliJ uses JFlex internally and GrammarKit ships it as a dependency |
-| Grammar-Kit | 2024.3.4 | Parser/PSI generator | Generates parser and PSI node classes from `.bnf` grammar files; the official JetBrains tool for custom language PSI trees |
-| Java | 21 | JVM runtime target | Already configured; required by platform 2025.2.5 |
+All classes verified present in `pycharm-community-2025.2.6-win` Gradle cache JARs.
 
-**Confidence for versions:** LOW — GrammarKit 2024.3.4 and JFlex 1.9.2 are from training data (August 2025). Verify current releases at https://plugins.jetbrains.com/plugin/6606-grammar-kit and https://github.com/JetBrains/Grammar-Kit/releases before pinning.
+| Class / Interface | JAR | Purpose | Why This One |
+|-------------------|-----|---------|--------------|
+| `com.intellij.psi.templateLanguages.TemplateLanguageFileViewProvider` | `util-8.jar` | Interface your FileViewProvider must implement | Required contract for multi-PSI-tree files; platform dispatches HTML features to the HTML PSI tree when this interface is present |
+| `com.intellij.psi.MultiplePsiFilesPerDocumentFileViewProvider` | `app-client.jar` | Abstract base class for the FileViewProvider implementation | Manages the concurrent map of Language → PsiFileImpl; provides `getAllFiles()`, `cloneInner()` contract |
+| `com.intellij.psi.templateLanguages.TemplateDataElementType` | `app-client.jar` | IFileElementType subclass that builds the HTML PSI sub-tree from TEMPLATE_TEXT tokens | Does the heavy lifting: takes the base Mako lexer, collects only `TEMPLATE_TEXT` tokens into a virtual HTML file, inserts `OuterLanguageElementImpl` placeholders where Mako directives appear |
+| `com.intellij.psi.tree.OuterLanguageElementType` | `app-client.jar` | IElementType for "foreign" (Mako-directive) leaf nodes in the HTML PSI tree | Required as the 4th constructor argument to `TemplateDataElementType`; created once as a singleton |
+| `com.intellij.psi.templateLanguages.TemplateDataLanguageMappings` | `app-client.jar` | Project service — per-file Language mapping (user can override via Settings) | `getInstance(project).getMapping(virtualFile)` returns user-configured language or null; fall back to `HTMLLanguage.INSTANCE` |
+| `com.intellij.psi.FileViewProviderFactory` | `util-8.jar` | Factory interface registered in plugin.xml to create the custom FileViewProvider | Single method: `createFileViewProvider(file, language, psiManager, eventSystemEnabled)` |
+| `com.intellij.lang.html.HTMLLanguage` | `app-client.jar` | The HTML Language singleton | `HTMLLanguage.INSTANCE` — used as default template data language and in `getLanguages()` set |
+| `com.intellij.ide.highlighter.HtmlFileType` | `app-client.jar` | File type used as fake file type when building the HTML PSI sub-tree | Used internally by `TemplateDataElementType`; no direct use needed |
 
----
+### Extension Points to Register in plugin.xml
 
-### Plugin Dependencies (Declared in plugin.xml)
+| Extension Point | Bean Class | Attribute | Value | Why |
+|-----------------|------------|-----------|-------|-----|
+| `com.intellij.lang.fileViewProviderFactory` | `com.intellij.lang.LanguageExtensionPoint` | `language` | `"Mako Template"` | Tells the platform to use `MakoFileViewProvider` instead of the default single-PSI FileViewProvider for Mako files |
 
-| Dependency | Type | Purpose | Confidence |
-|------------|------|---------|------------|
-| `com.intellij.modules.platform` | Bundled module | Base platform APIs (VFS, PSI infrastructure, notifications) | HIGH — already in plugin.xml |
-| `com.intellij.modules.lang` | Bundled module | Language infrastructure (Language, FileType, Lexer, Parser, SyntaxHighlighter, Annotator) | HIGH — required for custom language plugins |
-| `com.intellij.modules.python` | Bundled module (PyCharm only) | Python PSI access for `${...}` expression analysis; enables treating embedded expressions as Python fragments | MEDIUM — requires PyCharm as target IDE |
-| `com.intellij.html` | Bundled module | HTML PSI for HTML host language; enables treating the HTML skeleton of .mako files as HTML | MEDIUM — available in IntelliJ IDEA and PyCharm |
+**Critical note on EP name:** There are two EP names that sound similar:
+- `lang.fileViewProviderFactory` — keyed by `language`, uses `LanguageExtensionPoint` — **this is the correct one for Mako**
+- `fileType.fileViewProviderFactory` — keyed by file type name, uses `FileTypeExtensionPoint` — used by generic file type providers, not needed here
 
-**Note:** Depending on `com.intellij.modules.python` locks the plugin to PyCharm. This is intentional per PROJECT.md. Do NOT depend on `com.jetbrains.python` (the marketplace Python plugin) — use the bundled PyCharm module instead.
+The RST plugin bundled in PyCharm 2025.2.6 confirms `lang.fileViewProviderFactory` registration (verified in `META-INF/plugin.xml` of `restructuredtext.jar`).
 
----
+### Method Signatures (Verified from bytecode)
 
-### Core IntelliJ Platform Extension Points
+**`TemplateLanguageFileViewProvider` interface** (from `util-8.jar`):
+```kotlin
+interface TemplateLanguageFileViewProvider : FileViewProvider {
+    fun getBaseLanguage(): Language          // returns MakoLanguage
+    fun getTemplateDataLanguage(): Language  // returns HTML (or user-mapped language)
+    fun getContentElementType(language: Language): IElementType?  // default impl provided
+}
+```
 
-These are the specific extension points to register in `plugin.xml` for each feature. Listed in dependency order (build this sequence).
+**`MultiplePsiFilesPerDocumentFileViewProvider` abstract class** (from `app-client.jar`):
+```kotlin
+abstract class MultiplePsiFilesPerDocumentFileViewProvider(
+    manager: PsiManager, file: VirtualFile, eventSystemEnabled: Boolean
+) : AbstractFileViewProvider() {
+    abstract fun getBaseLanguage(): Language
+    abstract fun cloneInner(fileCopy: VirtualFile): MultiplePsiFilesPerDocumentFileViewProvider
+    // Must implement: createFile(language) to return PSI for each language
+}
+```
 
-| Extension Point | Purpose | Phase |
-|-----------------|---------|-------|
-| `com.intellij.fileType` | Register `.mako` file type and MIME type | Phase 1 |
-| `com.intellij.lang.fileNameMatcher` | Associate `.mako` / `.html` (when containing Mako markers) with MakoLanguage | Phase 1 |
-| `com.intellij.lang.syntaxHighlighterFactory` | Register `SyntaxHighlighter` for token coloring | Phase 1 |
-| `com.intellij.colorSettingsPage` | Register Color Settings page so users can customize Mako colors | Phase 1 |
-| `com.intellij.lang.parserDefinition` | Register `ParserDefinition` that provides lexer + parser + PSI factories | Phase 2 |
-| `com.intellij.lang.braceMatcher` | Brace/delimiter matching (e.g., `${` and `}`, `<%` and `>`) | Phase 2 |
-| `com.intellij.lang.commenter` | Line/block comment handling (`##` for Mako line comments) | Phase 2 |
-| `com.intellij.annotator` | Semantic error detection (malformed tags, unclosed blocks) | Phase 3 |
-| `com.intellij.completion.contributor` | Code completion for Mako directives, tag attributes | Phase 3 |
-| `com.intellij.lang.documentationProvider` | Hover documentation for Mako directives | Phase 3 |
-| `com.intellij.psi.referenceContributor` | Go-to-definition for `<%inherit file="..."/>`, `<%include file="..."/>` | Phase 4 |
-| `com.intellij.lang.findUsagesProvider` | Find usages for `<%def name="...">` across templates | Phase 4 |
-| `com.intellij.lang.refactoring.inlineHandler` or `renameHandler` | Rename refactoring for def names | Phase 5 |
-| `com.intellij.lang.foldingBuilder` | Code folding for `<%def>`, `<%block>`, control structures | Phase 3 |
-| `com.intellij.lang.formatter` | Code formatting (optional, complex for mixed-language files) | Phase 5 |
-| `com.intellij.languageInjector` or `com.intellij.multiHostInjector` | Inject Python into `${...}` and `<% %>` blocks; inject HTML into template body | Phase 4 |
+**`TemplateDataElementType` constructor** (from `app-client.jar`):
+```java
+public TemplateDataElementType(
+    String debugName,          // e.g., "MAKO_TEMPLATE_DATA"
+    Language language,         // HTMLLanguage.INSTANCE — the data language
+    IElementType templateElementType,  // MakoTokenTypes.TEMPLATE_TEXT — tokens that ARE template data
+    IElementType outerElementType      // OuterLanguageElementType instance — placeholder for Mako directives
+)
+```
 
----
-
-### Supporting Libraries
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| Grammar-Kit JFlex (via GrammarKit plugin) | Bundled with GrammarKit | Lexer file generation from `.flex` → Java scanner class | Always — use GrammarKit Gradle plugin task to generate before compiling |
-| IntelliJ Platform Test Framework | Bundled (252+) | `BasePlatformTestCase`, `ParsingTestCase`, `LexerTestCase`, `CompletionTestCase` | All testing — provides in-process IDE for integration tests |
-| JUnit 4 | 4.13.2 | Test runner | Currently configured; acceptable but see note on JUnit 5 migration below |
-| `com.intellij.lang.html` API | Bundled | `HtmlFileViewProvider`, `HTMLLanguage` for treating template body as HTML | When implementing multi-language file support (Phase 4) |
-| `com.jetbrains.python.psi` API | Bundled in PyCharm | `PyExpression`, `PyFile` for analyzing embedded Python in `${...}` | When implementing Python expression analysis (Phase 4) |
-
----
-
-### Development Tools
-
-| Tool | Purpose | Notes |
-|------|---------|-------|
-| GrammarKit IntelliJ Plugin | IDE plugin for editing `.bnf` grammar files with live preview | Install in your development IDE: plugins.jetbrains.com/plugin/6606-grammar-kit |
-| GrammarKit Gradle Plugin | `org.jetbrains.grammarkit` Gradle plugin — invokes JFlex and GrammarKit generators as build tasks | Add to `build.gradle.kts` with `generateLexer` and `generateParser` tasks |
-| `runIde` Gradle task | Launches sandbox IDE with plugin loaded for manual testing | Already configured in scaffold via `intellijPlatform { runIde }` |
-| Plugin Verifier | Validates binary compatibility across IntelliJ versions | Already configured via `pluginVerification { ides { recommended() } }` |
+**`FileViewProviderFactory` interface** (from `util-8.jar`):
+```java
+interface FileViewProviderFactory {
+    FileViewProvider createFileViewProvider(
+        VirtualFile file,
+        Language language,
+        PsiManager manager,
+        boolean eventSystemEnabled
+    );
+}
+```
 
 ---
 
-## Gradle Configuration Required
+## Architecture: What to Build
 
-The following changes are needed to `build.gradle.kts` and `gradle.properties` to support GrammarKit-based generation:
+Three new classes are needed. Nothing else changes.
+
+### Class 1: `MakoHtmlTemplateDataElementType` (optional subclass)
+
+OR simply a top-level constant. The simplest approach is a singleton val:
 
 ```kotlin
-// build.gradle.kts additions
+// In MakoFileViewProvider.kt or MakoTokenTypes.kt companion object
+val OUTER_ELEMENT_TYPE = OuterLanguageElementType("MAKO_OUTER_ELEMENT", MakoLanguage)
 
-plugins {
-    // Add to existing plugins block:
-    id("org.jetbrains.grammarkit") version "2022.3.2"  // verify current version
+val MAKO_TEMPLATE_DATA = TemplateDataElementType(
+    "MAKO_TEMPLATE_DATA",
+    HTMLLanguage.INSTANCE,
+    MakoTokenTypes.TEMPLATE_TEXT,    // these tokens become the HTML sub-tree content
+    OUTER_ELEMENT_TYPE                // Mako directive tokens become placeholders in HTML tree
+)
+```
+
+The `createBaseLexer` default implementation in `TemplateDataElementType` calls `getBaseLanguage()` on the view provider and creates a new `MakoLexerAdapter` via `ParserDefinition.createLexer()`. This is correct for Mako — the same lexer that produces `TEMPLATE_TEXT` tokens is used to split the file.
+
+### Class 2: `MakoFileViewProvider`
+
+```kotlin
+class MakoFileViewProvider(
+    manager: PsiManager,
+    virtualFile: VirtualFile,
+    eventSystemEnabled: Boolean,
+    private val myTemplateDataLanguage: Language = HTMLLanguage.INSTANCE
+) : MultiplePsiFilesPerDocumentFileViewProvider(manager, virtualFile, eventSystemEnabled),
+    TemplateLanguageFileViewProvider {
+
+    override fun getBaseLanguage(): Language = MakoLanguage
+
+    override fun getTemplateDataLanguage(): Language = myTemplateDataLanguage
+
+    override fun getLanguages(): Set<Language> = setOf(MakoLanguage, myTemplateDataLanguage)
+
+    override fun createFile(lang: Language): PsiFile? = when (lang) {
+        MakoLanguage -> {
+            // Create MakoFile — same as MakoParserDefinition does today
+            val def = LanguageParserDefinitions.INSTANCE.forLanguage(MakoLanguage)
+            def?.createFile(this)
+        }
+        myTemplateDataLanguage -> {
+            // Create HTML PSI — delegate to HTML's ParserDefinition
+            val def = LanguageParserDefinitions.INSTANCE.forLanguage(myTemplateDataLanguage)
+            (def?.createFile(this) as? PsiFileImpl)?.also {
+                it.contentElementType = MAKO_TEMPLATE_DATA
+            }
+        }
+        else -> null
+    }
+
+    override fun getContentElementType(language: Language): IElementType? =
+        if (language == myTemplateDataLanguage) MAKO_TEMPLATE_DATA else null
+
+    override fun cloneInner(fileCopy: VirtualFile): MultiplePsiFilesPerDocumentFileViewProvider =
+        MakoFileViewProvider(manager, fileCopy, false, myTemplateDataLanguage)
 }
+```
 
-// GrammarKit tasks — run before compilation
-tasks {
-    generateLexer {
-        sourceFile.set(file("src/main/java/com/github/kimuth/jetbrainsmakotemplateplugin/lang/MakoLexer.flex"))
-        targetOutputDir.set(file("src/main/gen/com/github/kimuth/jetbrainsmakotemplateplugin/lang"))
-        purgeOldFiles.set(true)
-    }
+**Key design decision on `getTemplateDataLanguage`:** The RST plugin (canonical bundled reference) hardcodes `PythonLanguage.getInstance()`. For Mako, hard-code `HTMLLanguage.INSTANCE` as the default. Optionally read `TemplateDataLanguageMappings.getInstance(manager.project).getMapping(virtualFile)` to let users override via Settings > Languages & Frameworks > Template Data Languages — this is the idiomatic platform pattern for configurable template data language mappings.
 
-    generateParser {
-        sourceFile.set(file("src/main/java/com/github/kimuth/jetbrainsmakotemplateplugin/lang/Mako.bnf"))
-        targetRootOutputDir.set(file("src/main/gen"))
-        pathToParser.set("/com/github/kimuth/jetbrainsmakotemplateplugin/lang/parser/MakoParser.java")
-        pathToPsiRoot.set("/com/github/kimuth/jetbrainsmakotemplateplugin/lang/psi")
-        purgeOldFiles.set(true)
-    }
+### Class 3: `MakoFileViewProviderFactory`
 
-    compileKotlin {
-        dependsOn(generateLexer, generateParser)
-    }
-
-    compileJava {
-        dependsOn(generateLexer, generateParser)
-    }
-}
-
-// Add generated sources to source sets
-sourceSets {
-    main {
-        java.srcDirs("src/main/gen")
+```kotlin
+class MakoFileViewProviderFactory : FileViewProviderFactory {
+    override fun createFileViewProvider(
+        file: VirtualFile,
+        language: Language,
+        manager: PsiManager,
+        eventSystemEnabled: Boolean
+    ): FileViewProvider {
+        // Honor user's per-file language mapping; default to HTML
+        val templateDataLanguage =
+            TemplateDataLanguageMappings.getInstance(manager.project).getMapping(file)
+                ?: HTMLLanguage.INSTANCE
+        return MakoFileViewProvider(manager, file, eventSystemEnabled, templateDataLanguage)
     }
 }
 ```
 
-```toml
-# gradle/libs.versions.toml additions
-[versions]
-grammarKit = "2022.3.2"   # VERIFY: check https://github.com/JetBrains/Grammar-Kit/releases
+### plugin.xml Change
 
-[plugins]
-grammarKit = { id = "org.jetbrains.grammarkit", version.ref = "grammarKit" }
-```
+Add one extension inside the existing `<extensions defaultExtensionNs="com.intellij">` block:
 
 ```xml
-<!-- plugin.xml: replace com.intellij.modules.platform with expanded dependencies -->
-<depends>com.intellij.modules.platform</depends>
-<depends>com.intellij.modules.lang</depends>
-<depends optional="true" config-file="mako-python.xml">com.intellij.modules.python</depends>
+<!-- HTML language injection via TemplateLanguageFileViewProvider -->
+<lang.fileViewProviderFactory
+    language="Mako Template"
+    implementationClass="com.schtilig.mako.lang.MakoFileViewProviderFactory"/>
 ```
 
-**Confidence for GrammarKit Gradle plugin version `2022.3.2`:** LOW — verify at https://github.com/JetBrains/Grammar-Kit before using. The GrammarKit Gradle plugin has historically lagged behind the IntelliJ plugin version numbering.
+No other plugin.xml changes are needed. The existing `com.intellij.modules.platform` dependency already provides `HTMLLanguage` and `HtmlFileType`. No additional module dependency is required.
 
 ---
 
-## Multi-Language Architecture Decision
+## What NOT to Change
 
-**The right approach for Mako is: Custom Language + Language Injection (not pure language injection).**
-
-Do NOT use pure language injection (registering Mako as an injected fragment in HTML). Mako IS the host language — it controls the file's structure. HTML and Python are the guests.
-
-**Architecture:**
-
-```
-MakoLanguage (host)
-├── MakoFileType (.mako extension)
-├── MakoLexer (JFlex-generated) — tokenizes entire file
-├── MakoParser (GrammarKit-generated) — builds PSI tree
-├── MakoPsiFile (root PSI element)
-│
-├── HTML injection: inject com.intellij.HTMLLanguage into template body regions
-│   └── InjectedLanguageManager.getInstance(project).injectLanguagesIn(element, ...)
-│
-└── Python injection: inject com.jetbrains.python.PythonLanguage into:
-    ├── ${...} expression blocks
-    ├── <% ... %> code blocks
-    ├── <%! ... %> module-level blocks
-    └── % for/if/while control lines (Python expression portion)
-```
-
-**Key API:** `com.intellij.lang.injection.MultiHostInjector` is the correct interface for injecting multiple languages into host PSI elements. Register via `com.intellij.multiHostInjector` extension point.
-
-**Alternative considered:** `TemplateDataLanguageMappings` + `com.intellij.lang.fileViewProviderFactory` — used by Twig, Blade, and Velocity plugins for template languages. This approach treats the file as HTML with a template overlay. It is simpler for the HTML case but makes Python injection harder and gives less control over Mako-specific PSI structure. **Do not use this for Mako.**
+| Component | Status | Why Leave Alone |
+|-----------|--------|-----------------|
+| `MakoLanguage` extending `TemplateLanguage` | Already correct | Platform detects TemplateLanguage for template data language mapping UI |
+| `MakoParserDefinition` | No changes needed | `createFile()` is called by `MakoFileViewProvider.createFile(MakoLanguage)` — no direct invocation change |
+| `MakoFile` constructor | No changes needed | `MakoFile(viewProvider)` still receives the `MakoFileViewProvider` — PsiFileBase handles multi-provider correctly |
+| `MakoPythonInjector` | No changes needed | Python injection via `MultiHostInjector` is orthogonal to the template language mechanism; both coexist |
+| All other features (folding, structure view, annotator, completion) | No changes needed | These operate on the Mako PSI tree (base language); the HTML PSI tree is separate |
+| `MakoTokenTypes.TEMPLATE_TEXT` | No changes needed | This is the token passed as `templateElementType` to `TemplateDataElementType` |
 
 ---
 
@@ -184,76 +211,73 @@ MakoLanguage (host)
 
 | Avoid | Why | Use Instead |
 |-------|-----|-------------|
-| `gradle-intellij-plugin` 1.x (old) | Deprecated; replaced by `org.jetbrains.intellij.platform` 2.x | `org.jetbrains.intellij.platform` 2.11.0 (already configured) |
-| `org.jetbrains.changelog` 3.x (if released) | Verify — 2.5.0 is configured and working | Stay on 2.5.0 until verified |
-| Pure TextMate grammar (`.tmLanguage`) | No PSI tree = no completion, references, or refactoring | JFlex + GrammarKit for full PSI |
-| RegexFilter-based syntax highlighting only | Cannot handle nested constructs or context-sensitive tokens like `${` inside HTML attributes | Full JFlex lexer with state machine |
-| `LanguageInjector` (single-language interface) | Only injects one language per host element | `MultiHostInjector` for injecting both HTML and Python into Mako regions |
-| Depending on `com.jetbrains.python` marketplace plugin | Creates fragile marketplace dependency; not guaranteed bundled | Depend on `com.intellij.modules.python` bundled module (PyCharm-only) |
-| JUnit 5 without platform test framework confirmation | IntelliJ Platform test framework still primarily targets JUnit 4 for `BasePlatformTestCase` | Keep JUnit 4 until JUnit 5 migration path is confirmed for IntelliJ Platform test classes |
-| Directly targeting IntelliJ IDEA Community (not PyCharm) | Python module not available; embedded Python analysis impossible | Target PyCharm as `<idea-version>` platform or use `com.intellij.modules.python` optional dependency with degraded mode |
+| `com.intellij.multiHostInjector` for HTML injection | MultiHostInjector injects language as a fragment into existing PSI hosts; for TEMPLATE_TEXT this would fight with the TemplateLanguageFileViewProvider mechanism | `TemplateLanguageFileViewProvider` + `TemplateDataElementType` (the platform's dedicated multi-PSI-tree mechanism) |
+| `fileType.fileViewProviderFactory` EP | Keyed by file type name (string), not language; works for generic file types not registered as a Language | `lang.fileViewProviderFactory` (keyed by language ID) |
+| Subclassing `TemplateDataElementType` | Not needed for basic HTML injection; the default `createBaseLexer` uses `MakoLexerAdapter` correctly | Use `TemplateDataElementType` directly as a singleton val |
+| Hard-coding `HTMLLanguage` without `TemplateDataLanguageMappings` fallback | Prevents users from configuring the template data language (e.g., plain text, XML) via Settings | Call `TemplateDataLanguageMappings.getInstance(project).getMapping(file)` first, fall back to `HTMLLanguage.INSTANCE` |
+| `ConfigurableTemplateLanguageFileViewProvider` | An empty marker interface extending `TemplateLanguageFileViewProvider` (verified: no additional methods); adds no functionality | Implement `TemplateLanguageFileViewProvider` directly |
 
 ---
 
 ## Alternatives Considered
 
-| Recommended | Alternative | When to Use Alternative |
-|-------------|-------------|-------------------------|
-| GrammarKit + JFlex for parser generation | Hand-written recursive descent parser | Only if grammar is too context-sensitive for BNF (Mako is not — it is mostly context-free with lexer states) |
-| MultiHostInjector for language injection | TemplateDataLanguageMappings | If building a simpler template plugin where the template language IS HTML-with-markers (e.g., Smarty, Twig); Mako has too much structure for this |
-| Depend on `com.intellij.modules.python` (PyCharm bundled) | Parse Python expressions with custom mini-parser | Only if targeting IntelliJ IDEA Community without Python support; creates massive scope increase |
-| Register MakoLanguage as custom Language subclass | Inject Mako as a dialect of HTML | Mako is not a dialect of HTML; the overall file structure is Mako-controlled with HTML regions embedded |
-| Custom color settings page via `colorSettingsPage` | Hard-code colors in `SyntaxHighlighter` | Hard-coding prevents user customization — always register a color settings page |
+| Recommended | Alternative | When Alternative Is Better |
+|-------------|-------------|---------------------------|
+| `TemplateLanguageFileViewProvider` + `TemplateDataElementType` | `MultiHostInjector` injecting HTML into TEMPLATE_TEXT PSI nodes | MultiHostInjector is appropriate when the HTML regions are small/scattered fragments, not whole-file structure. For Mako where TEMPLATE_TEXT IS the file's primary content, the FileViewProvider approach is the platform-intended design |
+| Hardcode default to `HTMLLanguage.INSTANCE` | Use only `TemplateDataLanguageMappings` (no default) | If all Mako files are guaranteed to contain HTML; but Mako is used for text generation too, so a UI-configurable default is more correct |
+| Single `MAKO_TEMPLATE_DATA` constant for `TemplateDataElementType` | Separate subclass per template data language | Only needed if different lexer logic is required per data language; not the case for Mako |
+
+---
+
+## Reference Implementation: RST Plugin (PyCharm 2025.2.6)
+
+The `restructuredtext.jar` plugin bundled with PyCharm 2025.2.6 implements exactly this pattern for RST files embedding Python:
+
+| RST Component | Mako Equivalent |
+|---------------|-----------------|
+| `RestFileViewProvider` | `MakoFileViewProvider` |
+| `RestFileProviderFactory` | `MakoFileViewProviderFactory` |
+| `RestPythonTemplateType` (extends `TemplateDataElementType`) | `MAKO_TEMPLATE_DATA` constant (no subclass needed) |
+| `RestPythonElementTypes.PYTHON_BLOCK_DATA` | `MAKO_TEMPLATE_DATA` |
+| Returns `PythonLanguage.getInstance()` from `getTemplateDataLanguage()` | Returns `HTMLLanguage.INSTANCE` |
+| Registered as `lang.fileViewProviderFactory language="ReST"` | Register as `lang.fileViewProviderFactory language="Mako Template"` |
 
 ---
 
 ## Version Compatibility
 
-| Package | Compatible With | Notes |
-|---------|-----------------|-------|
-| IntelliJ Platform 2025.2.5 (build 252) | GrammarKit 2022.3+ | GrammarKit PSI generation API has been stable since 2022; verify no breaking changes in 252 |
-| IntelliJ Platform 2025.2.5 | Python plugin bundled in PyCharm 2025.2 | Python PSI API (`com.jetbrains.python.psi`) is stable but internal — annotate with `@ApiStatus.Internal` awareness |
-| Kotlin 2.3.0 | IntelliJ Platform 252 | Platform 252 uses Kotlin 2.x internals; Kotlin 2.3.0 plugin code is compatible |
-| JFlex 1.9.x | GrammarKit 2022.3+ | GrammarKit bundles JFlex; do NOT add JFlex as a separate Gradle dependency — let GrammarKit manage it |
-| Gradle 9.3.1 | IntelliJ Platform Gradle Plugin 2.11.0 | Confirmed — scaffold already uses this combination |
+| Component | Platform Version | Notes |
+|-----------|-----------------|-------|
+| `TemplateLanguageFileViewProvider` | Stable since IntelliJ Platform 2017+; present in build 252 | API unchanged — `getBaseLanguage()`, `getTemplateDataLanguage()`, `getContentElementType()` |
+| `TemplateDataElementType` constructor `(String, Language, IElementType, IElementType)` | Stable since IntelliJ Platform 2017+; present in build 252 | Verified in `app-client.jar` from PyCharm 2025.2.6 Gradle download |
+| `TemplateDataLanguageMappings` | Project service; present in build 252 | `getInstance(project)`, `getMapping(file)`, `getDefaultMapping(file)` verified |
+| `HTMLLanguage.INSTANCE` | Always available in PyCharm (depends on `com.intellij.modules.platform` or bundled HTML plugin) | In `app-client.jar` — no additional module dependency needed |
+| `lang.fileViewProviderFactory` EP | Present in `LangExtensionPoints.xml` and `PyCharmCorePlugin.xml` from PyCharm 2025.2.6 | Double-confirmed in two XML sources |
+| `MultiplePsiFilesPerDocumentFileViewProvider` | Present in `app-client.jar` from PyCharm 2025.2.6 | Stable API; `cloneInner` and `createFile` signatures unchanged |
 
 ---
 
-## Stack Patterns by Variant
+## Implications for Testing
 
-**If targeting PyCharm only (current plan):**
-- Declare hard dependency on `com.intellij.modules.python`
-- Inject Python PSI directly into `${...}` blocks via MultiHostInjector
-- Access `PyExpression` for type inference and completion in expressions
-- Configure `platformVersion = 2025.2.5` (PyCharm Professional build)
+The existing test infrastructure (`BasePlatformTestCase`) supports multi-PSI file tests. For HTML injection:
 
-**If targeting both PyCharm and IntelliJ IDEA:**
-- Make Python dependency optional: `<depends optional="true" config-file="mako-python.xml">com.intellij.modules.python</depends>`
-- Implement graceful degradation: syntax highlighting works everywhere, Python expression analysis only in PyCharm
-- Use `LanguageUtil.isInjectedLanguageFragment()` guards around Python PSI access
-- Significantly increases complexity — not recommended for v1
-
-**If grammar becomes too complex for GrammarKit BNF:**
-- Fall back to hand-written `PsiParser` implementing `com.intellij.lang.PsiParser`
-- Keep JFlex lexer (it handles the complex tokenization states well)
-- This is the approach used by some complex language plugins (e.g., Rust plugin)
-- Mako grammar is not complex enough to require this in v1
+- HTML completion tests: `myFixture.configureByText(MakoFileType, "<div><caret>")` then `myFixture.completeBasic()` — should offer HTML tag completions
+- Verify Mako PSI still works: existing parser tests should pass unchanged
+- Verify Python injection still works: existing `MakoPythonInjectorTest` tests should pass unchanged
+- The `MakoFileViewProvider` must be registered before `MakoParserDefinition` in the `IdeaTestFixture` — platform registration order matters in tests
 
 ---
 
 ## Sources
 
-- IntelliJ Platform Docs — Custom Language Support Tutorial: https://plugins.jetbrains.com/docs/intellij/custom-language-support-tutorial.html (HIGH confidence for API names; verify extension point names for build 252)
-- IntelliJ Platform Docs — Language Injection: https://plugins.jetbrains.com/docs/intellij/language-injection.html (MEDIUM confidence for MultiHostInjector API)
-- IntelliJ Platform Docs — Syntax Highlighting and Error Highlighting: https://plugins.jetbrains.com/docs/intellij/syntax_errors.html (HIGH confidence — stable API)
-- Grammar-Kit GitHub: https://github.com/JetBrains/Grammar-Kit (LOW confidence for current version number — check releases page)
-- IntelliJ Platform Gradle Plugin 2.x docs: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html (HIGH confidence — this is the current tooling)
-- Existing scaffold `gradle.properties` and `build.gradle.kts` — confirms platform version 2025.2.5, build 252, Gradle 9.3.1, Kotlin 2.3.0, IntelliJ Platform Gradle Plugin 2.11.0 (HIGH confidence — directly observed)
-- Training knowledge (August 2025 cutoff) — GrammarKit API patterns, MultiHostInjector usage, PSI generation workflow (MEDIUM confidence — verify before implementing)
-
-**Note on GrammarKit version:** Training data indicates GrammarKit 2022.3.x as the most recently stable Gradle plugin version. This MUST be verified before implementation. Check: https://github.com/JetBrains/Grammar-Kit/releases and the Gradle plugin portal at https://plugins.gradle.org/plugin/org.jetbrains.grammarkit
+- PyCharm Community 2025.2.6 `app-client.jar` — `javap -p` on `TemplateLanguageFileViewProvider`, `TemplateDataElementType`, `TemplateDataLanguageMappings`, `MultiplePsiFilesPerDocumentFileViewProvider`, `OuterLanguageElementType`, `TemplateDataLanguagePatterns`, `ConfigurableTemplateLanguageFileViewProvider`, `HTMLLanguage`, `HtmlFileType` (HIGH confidence — primary source)
+- PyCharm Community 2025.2.6 `util-8.jar` — `javap -p` on `TemplateLanguageFileViewProvider`, `FileViewProviderFactory`, `ITemplateDataElementType`, `OuterLanguageElement` (HIGH confidence — primary source)
+- PyCharm Community 2025.2.6 `restructuredtext.jar` (bundled plugin) — `javap -p` on `RestFileViewProvider`, `RestFileProviderFactory`, `RestPythonTemplateType`, `RestPythonElementTypes`; `META-INF/plugin.xml` showing `lang.fileViewProviderFactory language="ReST"` registration (HIGH confidence — canonical reference implementation)
+- `META-INF/LangExtensionPoints.xml` extracted from `app-client.jar` — `lang.fileViewProviderFactory` EP definition with `LanguageExtensionPoint` beanClass confirmed (HIGH confidence — authoritative EP list)
+- `META-INF/PyCharmCorePlugin.xml` extracted from `app-client.jar` — dual confirmation of `lang.fileViewProviderFactory` EP registration and `TemplateDataLanguagePatterns` application service (HIGH confidence)
+- JetBrains IntelliJ Platform community discussion: https://intellij-support.jetbrains.com/hc/en-us/community/posts/206765105-Tutorial-Custom-templating-language-plugin (MEDIUM confidence — confirms architectural pattern)
 
 ---
 
-*Stack research for: JetBrains Mako Template Language Plugin*
-*Researched: 2026-02-19*
+*Stack research for: HTML language injection into Mako template plugin (JetBrains IntelliJ Platform 2025.2+)*
+*Researched: 2026-02-22*

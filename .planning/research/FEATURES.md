@@ -1,24 +1,29 @@
 # Feature Research
 
-**Domain:** JetBrains language support plugin — Mako template language for PyCharm
-**Researched:** 2026-02-19
-**Confidence:** MEDIUM (IntelliJ Platform API feature categories verified from official documentation structure; specific API names from training data through August 2025 — flag for version verification)
+**Domain:** HTML language injection in a JetBrains Mako template plugin (v0.3.0 milestone)
+**Researched:** 2026-02-22
+**Confidence:** MEDIUM (IntelliJ Platform TemplateLanguageFileViewProvider behavior confirmed from multiple official JetBrains sources and community reference implementations; specific CSS/JS sub-injection behavior confirmed from JetBrains developer statements; Emmet behavior in template data language context confirmed from Pebble plugin documentation)
 
 ---
 
 ## Research Notes
 
-**Sources used:**
-- Project documentation: `.planning/PROJECT.md`, `.planning/codebase/` analysis files
-- IntelliJ Platform SDK Docs knowledge (training data, August 2025 cutoff)
-- Comparable plugins known from training: PyCharm's Jinja2/Django template support, Thymeleaf plugin, FreeMarker plugin, Velocity plugin, IntelliJ IDEA's built-in HTML/XML support
-- IntelliJ Platform Custom Language Support Tutorial (training data)
+**Scope:** This document covers features unlocked by HTML language injection only. It assumes the existing plugin (v0.2.0) already provides: file type recognition, lexer, parser, PSI tree, Python injection, syntax highlighting, code folding, structure view, tag completion, and error annotations. This research answers: "When HTML injection is added, what do users gain, what needs explicit implementation work, and what should be avoided?"
 
-**Confidence notes:**
-- Feature categories (what types of features language plugins provide) — HIGH confidence from official IntelliJ Platform documentation structure
-- API extension point names (e.g., `SyntaxHighlighter`, `CompletionContributor`) — MEDIUM confidence; stable APIs but verify exact names against current platform version 2025.2.5
-- Competitor feature sets (Jinja2, Thymeleaf) — MEDIUM confidence; observed behavior may have changed
-- Mako-specific complexity assessments — MEDIUM confidence; based on Mako language spec knowledge
+**How TemplateLanguageFileViewProvider works (architecture prerequisite):**
+The platform's `TemplateLanguageFileViewProvider` (implemented via `MultiplePsiFilesPerDocumentFileViewProvider`) creates two PSI trees from the same document bytes:
+1. The Mako PSI tree — already exists; contains all nodes (MakoFile, MakoDefTag, MakoExpression, MakoCodeBlock, TEMPLATE_TEXT leaves, etc.)
+2. An HTML PSI tree — built by parsing only the TEMPLATE_TEXT tokens; Mako-specific regions appear as opaque `OuterLanguageElement` leaves in this tree
+
+With `TemplateDataElementType` wiring the TEMPLATE_TEXT tokens into the HTML parser, the HTML plugin's full feature set activates for those regions. The Mako plugin provides this wiring; the HTML plugin provides the features.
+
+**Sources used:**
+- JetBrains community tutorial: "Tutorial: Custom templating language plugin" (intellij-support.jetbrains.com)
+- JetBrains developer statement on TemplateDataElementType: "you'll get that for almost free" — confirms automatic OuterLanguageElement insertion
+- JetBrains developer statement on CSS/JS: "JavaScript gets embedded into the HTML tree automatically in the presence of JS plugin" — confirms CSS/JS sub-injection is automatic
+- Pebble IntelliJ plugin documentation: confirms Emmet works after Template Data Language set to HTML
+- YouTrack PY-13775: "Setting Template Data Language for Mako templates has no effect" — confirms current Mako plugin does NOT have TemplateLanguageFileViewProvider; this v0.3.0 work fixes that gap
+- JetBrains Platform SDK: FileViewProviders, Language Injection documentation
 
 ---
 
@@ -26,142 +31,129 @@
 
 ### Table Stakes (Users Expect These)
 
-Features users assume exist. Missing these = product feels incomplete. These are standard for any language plugin in JetBrains IDEs.
+These are the features users expect the moment they see "HTML injection" in the plugin's changelog. Missing any of these makes HTML injection feel broken or incomplete.
 
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| **File type registration** (.mako, .html with Mako) | Without it, files open as plain text with no features | LOW | Register `FileType` + `FileTypeFactory`; associate `.mako` extension. `.html` detection requires content-based sniffing (checking for Mako markers like `<%` or `${`) — adds complexity |
-| **Syntax highlighting** — Mako constructs | Every language plugin provides this; plain text is the baseline users are escaping | MEDIUM | Requires `Lexer` + `SyntaxHighlighter` + color scheme descriptor. Complexity comes from three embedded languages: HTML structure, Mako directives, Python expressions |
-| **Syntax highlighting** — embedded HTML | Templates are primarily HTML; users expect HTML colors inside `.mako` files | MEDIUM | Requires language injection or multi-language file support to hand off HTML regions to IDE's HTML highlighter |
-| **Syntax highlighting** — embedded Python | `${expr}`, `% for`, `% if` lines contain Python; users expect Python colors | HIGH | Python language injection into Mako expression/control regions; depends on PyCharm Python plugin being present |
-| **Code folding** — blocks and defs | Large templates are unreadable without folding `<%def>`, `<%block>`, control structures | MEDIUM | `FoldingBuilder` extension point. Fold regions: `<%def name="...">...</%def>`, `<%block name="...">...</%block>`, `% for/if/while` blocks |
-| **Brace/tag matching** | Users expect `<%def>` to highlight its matching `</%def>`; standard IDE behavior | LOW | `BraceMatcher` or `PairedBraceMatcher` extension point |
-| **Comment/uncomment** | Ctrl+/ to toggle `##` line comments in Mako | LOW | `Commenter` extension point. Mako uses `## comment` for line comments and `<%doc>...</%doc>` for block comments |
-| **Basic error annotation** — malformed Mako | Red squiggle on syntactically invalid Mako (unclosed `<%def>`, etc.) | MEDIUM | `Annotator` or `ExternalAnnotator` extension point. Parser-level errors surface automatically from a correct grammar |
-| **File icon** | `.mako` files should show a Mako icon, not a generic file icon | LOW | Register file icon in `FileType` definition; create 16x16 SVG icon |
-| **File structure view** | Ctrl+F12 or Structure panel showing defs/blocks in the file | MEDIUM | `StructureViewBuilder` + `TreeElement` hierarchy. Show all `<%def>` and `<%block>` declarations as named nodes |
+| Feature | Why Expected | Complexity | Automatic vs. Explicit | Notes |
+|---------|--------------|------------|------------------------|-------|
+| **HTML syntax coloring in template body** | The template body is HTML — without coloring it looks like plain text; users already experience this in `.html` files | LOW (once TemplateLanguageFileViewProvider is wired) | AUTOMATIC — HTML SyntaxHighlighter runs on HTML PSI tree | The HTML PSI tree covers all TEMPLATE_TEXT tokens; zero per-token wiring needed in the Mako plugin |
+| **HTML tag completion (`<div>`, `<span>`, etc.)** | Users type `<` and expect tag suggestions just like in `.html` files | LOW (once TemplateLanguageFileViewProvider is wired) | AUTOMATIC — HTML CompletionContributor fires in HTML PSI context | Requires correct `getLanguages()` in FileViewProvider returning both Mako and HTML |
+| **HTML attribute completion (`class=`, `href=`, `id=`, etc.)** | Users click inside a tag and expect attribute suggestions | LOW | AUTOMATIC — HTML CompletionContributor provides attributes for known tags | Works for standard HTML tags; custom attributes require HTML schema customization (out of scope) |
+| **HTML error squiggles for malformed markup** | Users expect red underlines on `<div class=` (missing value) or `<diiv>` (unknown tag) | MEDIUM | MOSTLY AUTOMATIC — HTML Annotator runs on HTML PSI tree; Mako syntax regions appear as OuterLanguageElements and are skipped | Risk: `${...}` inside HTML attributes may still produce false positives if the HTML parser misinterprets the EXPR_START token boundary — needs testing |
+| **HTML tag auto-closing** | Typing `<div>` and getting `</div>` inserted automatically | LOW | AUTOMATIC — HTML plugin's TypedHandler handles this in HTML PSI context | No Mako-specific code needed |
+| **HTML brace/tag matching** | Clicking `<div>` highlights matching `</div>` | LOW | AUTOMATIC — HTML's BraceMatcher applies in HTML PSI context | Coexists with existing Mako `MakoPairedBraceMatcher`; they operate on different token types |
+| **Default template data language configured to HTML for .mako files** | Without a default, users must manually go to Settings > Template Data Languages and set HTML for every project; this friction defeats the purpose | MEDIUM | EXPLICIT — requires `templateDataLanguageProvider` extension point registration | Must register `com.intellij.fileType.templateDataLanguageProvider` pointing to HTML for `MakoFileType`; confirmed by PY-13775 that this does not exist in the current plugin |
 
 ### Differentiators (Competitive Advantage)
 
-Features that set the product apart. Not required, but valuable — these raise the plugin from "usable" to "excellent."
+These features come from HTML injection but are not universally expected by Mako users. They represent the "above and beyond" value of proper HTML injection.
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| **Code completion** — Mako tags and attributes | Autocomplete `<%def`, `<%block`, `<%inherit href="...">` etc. | MEDIUM | `CompletionContributor` extension point. Can be done without Python integration for Mako-specific keywords |
-| **Code completion** — Python expressions in `${...}` | Reuse PyCharm's Python completion inside expression blocks | HIGH | Requires language injection into Python plugin's scope. Dependent on Python plugin dependency declaration in `plugin.xml` |
-| **Go-to-definition** — template inheritance (`<%inherit>`) | Ctrl+click on `<%inherit href="base.html">` navigates to the base template file | MEDIUM | `PsiReference` on the `href` attribute of `<%inherit>` tags; resolves to file path relative to project |
-| **Go-to-definition** — include/namespace resolution | Ctrl+click on `<%include file="...">` and `<%namespace file="...">` navigates to referenced file | MEDIUM | Same mechanism as inheritance — `PsiReference` on file path strings |
-| **Go-to-definition** — def calls within templates | Navigating from `${self.body()}` or `${next.body()}` to the def declaration | HIGH | Requires cross-file PSI reference resolution; depends on namespace resolution working correctly |
-| **Find usages** of template defs | "Find all usages" for a `<%def name="foo">` across the project | HIGH | Requires `PsiNamedElement` + `UsageSearcher`; depends on go-to-definition being implemented first |
-| **Rename refactoring** — defs | Rename `<%def name="foo">` and update all call sites | HIGH | Requires `PsiNamedElement` + `RenameHandler`; depends on find usages |
-| **Live templates / code snippets** | Snippets for common Mako patterns (`<%def>`, `<%block>`, `% for`) | LOW | `LiveTemplate` registration in plugin.xml. High user value, low implementation cost |
-| **Inspections** — undefined variables | Flag `${undefined_var}` where variable is not defined in visible scope | HIGH | Requires Python type inference or at minimum scope tracking for `% for x in y:` bound variables |
-| **Inspections** — inherited template structure validation | Detect when a child template references a block `<%block name="x">` that doesn't exist in parent | HIGH | Requires cross-file analysis and understanding `<%inherit>` resolution |
-| **Settings panel** — file associations | Let users configure which `.html` extensions also get Mako treatment | LOW | `SearchableConfigurable` implementation; small UI with checkbox/pattern list |
-| **Breadcrumb navigation** | Show path like `base.html > content_block > sidebar_def` in editor gutter | MEDIUM | `BreadcrumbsInfoProvider` extension point; shows structural context while editing deep in a template |
-| **Color scheme customization** | Users can theme Mako-specific colors (expression delimiters, directive keywords, comments) | LOW | Color scheme descriptor in plugin.xml; the attributes are defined when implementing SyntaxHighlighter |
-| **HTML-aware completion inside Mako** | HTML tag/attribute completion works inside Mako template HTML regions | MEDIUM | Automatic if language injection into HTML is implemented correctly — the HTML plugin handles it |
+| Feature | Value Proposition | Complexity | Automatic vs. Explicit | Notes |
+|---------|-------------------|------------|------------------------|-------|
+| **Emmet abbreviation expansion in HTML regions** | Type `div.container>ul>li*3` then Tab and get fully expanded HTML — major productivity feature for HTML authors | LOW (once HTML injection is working) | AUTOMATIC — Emmet activates when caret is in HTML PSI context; confirmed by Pebble plugin docs | Emmet's language check looks at the PSI language at the caret position; if that position is in HTML PSI, Emmet fires. No plugin-side code needed. |
+| **CSS language injection inside `<style>` tags** | Users get CSS coloring, property completion, and lint inside inline style blocks | LOW (once HTML injection is working) | AUTOMATIC — HTML plugin injects CSS into `<style>` tags internally; confirmed by JetBrains developer: "JavaScript gets embedded into the HTML tree automatically in the presence of JS plugin" — same mechanism for CSS | The CSS injection comes from the HTML plugin, not the Mako plugin. The Mako plugin just needs the HTML tree; CSS injection happens inside that tree. |
+| **JavaScript injection inside `<script>` tags** | Users get JS coloring, completion, and lint inside inline script blocks | LOW (once HTML injection is working) | AUTOMATIC — HTML plugin injects JavaScript into `<script>` tags via `HtmlScriptContentProvider` | PyCharm Community includes JavaScript plugin. CSS/JS injection inside HTML sub-trees is a platform-level feature. |
+| **HTML code folding for long elements** | Long `<table>` or `<section>` blocks can be folded just like in `.html` files | LOW | AUTOMATIC — HTML FoldingBuilder applies to HTML PSI tree | Coexists with existing Mako FoldingBuilder for `<%def>`, `<%block>`, control flow. Both run. |
+| **HTML inspections (e.g., deprecated attributes, accessibility warnings)** | IDE flags `<font>` as deprecated, flags missing `alt` on `<img>` | LOW | AUTOMATIC — HTML inspections run on HTML PSI tree | Users who have these inspections enabled in `.html` files get them automatically |
+| **HTML live templates (e.g., `html5` snippet)** | Standard HTML live templates expand in `.mako` files just as in `.html` files | LOW | AUTOMATIC — live template language check matches HTML context | Zero plugin-side work |
+| **Breadcrumb navigation inside HTML structure** | Editor breadcrumb shows `body > main > section > div` as the user navigates | LOW | AUTOMATIC — HTML BreadcrumbsInfoProvider applies to HTML PSI tree | Users of breadcrumbs in HTML files get it in Mako files too |
+| **HTML reformatting (Ctrl+Alt+L) for template body** | Code formatter applies HTML indentation rules to template body regions | MEDIUM | PARTLY AUTOMATIC — `SimpleTemplateLanguageFormattingModelBuilder` delegates to HTML formatter; but must be registered for Mako language | Requires registering `lang.formatter` for Mako Template language pointing to `SimpleTemplateLanguageFormattingModelBuilder` or a custom formatter. If not registered, Ctrl+Alt+L does nothing useful. |
 
 ### Anti-Features (Commonly Requested, Often Problematic)
 
-Features that seem like good ideas but create disproportionate complexity or maintenance burden.
+These features seem desirable but create disproportionate implementation cost, user confusion, or maintenance burden.
 
 | Feature | Why Requested | Why Problematic | Alternative |
 |---------|---------------|-----------------|-------------|
-| **Template preview / render output** | "Show me what the HTML looks like" | Requires Mako Python runtime, project dependencies, context data — fundamentally an IDE plugin cannot execute arbitrary templates safely; maintenance nightmare | Out of scope per PROJECT.md. Direct users to run the application |
-| **Full Python semantic analysis inside `${...}` without Python plugin dependency** | Users want "intelligent" Python completion even in IntelliJ IDEA (non-PyCharm) | Reimplementing Python type inference is a years-long project; results will always be inferior to PyCharm's Python plugin | Declare hard dependency on Python plugin; PyCharm-only is the correct scope |
-| **Mako configuration file support** (`mako.conf`, application settings) | "Complete" support means touching config files too | Separate domain from template editing; config files use Python/INI syntax already supported by other plugins | Out of scope per PROJECT.md |
-| **Web framework integration** (Pyramid routes, TurboGears URL generation) | "Jump to route handler from template" | Framework-specific; creates N separate maintenance problems for N frameworks; breaks the single-responsibility of a template language plugin | Out of scope per PROJECT.md; let framework-specific plugins handle this |
-| **Auto-format / prettify Mako templates** | "Format Document" (Ctrl+Alt+L) for Mako | Extremely hard to implement correctly for a language that mixes HTML, Python, and Mako directives; formatting one layer breaks another | Implement basic indentation support only; defer full formatting. Recommend external formatters (e.g., `djlint`) as a separate tool |
-| **Real-time Mako lint integration** (running `mako` parser as external tool) | Catch all Mako errors, not just lexer-level ones | External process execution on every keystroke is slow and fragile; process lifecycle management is complex | Implement parser-level error detection within the plugin's own grammar instead |
+| **"Smart" HTML error suppression inside Mako expressions** | Users complain that `<div class="${some_expr}">` gets a false-positive attribute-value error | The OuterLanguageElement mechanism handles this at the PSI level — TEMPLATE_TEXT boundaries respect EXPR_START/EXPR_END tokens, so the HTML PSI tree sees the expression as an opaque leaf, not as malformed text. If errors still appear after correct TemplateDataElementType wiring, they come from HTML inspections, not the HTML parser. | Let the OuterLanguageElement mechanism do its job. If specific false positives persist, suppress them with a targeted `HtmlUnknownAttributeInspection` suppression rather than a blanket approach. Do not attempt to build a custom error-filter layer — too fragile. |
+| **Injecting HTML via MultiHostInjector (instead of TemplateLanguageFileViewProvider)** | Seems simpler — existing Python injection uses MultiHostInjector | MultiHostInjector is for injecting a foreign language into specific host PSI nodes. It cannot inject HTML into the whole "background" of a file (TEMPLATE_TEXT is not a single host node — it is many fragmented leaves across the Mako PSI tree). Attempting this produces fragmentary HTML PSI with no context between fragments — tag completion fails, folding fails, Emmet fails. | Use TemplateLanguageFileViewProvider. It is the correct mechanism for "the whole file background is language X." |
+| **Injecting HTML into TEMPLATE_TEXT via `languageInjectionContributor`** | Seems like a lighter-weight alternative | Same problem as MultiHostInjector above — injection-based approaches create isolated islands of HTML PSI, not a continuous HTML tree. Tag matching across a Mako expression boundary (e.g., `<div>${expr}</div>`) requires OuterLanguageElement continuity, which only TemplateLanguageFileViewProvider provides. | TemplateLanguageFileViewProvider is the only correct approach for this use case. |
+| **Configurable "template data language" beyond HTML** | Power users want to set data language to "plain text" or "XML" for non-HTML Mako templates | The `templateDataLanguageProvider` extension point sets the default. The IDE's Template Data Languages settings UI already lets users override per-file/folder — this is built into the platform. No custom UI needed. | Register the default as HTML via the extension point; let the platform's existing UI handle overrides. Do not build a custom settings panel for this. |
+| **HTML tag completion for Mako-specific pseudo-tags (`<%def>`, `<%block>`)** | Users might expect the HTML completion list to include Mako directives | Mako tags are not HTML tags. The existing Mako CompletionContributor handles `<%` completion already. Mixing Mako directives into the HTML completion list pollutes the HTML completions with non-HTML items and confuses users who expect valid HTML. | Keep Mako completion (in MakoCompletionContributor) and HTML completion (via HTML PSI) fully separate. They fire in different PSI contexts. |
+| **CSS-in-Python-expression highlighting** | Users want `<div style="${computed_style}">` to show CSS syntax inside the Python expression | The `${...}` region is Python-injected, not CSS. The content is a Python expression that happens to produce a CSS string at runtime — the IDE has no way to know this without runtime information. | Out of scope. The Python injection already provides Python completion inside `${...}`. Users who write runtime CSS strings can use IntelliJ's manual "Inject Language" action. |
 
 ---
 
 ## Feature Dependencies
 
 ```
-[File Type Registration]
-    └──required by──> [Syntax Highlighting]
-    └──required by──> [Code Folding]
-    └──required by──> [Comment/Uncomment]
-    └──required by──> [File Icon]
-    └──required by──> [File Structure View]
-    └──required by──> [All other features]
+[TemplateLanguageFileViewProvider + TemplateDataElementType]
+    └──enables──> [HTML Syntax Coloring in TEMPLATE_TEXT]
+    └──enables──> [HTML Tag Completion]
+    └──enables──> [HTML Attribute Completion]
+    └──enables──> [HTML Error Squiggles]
+    └──enables──> [HTML Auto-closing Tags]
+    └──enables──> [HTML Brace Matching]
+    └──enables──> [HTML Code Folding]
+    └──enables──> [HTML Inspections]
+    └──enables──> [Emmet Expansion]     (AUTOMATIC — HTML PSI context activates Emmet)
+    └──enables──> [CSS in <style> tags] (AUTOMATIC — HTML plugin handles internally)
+    └──enables──> [JS in <script> tags] (AUTOMATIC — HTML plugin handles internally)
+    └──enables──> [HTML Live Templates]
+    └──enables──> [Breadcrumb Navigation in HTML structure]
 
-[Lexer + Grammar (PSI)]
-    └──required by──> [Syntax Highlighting]
-    └──required by──> [Code Folding]
-    └──required by──> [Brace Matching]
-    └──required by──> [Basic Error Annotation]
-    └──required by──> [File Structure View]
-    └──required by──> [Code Completion — Mako tags]
-    └──required by──> [Go-to-definition]
+[templateDataLanguageProvider extension point]
+    └──required by──> [Default HTML language for .mako files]
+                           └──without this──> [Users must configure manually per-project]
 
-[HTML Language Injection]
-    └──required by──> [Syntax Highlighting — embedded HTML]
-    └──enhances──>    [HTML-aware completion inside Mako]
+[SimpleTemplateLanguageFormattingModelBuilder registration]
+    └──enables──> [HTML Reformatting (Ctrl+Alt+L)]
 
-[Python Language Injection]
-    └──required by──> [Syntax Highlighting — embedded Python]
-    └──required by──> [Code Completion — Python expressions]
-    └──required by──> [Inspections — undefined variables]
+[Existing MakoPythonInjector (already built)]
+    └──coexists-with──> [TemplateLanguageFileViewProvider]  (different layers, no conflict)
+    └──note──> MultiHostInjector operates on Mako PSI tree; TemplateLanguageFileViewProvider
+               creates a parallel HTML PSI tree; they do not interfere
 
-[Go-to-definition — file references]
-    └──required by──> [Find Usages]
-    └──required by──> [Rename Refactoring]
-    └──required by──> [Inspections — inherited template structure]
+[Existing MakoCompletionContributor (already built)]
+    └──coexists-with──> [HTML CompletionContributor]
+    └──risk──> contributor registered language='any' — fires in HTML PSI positions too;
+               existing MakoLanguage identity guard inside contributor prevents false firing
+               but must be verified in the HTML PSI context after TemplateLanguageFileViewProvider is added
 
-[Find Usages]
-    └──required by──> [Rename Refactoring]
+[Existing MakoFoldingBuilder (already built)]
+    └──coexists-with──> [HTML FoldingBuilder]
+    └──note──> both FoldingBuilders run; Mako folds <%def>/<%block>/control flow;
+               HTML folds <div>/<section> etc.; no conflict expected
+
+[Existing MakoAnnotator (already built)]
+    └──coexists-with──> [HTML Annotator]
+    └──note──> Mako annotator fires on Mako PSI tree; HTML annotator fires on HTML PSI tree;
+               they are independent; no conflict expected
 ```
 
 ### Dependency Notes
 
-- **File type registration requires nothing:** It is the foundation; everything else depends on it being correct.
-- **Lexer + Grammar is the second foundation:** The PSI tree built from parsing is consumed by highlighting, folding, structure view, completion, and navigation. Investing in a correct grammar early pays dividends across all later features.
-- **Language injection (HTML and Python) is the hardest architectural decision:** Decides whether Mako is a standalone language or a "host" language that injects regions into HTML/Python. This choice affects how all downstream features are built. See ARCHITECTURE.md.
-- **Python plugin dependency gates several features:** Code completion inside `${...}`, proper Python expression error detection, and variable inspection all require PyCharm's Python plugin. This is the correct design — don't re-implement Python analysis.
-- **Go-to-definition is prerequisite for refactoring:** Rename refactoring requires knowing all reference sites; finding reference sites requires the same resolution logic as go-to-definition.
+- **TemplateLanguageFileViewProvider is the single enabler:** All HTML features flow from this one architectural change. It is the prerequisite for everything in this milestone.
+- **CSS and JS injection are free:** Do not implement separate CSS or JS injectors — the HTML plugin handles them inside the HTML PSI tree automatically.
+- **Emmet is free:** Do not implement custom Emmet hooks — Emmet reads the PSI language at caret and fires in HTML context automatically.
+- **The templateDataLanguageProvider extension point is not optional:** Without it, HTML injection only works after the user manually configures the Template Data Language setting. This is too much friction — most users will not find it. The extension point makes HTML the default for `.mako` files at plugin install time.
+- **Existing features must be regression-tested:** TemplateLanguageFileViewProvider changes how `getContainingFile()` resolves for elements in the file — code in MakoFoldingBuilder, MakoStructureViewFactory, MakoAnnotator, and MakoPythonInjector must be verified to still resolve against the correct (Mako) PSI root, not the HTML PSI root.
 
 ---
 
 ## MVP Definition
 
-### Launch With (v1)
+### Launch With (v0.3.0)
 
-Minimum viable product — what users need to stop using plain text editing.
+Minimum viable HTML injection — what is needed to make the feature meaningful to users.
 
-- [ ] **File type registration** for `.mako` — without this, nothing else works and users have to configure it manually
-- [ ] **Syntax highlighting — Mako constructs** — the single biggest quality-of-life improvement; distinguishes directives from content
-- [ ] **Syntax highlighting — embedded HTML regions** — templates are HTML first; HTML coloring is expected
-- [ ] **Syntax highlighting — embedded Python** — `% for`, `% if`, `${...}` blocks look wrong without Python colors
-- [ ] **Code folding** for `<%def>`, `<%block>`, control flow blocks — large templates become navigable
-- [ ] **Comment/uncomment** (Ctrl+/) for `##` line comments — basic editing ergonomics
-- [ ] **File structure view** showing defs and blocks — navigate to any named construct quickly
-- [ ] **Brace/tag matching** for Mako tag pairs — standard IDE expectation
-- [ ] **File icon** for `.mako` files — visual identification in project tree
+- [ ] **TemplateLanguageFileViewProvider + TemplateDataElementType** — the foundational mechanism that creates the parallel HTML PSI tree from TEMPLATE_TEXT tokens; without this nothing else in this list works
+- [ ] **`templateDataLanguageProvider` extension point → HTML** — registers HTML as the default template data language for `.mako` files; without this the feature only works after manual per-project configuration
+- [ ] **Regression verification: existing Mako features still work** — folding, structure view, Python injection, completion, annotator must all pass their existing tests after the FileViewProvider change
+- [ ] **False-positive audit** — verify that Mako syntax (`${...}` in attribute values, `% for` control lines) does not produce HTML error squiggles; confirm OuterLanguageElement boundaries are correct
 
-### Add After Validation (v1.x)
+### Add After Validation (v0.3.x)
 
-Features to add once the core highlighting/structure layer is solid and users have validated it.
+Features to add once the core HTML injection is validated and shipped.
 
-- [ ] **Code completion — Mako tags and attributes** — add when user feedback confirms highlighting is working; completion requires PSI to be stable
-- [ ] **Go-to-definition** for `<%inherit>`, `<%include>`, `<%namespace>` file references — highest-value navigation feature
-- [ ] **Live templates** for common Mako constructs — low cost, high user satisfaction
-- [ ] **Basic error annotations** — parser-level errors for malformed Mako syntax
-- [ ] **Settings panel** for file associations — needed when users report `.html` files aren't being recognized
+- [ ] **HTML reformatting integration** — register `SimpleTemplateLanguageFormattingModelBuilder` for Mako language; lets Ctrl+Alt+L apply HTML formatting rules to the template body; risk: mixed-language reformatting can mangle Mako control lines — validate carefully before shipping
+- [ ] **MakoCompletionContributor guard verification** — the existing `language='any'` contributor may surface in HTML PSI positions in unexpected ways; add explicit guard if issues are found in testing
 
-### Future Consideration (v2+)
+### Future Consideration (v0.4+)
 
-Features to defer until product-market fit is established.
+Features that build on HTML injection but are separate milestones.
 
-- [ ] **Code completion — Python expressions inside `${...}`** — requires stable Python injection architecture; defer until injection is solid
-- [ ] **Go-to-definition — def call resolution** (cross-file) — requires complex reference resolution; substantial scope expansion
-- [ ] **Find usages of template defs** — depends on go-to-definition being complete
-- [ ] **Rename refactoring** — high complexity, depends on find usages
-- [ ] **Inspections — undefined variables** — requires Python type inference integration
-- [ ] **Inspections — inherited template structure** — requires cross-file analysis
-- [ ] **Breadcrumb navigation** — nice-to-have quality-of-life feature
+- [ ] **Go-to-definition for `<%inherit>`, `<%include>`, `<%namespace>` file references** — uses HTML PSI cross-file reference resolution pattern; depends on stable HTML injection
+- [ ] **HTML-aware inspections for Mako-specific attribute patterns** — e.g., detect invalid HTML produced by Mako expressions; requires understanding of runtime semantics
 
 ---
 
@@ -169,94 +161,84 @@ Features to defer until product-market fit is established.
 
 | Feature | User Value | Implementation Cost | Priority |
 |---------|------------|---------------------|----------|
-| File type registration (.mako) | HIGH | LOW | P1 |
-| Syntax highlighting — Mako constructs | HIGH | MEDIUM | P1 |
-| Syntax highlighting — embedded HTML | HIGH | MEDIUM | P1 |
-| Syntax highlighting — embedded Python | HIGH | HIGH | P1 |
-| Code folding (defs, blocks) | HIGH | MEDIUM | P1 |
-| Comment/uncomment | MEDIUM | LOW | P1 |
-| File structure view | HIGH | MEDIUM | P1 |
-| Brace/tag matching | MEDIUM | LOW | P1 |
-| File icon | LOW | LOW | P1 |
-| Code completion — Mako tags | HIGH | MEDIUM | P2 |
-| Go-to-definition — file references | HIGH | MEDIUM | P2 |
-| Live templates | HIGH | LOW | P2 |
-| Basic error annotations | MEDIUM | MEDIUM | P2 |
-| Settings panel (file associations) | LOW | LOW | P2 |
-| Code completion — Python expressions | HIGH | HIGH | P3 |
-| Go-to-definition — def calls | MEDIUM | HIGH | P3 |
-| Find usages | MEDIUM | HIGH | P3 |
-| Rename refactoring | MEDIUM | HIGH | P3 |
-| Inspections — undefined variables | HIGH | HIGH | P3 |
-| Inspections — inherited template structure | MEDIUM | HIGH | P3 |
-| Breadcrumb navigation | LOW | MEDIUM | P3 |
-| Color scheme customization | LOW | LOW | P2 |
+| TemplateLanguageFileViewProvider + TemplateDataElementType | HIGH | MEDIUM | P1 |
+| templateDataLanguageProvider → HTML default | HIGH | LOW | P1 |
+| HTML syntax coloring (automatic once FVP wired) | HIGH | LOW (free) | P1 |
+| HTML tag/attribute completion (automatic) | HIGH | LOW (free) | P1 |
+| HTML error squiggles (automatic, needs false-positive audit) | HIGH | LOW (free, MEDIUM for audit) | P1 |
+| Emmet expansion (automatic) | MEDIUM | LOW (free) | P1 |
+| CSS in `<style>` tags (automatic) | MEDIUM | LOW (free) | P1 |
+| JS in `<script>` tags (automatic) | MEDIUM | LOW (free) | P1 |
+| Regression verification of existing features | HIGH | MEDIUM | P1 |
+| HTML reformatting (Ctrl+Alt+L) | MEDIUM | MEDIUM | P2 |
+| CompletionContributor guard audit | LOW | LOW | P2 |
 
 **Priority key:**
-- P1: Must have for launch (MVP)
-- P2: Should have, add when possible (v1.x)
-- P3: Nice to have, future consideration (v2+)
+- P1: Must have for v0.3.0 launch
+- P2: Should have, add in v0.3.x
+- P3: Nice to have, future milestone
+
+---
+
+## Automatic vs. Explicit Implementation Summary
+
+This table directly answers the research question: which features come from TemplateLanguageFileViewProvider automatically, and which need explicit code.
+
+| Feature | Automatic or Explicit | What Triggers It | Risk |
+|---------|-----------------------|-----------------|------|
+| HTML syntax coloring | AUTOMATIC | HTML SyntaxHighlighter runs on HTML PSI tree | None |
+| HTML tag completion | AUTOMATIC | HTML CompletionContributor fires in HTML PSI | Verify `language='any'` Mako contributor doesn't conflict |
+| HTML attribute completion | AUTOMATIC | HTML CompletionContributor | None |
+| HTML tag auto-close | AUTOMATIC | HTML TypedHandler fires | None |
+| HTML brace/tag matching | AUTOMATIC | HTML BraceMatcher fires | None |
+| HTML code folding | AUTOMATIC | HTML FoldingBuilder fires | Coexistence with MakoFoldingBuilder — verify no overlap |
+| HTML inspections | AUTOMATIC | HTML Annotator fires on HTML PSI | Potential false positives where Mako syntax meets HTML boundaries |
+| Emmet expansion | AUTOMATIC | Emmet checks PSI language at caret — HTML = fire | None; confirmed by Pebble plugin docs |
+| CSS inside `<style>` tags | AUTOMATIC | HTML plugin injects CSS internally | None; platform handles it |
+| JS inside `<script>` tags | AUTOMATIC | HTML plugin injects JS via HtmlScriptContentProvider | None; platform handles it |
+| HTML live templates | AUTOMATIC | Live template language check hits HTML PSI | None |
+| HTML breadcrumbs | AUTOMATIC | HTML BreadcrumbsInfoProvider fires | None |
+| HTML reformatting | EXPLICIT | Must register `SimpleTemplateLanguageFormattingModelBuilder` for Mako | Mixed-language formatting can mangle control lines — test before shipping |
+| Default HTML for .mako files | EXPLICIT | Must register `templateDataLanguageProvider` extension point | Without it, users must configure manually — makes feature invisible |
+| HTML PSI tree construction from TEMPLATE_TEXT | EXPLICIT | Must implement `TemplateLanguageFileViewProvider` + `TemplateDataElementType` | Core implementation — everything else depends on this |
+| `fileViewProviderFactory` registration | EXPLICIT | Must register `com.intellij.fileType.fileViewProviderFactory` for MakoFileType | Plugin.xml extension point registration |
+| Python injection coexistence | EXPLICIT (verification) | Must verify MakoPythonInjector still works correctly after FileViewProvider change | Layers are separate but shared document coordinates must remain consistent |
 
 ---
 
 ## Competitor Feature Analysis
 
-Reference plugins analyzed from training data (MEDIUM confidence — behavior may have changed since training cutoff August 2025).
+Reference: how comparable template language plugins handle HTML injection.
 
-| Feature | PyCharm Jinja2/Django templates | Thymeleaf plugin (JetBrains) | IntelliJ FreeMarker/Velocity | Our Approach |
-|---------|--------------------------------|------------------------------|------------------------------|--------------|
-| File type registration | Yes — `.html` with Django/Jinja2 mode detection | Yes — `.html` with `th:` namespace detection | Yes — `.ftl`, `.vm` extensions | Register `.mako` + content-based sniffing for `.html` |
-| Syntax highlighting | Yes — directives, expressions, HTML coexist | Yes — Thymeleaf attrs highlighted in HTML | Yes — template tags highlighted | Same approach; three-language mixing |
-| Embedded Python/Java | Yes (Django templates) — variable/filter syntax highlighted | No Python; Java expressions via EL | FreeMarker/Velocity use their own expression language | Full Python embedding via PyCharm Python plugin injection |
-| Code completion | Yes — template tags, filters, variables from context | Yes — Thymeleaf attribute/expression completion | Yes — FTL/Velocity directive completion | Mako-specific completion; Python expressions defer to Python plugin |
-| Go-to-definition — file references | Yes — `{% include %}`, `{% extends %}` navigate to files | Yes — Thymeleaf `th:replace` navigates to fragments | Yes — `#include` navigates | `<%inherit>`, `<%include>`, `<%namespace>` file navigation |
-| Go-to-definition — defs/fragments | Yes — Django template tags, Jinja2 macros | Yes — Thymeleaf fragment navigation | Partial | `<%def>` navigation within and across files |
-| Refactoring | Partial — rename for some constructs | Partial | Partial | MVP defers refactoring; add in v2 |
-| Inspections / error detection | Yes — undefined variables, template syntax errors | Yes — Thymeleaf-specific validations | Partial | Start with parser-level; add semantic inspections in v2 |
-| Structure view | Yes | Yes | Partial | Show `<%def>` and `<%block>` nodes |
-| Code folding | Yes | Yes | Yes | Fold defs, blocks, control structures |
-| Live templates | Yes — snippet library for common patterns | Yes | Yes | Include from v1.x |
-| Multi-language file (HTML + template) | Yes — language injection approach | Yes | Yes | Core architectural challenge; language injection preferred |
+| Feature | Handlebars/Mustache plugin (JetBrains) | Pebble plugin (bjansen) | Django templates (PyCharm bundled) | Our Approach |
+|---------|-----------------------------------------|------------------------|-------------------------------------|--------------|
+| HTML injection mechanism | TemplateLanguageFileViewProvider | TemplateLanguageFileViewProvider | TemplateLanguageFileViewProvider | TemplateLanguageFileViewProvider — same pattern |
+| Default template data language | HTML (set by plugin) | Configured by user in Template Data Languages settings | HTML (set by plugin for `.html` Django files) | Register `templateDataLanguageProvider` → HTML |
+| Emmet in template files | Yes | Yes (confirmed in Pebble docs) | Yes | Automatic after TemplateLanguageFileViewProvider |
+| CSS in `<style>` tags | Yes | Yes | Yes | Automatic |
+| JS in `<script>` tags | Yes | Yes | Yes | Automatic |
+| False-positive HTML errors for template syntax | Handled by OuterLanguageElement in HTML PSI | Handled by OuterLanguageElement | Handled by OuterLanguageElement | Same mechanism — OuterLanguageElement leaves are opaque to HTML parser |
+| Formatting | SimpleTemplateLanguageFormattingModelBuilder | Registered | Registered | Register in v0.3.x |
 
-**Key insight from comparison:** All mature template language plugins for JetBrains IDEs share the same architectural pattern — language injection into HTML. Jinja2/Django, Thymeleaf, and FreeMarker all inject their template language tokens into an HTML host, allowing the HTML plugin to handle HTML features and the template plugin to handle template-specific features. This is the proven pattern for Mako.
+**Key insight:** Every mature IntelliJ template language plugin uses TemplateLanguageFileViewProvider for HTML injection. The pattern is fully established and de-risked by multiple production plugins. The Mako plugin's architecture (TemplateLanguage subclass, GrammarKit PSI, TEMPLATE_TEXT token type) aligns correctly with this pattern.
 
-**Gap identified:** No existing JetBrains plugin for Mako exists (verified by PROJECT.md). The closest analogues are Django template support (bundled in PyCharm) and Jinja2 support (PyCharm). Both handle Python-based templates with Python expression embedding — same problem domain as Mako.
-
----
-
-## Mako-Specific Syntax Coverage Checklist
-
-Mako has several unique constructs that must all be handled. This drives the grammar/lexer scope.
-
-| Mako Construct | Example | Feature Impact | Complexity |
-|----------------|---------|----------------|------------|
-| Expression substitution | `${variable}` | Highlighting, completion, Python injection | MEDIUM |
-| Expression with filters | `${x \| h,trim}` | Highlighting (pipe syntax is Mako-specific) | LOW |
-| Control lines | `% for x in items:` / `% endfor` | Highlighting, folding, indentation | MEDIUM |
-| Def blocks | `<%def name="foo(arg)">...</%def>` | Highlighting, structure view, go-to-def, folding | HIGH |
-| Named blocks | `<%block name="content">...</%block>` | Highlighting, structure view, go-to-def, folding | HIGH |
-| Inheritance | `<%inherit file="base.html"/>` | Highlighting, go-to-def (file reference) | MEDIUM |
-| Include | `<%include file="fragment.html"/>` | Highlighting, go-to-def (file reference) | LOW |
-| Namespace | `<%namespace file="lib.html" name="lib"/>` | Highlighting, go-to-def, completion for `lib.` calls | HIGH |
-| Module-level Python | `<%! import os %>` | Highlighting, Python injection | MEDIUM |
-| Page-level Python | `<% x = 1 %>` | Highlighting, Python injection | MEDIUM |
-| Page directive | `<%page args="x, y"/>` | Highlighting, argument tracking | MEDIUM |
-| Line comments | `## This is a comment` | Comment/uncomment feature | LOW |
-| Block comments | `<%doc>...</%doc>` | Highlighting, folding | LOW |
-| Tags with attributes | `<%def name="..." buffered="True">` | Attribute highlighting, completion | LOW |
-| Self/next/parent | `${self.body()}` | Highlighting, go-to-def (complex) | HIGH |
-| Unicode literals | Standard Python unicode in expressions | Handled by Python injection | LOW |
+**Confirmed gap:** YouTrack PY-13775 ("Setting Template Data Language for Mako templates has no effect") demonstrates that without TemplateLanguageFileViewProvider, even the IDE's manual Template Data Language setting has no effect on Mako files. This v0.3.0 milestone is the correct fix.
 
 ---
 
 ## Sources
 
-- Project documentation: `.planning/PROJECT.md` — Mako syntax constructs list, constraints, out-of-scope definitions
-- `.planning/codebase/ARCHITECTURE.md` — Existing plugin scaffold structure
-- IntelliJ Platform SDK documentation (training data, August 2025): Custom Language Support tutorial, extension point reference, Language Injection API
-- Comparable plugins (training data, MEDIUM confidence): PyCharm Django/Jinja2 template support, JetBrains Thymeleaf plugin, IntelliJ FreeMarker/Velocity support
-- Mako template language documentation (training data): https://docs.makotemplates.org/
+- JetBrains IntelliJ Support: "Tutorial: Custom templating language plugin" (intellij-support.jetbrains.com/hc/en-us/community/posts/206765105) — architecture of TemplateLanguageFileViewProvider
+- JetBrains IntelliJ Support: "Example of a custom language plugin for a templating language" (intellij-support.jetbrains.com/hc/en-us/community/posts/206780275) — "you'll get that for almost free" quote; JS automatic embedding confirmation
+- JetBrains IntelliJ Support: "Inject custom language into JS/CSS code" (intellij-support.jetbrains.com/hc/en-us/community/posts/204145604) — CSS/JS automatic behavior
+- Pebble IntelliJ Plugin (github.com/bjansen/pebble-intellij) — "Emmet expansions" listed as automatic after Template Data Language = HTML
+- JetBrains YouTrack PY-13775 (youtrack.jetbrains.com/issue/PY-13775) — confirms current Mako plugin lacks TemplateLanguageFileViewProvider; Template Data Language setting has no effect
+- JetBrains Documentation: "Template Data Languages" (jetbrains.com/help/idea/template-data-languages-settings.html) — feature list when data language is configured
+- JetBrains Documentation: "Template languages: Velocity and FreeMarker" (jetbrains.com/help/idea/template-data-languages.html) — reference for comparable template language features
+- IntelliJ Platform Plugin SDK: "File View Providers" (plugins.jetbrains.com/docs/intellij/file-view-providers.html)
+- IntelliJ Platform Plugin SDK: "Language Injection" (plugins.jetbrains.com/docs/intellij/language-injection.html)
 
 ---
-*Feature research for: JetBrains Mako template language plugin (PyCharm)*
-*Researched: 2026-02-19*
+
+*Feature research for: HTML language injection in Mako JetBrains plugin (v0.3.0 milestone)*
+*Researched: 2026-02-22*

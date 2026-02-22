@@ -1,172 +1,346 @@
 # Pitfalls Research
 
-**Domain:** JetBrains custom language plugin — Mako template language support for PyCharm
-**Researched:** 2026-02-19
-**Confidence:** MEDIUM (training knowledge; external verification blocked during research session)
+**Domain:** JetBrains custom language plugin — adding HTML injection via TemplateLanguageFileViewProvider to an existing Mako TemplateLanguage plugin
+**Researched:** 2026-02-22
+**Confidence:** MEDIUM-HIGH (web-verified patterns from official JetBrains SDK docs, community forum discussions, and open-source reference implementations; HTML-specific verification against JetBrains plugin source and community posts)
 
-> Note: WebSearch, WebFetch, and Bash tools were unavailable during this research session. All findings draw
-> from training knowledge of IntelliJ Platform plugin development patterns. Core platform APIs are stable
-> enough that training data is reliable for fundamentals; version-specific API changes should be verified
-> against the official IntelliJ Platform Plugin SDK docs before implementation.
+> This document supersedes the 2026-02-19 PITFALLS.md for the v0.3.0 milestone.
+> It focuses specifically on adding TemplateLanguageFileViewProvider + HTML injection to an
+> existing plugin that already has a working TemplateLanguage subclass, JFlex lexer, GrammarKit
+> parser, and MultiHostInjector-based Python injection. General plugin pitfalls from the earlier
+> document are preserved where still relevant.
 
 ---
 
 ## Critical Pitfalls
 
-### Pitfall 1: Stateful Lexer Breaks Incremental Re-Lexing
+### Pitfall 1: fileViewProviderFactory Registered Under Wrong Extension Point Key
 
 **What goes wrong:**
-The IntelliJ Platform incrementally re-lexes changed regions of a file, restarting the lexer from a known "clean" state boundary. If your lexer uses mutable state that cannot be correctly serialized and restored (e.g., tracking whether you're inside `${...}`, inside a `<%def ...>` block, or inside a Python expression), the platform cannot find a valid restart point. Re-lexing after an edit produces wrong token types for the rest of the file — syntax highlighting goes wrong, completions break, and PSI tree integrity is lost.
+The `fileViewProviderFactory` extension point is registered under `com.intellij.fileType.fileViewProviderFactory`, NOT `com.intellij.lang.fileViewProviderFactory`. Developers frequently confuse these because "file view provider" sounds like a language-scoped extension. If you register under the wrong key, the factory is silently ignored — the platform continues using `SingleRootFileViewProvider` and no HTML PSI tree is created. HTML completion and coloring simply don't appear, with no error or warning.
 
 **Why it happens:**
-Developers implement a recursive/stateful design that works in a single-pass scenario but does not implement `LexerBase.getState()` / `start(buffer, startOffset, endOffset, initialState)` correctly. They test full-file lexing and it passes, but never test restart-from-middle scenarios. Mako's nested constructs amplify this: `${expr | filter}` can appear inside HTML attribute values, inside `<%def>` bodies, making state combinations many.
+IntelliJ Platform has both a `lang.fileViewProviderFactory` and a `fileType.fileViewProviderFactory` extension. The language-scoped variant is for a different purpose (LSP-based integrations). The file type variant is what template languages need. The platform SDK documentation uses the abbreviated form `fileViewProviderFactory` in examples without always specifying the full qualified extension point name.
 
 **How to avoid:**
-- Use JFlex (`.flex` grammar file) rather than a hand-written lexer — JFlex generates state machine code with correct state serialization automatically.
-- Every state transition must be encodable as a single integer returned by `getState()`.
-- State must encode ALL relevant context: are we in HTML? In `${}` expression? In a Mako tag attribute? Nesting depth if needed.
-- Write lexer restart tests using `LexerTestCase` that lex a file, then re-lex starting at multiple mid-file offsets and compare token output.
-- Keep state integer space small: use bit flags or a state machine enum mapped to integers, not object graphs.
-
-**Warning signs:**
-- Syntax highlighting "flickers" or goes wrong when you type in the middle of a file.
-- Token types after the edit cursor are correct on first open but wrong after editing.
-- Tests pass when lexing whole files but not when restarting mid-file.
-- You find yourself storing `var` fields on the Lexer class that track nesting depth.
-
-**Phase to address:** Lexer implementation phase (the first core language support phase). Correct state management must be designed in from the start — retrofitting a stateless restart is nearly impossible.
-
----
-
-### Pitfall 2: Choosing the Wrong Multi-Language Strategy (Language Injection vs. Custom Language)
-
-**What goes wrong:**
-Mako mixes three languages in one file. Developers must choose between two fundamentally different approaches: (A) Register Mako as a custom language with its own PSI, use `TemplateDataLanguage` to host HTML, and inject Python into expression regions; or (B) Treat the file as HTML and inject Mako/Python via language injection. Choosing the wrong approach early forces a complete rewrite of the lexer, parser, PSI, and all extensions.
-
-Approach B (treating Mako files as HTML with injections) fails because Mako's template syntax is not valid HTML — `% for x in items:` lines, `<%def name="foo():">` tags, and `##` comments break HTML parsing. You end up fighting the HTML parser to get syntax highlighting right.
-
-**Why it happens:**
-Language injection seems simpler to start with ("just inject Python into `${...}` blocks"). Developers prototype injection support quickly, it works for simple cases, then discover that full Mako syntax — especially control flow lines, def/block tags, and template inheritance — cannot be modeled as injections into an HTML host.
-
-**How to avoid:**
-- Register Mako as a custom language (`Language`, `FileType`, `ParserDefinition`). Mako IS the primary language of the file.
-- Use `TemplateDataLanguage` (the IntelliJ mechanism for "the host language in template files") to indicate that HTML is what Mako outputs, so HTML-specific features (CSS color pickers, tag completion) work in the right regions.
-- Use `MultiHostInjector` or `LanguageInjectionContributor` to inject Python into `${...}` expression regions and `<%! ... %>` / `<% ... %>` Python blocks.
-- Study how Twirl (Scala) and Twig (PHP) plugins handle this — they use the custom language + template data approach.
-
-**Warning signs:**
-- You find yourself adding special cases to the HTML lexer or parser.
-- Control flow lines (`% for`, `% if`) are being tokenized as "invalid HTML."
-- You can't get highlighting for `##` line comments because HTML doesn't know about them.
-- You're fighting `InjectedLanguageManager` more than using it.
-
-**Phase to address:** Architecture/scaffolding phase before any lexer work. This decision cannot be reversed cheaply.
-
----
-
-### Pitfall 3: PSI Tree Design That Cannot Support Reference Resolution
-
-**What goes wrong:**
-An insufficiently structured PSI tree cannot support navigation (go-to-definition), find usages, or refactoring. If `<%def name="myfunc">` is parsed as a generic "tag element" with no dedicated PSI node class for the def name, then implementing go-to-definition for calls like `${myfunc()}` requires heuristic text scanning instead of PSI reference resolution — which breaks in renamed-file scenarios and produces false positives.
-
-**Why it happens:**
-Developers design the PSI tree to minimize grammar complexity, treating all Mako tags as generic nodes and only adding specialized nodes when a feature visibly breaks. The problem is that PSI node types determine what `PsiReference` implementations can point to. Retrofitting reference targets into an already-built PSI means changing grammar production rules, which ripples into parser regeneration, existing tests, and annotator logic.
-
-**How to avoid:**
-- Design the PSI node hierarchy before writing the grammar. Map every Mako construct that will be a navigation target to a distinct PSI interface: `MakoDefStatement`, `MakoBlockStatement`, `MakoInheritDirective`, `MakoIncludeDirective`, `MakoNamespaceDirective`.
-- Implement `PsiNamedElement` on definition nodes early — it enables rename refactoring essentially for free.
-- Define `PsiReference` implementations for call sites before completing the parser phase.
-- Use IntelliJ's `PsiElementFactory` pattern for creating PSI nodes programmatically in tests.
-
-**Warning signs:**
-- Go-to-definition is implemented as "text search in directory" rather than PSI reference resolution.
-- Rename refactoring is disabled or uses find-and-replace-in-files.
-- PSI tree has a single `MakoElement` type used for many different constructs.
-- Integration tests for reference resolution don't exist in early phases.
-
-**Phase to address:** Parser/PSI design phase. Node types must be modeled before the grammar is finalized.
-
----
-
-### Pitfall 4: Thread Safety Violations in PSI Access
-
-**What goes wrong:**
-IntelliJ Platform enforces that PSI reads happen under a read lock (and writes under a write lock via `WriteCommandAction`). Custom language plugin code that accesses PSI from background threads without acquiring the read lock throws `ProcessCanceledException` or corrupts the PSI tree. This manifests as intermittent `AssertionError: Read access is allowed from event dispatch thread or inside read-action only` exceptions in production, which are hard to reproduce and often reported as IDE crashes.
-
-**Why it happens:**
-Completion contributors, annotators, and reference resolvers look synchronous but are sometimes invoked from background threads. Developers new to IntelliJ Platform write:
-```kotlin
-// WRONG — no read lock
-val element = file.findElementAt(offset)
+Register exactly as follows in `plugin.xml`:
+```xml
+<fileType.fileViewProviderFactory
+    filetype="Mako Template"
+    implementationClass="com.schtilig.mako.lang.MakoFileViewProviderFactory"/>
 ```
-instead of:
+The `filetype` attribute value must exactly match `MakoFileType.getName()` — in this plugin, `"Mako Template"`. Case-sensitive string match; any mismatch means silent fallback to the default provider.
+
+**Warning signs:**
+- No HTML PSI tree visible in PSI Viewer for `.mako` files after registering the factory.
+- `(file.viewProvider as? TemplateLanguageFileViewProvider)` cast returns null at runtime.
+- `file.viewProvider.allFiles` has exactly one element instead of two (Mako + HTML).
+
+**Phase to address:** Phase 1 of HTML injection (FileViewProvider scaffolding). The registration must be verified before building any higher-level functionality on top of it.
+
+---
+
+### Pitfall 2: createFile for HTML Language Returns Null — Missing contentElementType
+
+**What goes wrong:**
+`TemplateLanguageFileViewProvider.createFile(lang: Language)` must handle three cases: Mako (base), HTML (template data), and any other language returning `null`. For the HTML case, the method must set `contentElementType` on the returned `PsiFile` to a `TemplateDataElementType` instance. Forgetting to set `contentElementType` causes the HTML PSI tree to parse the entire Mako file as HTML without removing Mako-specific tokens — the HTML parser sees `<%def name="foo():">` and produces a deeply broken tree. HTML tag completion becomes wildly incorrect, and the HTML error annotator fires false positives everywhere.
+
+**Why it happens:**
+Developers model `createFile` as a simple language-switch:
 ```kotlin
-// CORRECT
-ApplicationManager.getApplication().runReadAction {
-    val element = file.findElementAt(offset)
+// WRONG — missing contentElementType assignment
+override fun createFile(lang: Language): PsiFile? {
+    return when {
+        lang.isKindOf(MakoLanguage) -> MakoParserDefinition().createFile(this)
+        lang.isKindOf(HTMLLanguage.INSTANCE) ->
+            LanguageParserDefinitions.INSTANCE.forLanguage(lang)?.createFile(this)
+        else -> null
+    }
 }
 ```
-The mistake is invisible during development (the IDE often happens to run on the right thread in dev mode) but surfaces in production under load.
+The HTML file is created but the `TemplateDataElementType` that tells the platform "only parse TEMPLATE_TEXT tokens as HTML" is never installed.
 
 **How to avoid:**
-- Enable `Registry.is("ide.slow.operations.assertion")` during development to surface threading violations earlier.
-- Use `ReadAction.compute<T, E>` (the Kotlin-friendly form) instead of raw `runReadAction`.
-- Annotators must be stateless and not cache PSI outside their `annotate()` call.
-- For long-running analysis (like Python type resolution for `${...}` expressions), use `ReadAction.nonBlocking()` with a cancellation token.
-- Write tests that invoke completion/annotations from a background thread to catch violations.
+```kotlin
+override fun createFile(lang: Language): PsiFile? {
+    return when {
+        lang.isKindOf(MakoLanguage) -> MakoParserDefinition().createFile(this)
+        lang.isKindOf(HTMLLanguage.INSTANCE) -> {
+            val def = LanguageParserDefinitions.INSTANCE.forLanguage(lang) ?: return null
+            val file = def.createFile(this)
+            (file as? PsiFileImpl)?.contentElementType = MAKO_HTML_TEMPLATE_DATA_TYPE
+            file
+        }
+        else -> null
+    }
+}
+```
+Where `MAKO_HTML_TEMPLATE_DATA_TYPE` is a singleton `TemplateDataElementType(...)` constructed with the Mako language, `MakoTokenTypes.TEMPLATE_TEXT` as the template element type, and an outer element type for the Mako-side OuterLanguageElement placeholder.
 
 **Warning signs:**
-- Intermittent `AssertionError` in IDE logs mentioning "read access."
-- Features work perfectly in the sandbox IDE but crash in production.
-- Background highlighter (daemon) passes but inspector fails.
+- PSI Viewer shows HTML tree containing raw Mako tag text like `<%def` as HTML tokens.
+- HTML tag completion suggests completing `<%def` as an HTML tag.
+- `MakoAnnotator` now sees HTML PSI nodes it doesn't understand, throwing `ClassCastException`.
 
-**Phase to address:** All phases — but the threading model must be explained in the architecture doc before the first feature is implemented. Retrofitting correct threading is expensive.
+**Phase to address:** Phase 1 of HTML injection (FileViewProvider scaffolding). Must be correct before testing any HTML feature.
 
 ---
 
-### Pitfall 5: Depending on Python Plugin Internal APIs
+### Pitfall 3: TEMPLATE_TEXT Token Not Declared as the Outer Element Type — PSI Corruption
 
 **What goes wrong:**
-PyCharm's Python plugin exposes `PyFile`, `PyExpression`, `PyType` and related PSI types for Python analysis. These are attractive for analyzing `${expression}` content, but they are treated as internal/unstable APIs. Depending on them directly without stability guarantees causes the plugin to break on every PyCharm release when internal Python plugin APIs move, are renamed, or removed.
+`TemplateDataElementType` takes two element type parameters: `templateElementType` (the Mako-language token type that represents the Mako syntax markers to be EXCLUDED from the HTML tree) and `outerElementType` (the token type representing the HTML content regions to be INCLUDED in the HTML tree). Swapping these, or using the wrong Mako token as `templateElementType`, causes one of two failures:
+1. All Mako tokens appear in the HTML tree — HTML parser produces garbage.
+2. All TEMPLATE_TEXT tokens are stripped from the Mako tree — folding and structure view see an empty file.
+
+In this plugin, `TEMPLATE_TEXT` is the token for HTML content. It should be the `outerElementType` (content to be represented in the HTML tree) — NOT the `templateElementType` (Mako markers to be stripped out). Getting this backwards is a common mistake.
 
 **Why it happens:**
-The developer wants real Python type analysis inside `${...}` expressions, sees that `PyCharmCorePluginResolution.resolve()` or `PyReferenceExpression.getType()` does exactly what's needed, and uses it — without realizing these are not part of the stable platform API contract.
+The naming is confusing. Developers read "templateElementType" as "the element type for template content (HTML)" when it actually means "the element type for template *syntax* markers (Mako)." The outer element type is the HTML content, which becomes `OuterLanguageElementImpl` nodes in the Mako tree at those positions.
 
 **How to avoid:**
-- Only depend on the Python plugin via its declared extension points (`<depends>com.intellij.modules.python</depends>` or the PyCharm-specific module).
-- Use `LanguageInjectionHost` + language injection to embed Python as an injected language — let the Python plugin handle its own PSI. This is the officially supported integration path.
-- If you must access Python PSI types, wrap all access in try-catch for `ClassNotFoundException` and `NoSuchMethodError` to survive API changes gracefully.
-- Subscribe to Python plugin API compatibility warnings in JetBrains's third-party plugin tracker.
+Understand the semantics:
+- `templateElementType` = the Mako-syntax tokens that must NOT appear in the HTML tree (e.g., `OPEN_TAG`, `CLOSE_TAG`, tag-specific tokens, expression delimiters). These mark where Mako syntax is.
+- `outerElementType` = `TEMPLATE_TEXT` — the token that represents raw HTML content. These become `OuterLanguageElementImpl` nodes in the Mako PSI tree, replaced by real HTML PSI nodes in the HTML tree.
+
+In practice, pass `MakoTokenTypes.TEMPLATE_TEXT` as the `outerElementType` argument:
+```kotlin
+val MAKO_HTML_TEMPLATE_DATA_TYPE = TemplateDataElementType(
+    "MAKO_TEMPLATE_DATA",
+    HTMLLanguage.INSTANCE,
+    MakoTokenTypes.TEMPLATE_TEXT,  // this IS the outer/HTML content token
+    MakoElementType("OUTER_LANGUAGE_ELEMENT")  // placeholder for OuterLanguageElement in Mako tree
+)
+```
 
 **Warning signs:**
-- Direct imports of `com.jetbrains.python.psi.*` classes in non-injection code.
-- Plugin fails to load on PyCharm updates even though your code didn't change.
-- Build warnings about depending on non-stable modules.
+- `MakoFoldingBuilder.buildFoldRegions()` receives a tree with no `MakoDefTag` or `MakoBlockTag` nodes.
+- `MakoStructureViewElement` returns no children.
+- PSI Viewer shows `OuterLanguageElementImpl` nodes where Mako syntax tokens should be.
 
-**Phase to address:** Integration with PyCharm Python plugin phase. Must be explicitly designed around the injection boundary.
+**Phase to address:** Phase 1 of HTML injection (FileViewProvider scaffolding). Verified with PSI Viewer before proceeding.
 
 ---
 
-### Pitfall 6: Incorrect `sinceBuild` / `untilBuild` Range Causes Marketplace Rejection
+### Pitfall 4: Existing MakoFoldingBuilder and MakoStructureViewElement Break on OuterLanguageElement Nodes
 
 **What goes wrong:**
-The `sinceBuild` and `untilBuild` values in `plugin.xml` (or `gradle.properties`) define which IDE versions are compatible. Setting `untilBuild` too low rejects the plugin for new IDE versions. Setting it too high (or omitting it) causes the plugin to appear compatible with future IDEs where APIs may have changed, leading to user crashes on new releases. JetBrains Marketplace rejects plugins that claim compatibility they haven't verified.
+After adding `TemplateLanguageFileViewProvider`, the Mako PSI tree still covers the entire file but now contains `OuterLanguageElementImpl` nodes at positions that used to be `TEMPLATE_TEXT` leaf nodes. Code that does `element.node.elementType == MakoTokenTypes.TEMPLATE_TEXT` will no longer match at those positions — it sees `OuterLanguageElementType` instead.
+
+More critically: `MakoFoldingBuilder` already uses `walkAllNodes` with a visitor and `Language.ANY` detection. If `OuterLanguageElementImpl` nodes have `language == Language.ANY` (which they do by default), the existing `DUMMY_BLOCK` guard in the current code (`element.language == Language.ANY`) will treat ALL template text regions as dummy blocks and skip them — this is correct for folding purposes, but may cause subtle issues if that guard was only intended for GrammarKit internal nodes.
+
+Additionally, `PsiTreeUtil.findChildrenOfType(file, MakoCodeBlock::class.java)` called from `MakoPythonInjector` operates on whichever PSI file is passed as the root. After adding `TemplateLanguageFileViewProvider`, calling `context.containingFile` in the injector may return the Mako `PsiFile` or the HTML `PsiFile` depending on which tree the `context` element came from. If it returns the HTML file, `PsiTreeUtil.findChildrenOfType(htmlFile, MakoCodeBlock::class.java)` returns empty — and the multi-host Python injection fires zero hosts.
 
 **Why it happens:**
-Developers set `sinceBuild=252` (the current version at time of development) and either omit `untilBuild` or set it to `252.*` without considering forward compatibility. The IntelliJ Platform Gradle Plugin's `pluginVerifier` catches some issues, but not all API incompatibilities.
+- `TemplateLanguageFileViewProvider` creates TWO separate `PsiFile` roots for the same underlying document — one rooted in MakoLanguage, one in HTMLLanguage.
+- `PsiElement.containingFile` returns the root of whichever tree the element lives in.
+- If `MakoPythonInjector.elementsToInjectIn()` returns `MakoExpression` and `MakoCodeBlock`, these elements only exist in the Mako PSI tree. The injector's `context.containingFile` should always be the Mako file. But if the wrong file root is used in `collectCodeAndExpressionHosts`, the collection will be empty.
 
 **How to avoid:**
-- Use the IntelliJ Platform Gradle Plugin's `runPluginVerifier` task against the full set of target IDE builds before each release.
-- Set `untilBuild` to `[major].*` (e.g., `252.*`) to limit to the current major train, then explicitly expand after verifying the next major.
-- Subscribe to the JetBrains Platform releases blog and the `intellij-platform-plugin-template` changelog for breaking API changes.
-- Pin specific API calls with `@ApiStatus.Experimental` or `@ApiStatus.Internal` annotations' usage noted during development so you know what to re-verify on each IDE update.
+- In `MakoPythonInjector.collectCodeAndExpressionHosts`, explicitly get the Mako PSI file from the view provider, not from `context.containingFile` directly:
+  ```kotlin
+  val makoFile = context.containingFile.viewProvider.getPsi(MakoLanguage) ?: return
+  ```
+- In `MakoFoldingBuilder`, the existing `Language.ANY` guard is likely sufficient but must be verified with the PSI Viewer after adding `TemplateLanguageFileViewProvider` to confirm that `OuterLanguageElementImpl` nodes are correctly skipped.
+- `MakoStructureViewElement` iterates `PsiTreeUtil.findChildrenOfType` — verify it is called on the Mako language PSI root, not the HTML root.
 
 **Warning signs:**
-- `pluginVerifier` reports warnings you're ignoring.
-- Plugin works in your dev environment but users report "plugin incompatible" errors.
-- You haven't run `verifyPlugin` since initial scaffolding.
+- Python injection stops working after adding `TemplateLanguageFileViewProvider` — expressions turn red with "Unresolved reference" even for simple variables.
+- `MakoFoldingBuilder` produces zero fold regions.
+- `MakoStructureViewElement` shows empty structure view.
+- IDE log shows `ProcessCanceledException` or NPE in `MakoPythonInjector` during indexing.
 
-**Phase to address:** Build/release phase, but `untilBuild` must be configured correctly in the scaffolding phase.
+**Phase to address:** Phase 1 (FileViewProvider scaffolding) — must audit all PSI consumers before wiring up the view provider. Phase 2 (regression testing) — all existing tests must pass after Phase 1.
+
+---
+
+### Pitfall 5: getTemplateDataLanguage Returns PlainText Because the Mapping Is Not Configured
+
+**What goes wrong:**
+`ConfigurableTemplateLanguageFileViewProvider.getTemplateDataLanguage()` typically consults `TemplateDataLanguageMappings.getInstance(project).getMapping(virtualFile)`. If no mapping is configured (either by the user in Settings or by a programmatic default), this returns null or falls back to `PlainTextLanguage.INSTANCE`. An HTML PSI tree is never created, HTML completion never fires, and no error is shown — the plugin silently produces no HTML editing support.
+
+**Why it happens:**
+Developers implement `getTemplateDataLanguage()` as:
+```kotlin
+override fun getTemplateDataLanguage(): Language {
+    return TemplateDataLanguageMappings.getInstance(project)
+        .getMapping(virtualFile) ?: HTMLLanguage.INSTANCE
+}
+```
+The fallback to `HTMLLanguage.INSTANCE` is correct, but the null path can still be reached if `project` is null during early initialization (e.g., when the view provider is created before the project is fully loaded). Without a null check on `project`, a NPE crashes the view provider creation and the file opens without any language support at all.
+
+**How to avoid:**
+```kotlin
+override fun getTemplateDataLanguage(): Language {
+    val project = manager.project ?: return HTMLLanguage.INSTANCE
+    return TemplateDataLanguageMappings.getInstance(project)
+        .getMapping(virtualFile) ?: HTMLLanguage.INSTANCE
+}
+```
+Additionally, to give users the right default without requiring manual configuration, register a `templateDataLanguagePatterns` extension in `plugin.xml` that maps `.mako` files to HTML by default:
+```xml
+<templateDataLanguagePatterns>
+    <pattern ext="mako" language="HTML"/>
+    <pattern ext="mak" language="HTML"/>
+</templateDataLanguagePatterns>
+```
+This extension point causes the IDE to pre-populate the mapping in Settings → Template Data Languages, so new users get HTML immediately without manual setup.
+
+**Warning signs:**
+- No HTML syntax highlighting or completion in `.mako` files after installing the plugin fresh.
+- `Settings → Languages & Frameworks → Template Data Languages` shows Mako files with no language assigned.
+- Users need to manually select HTML in the Template Data Languages settings before anything works.
+
+**Phase to address:** Phase 1 (FileViewProvider scaffolding) + `plugin.xml` defaults registration.
+
+---
+
+### Pitfall 6: MakoFile (PsiFileBase) Incompatible With TemplateLanguageFileViewProvider
+
+**What goes wrong:**
+The existing `MakoFile` extends `PsiFileBase`. When `TemplateLanguageFileViewProvider` is active, the platform calls `createFile(MakoLanguage)` inside the view provider, which in turn calls `MakoParserDefinition.createFile(viewProvider)`. This construction path is unchanged and produces the correct `MakoFile` instance. The risk is that some code may call `PsiManager.findFile(virtualFile)` and expect a single `PsiFile`, while now there are two (Mako + HTML). Code that casts the result to `MakoFile` without checking the language will fail with a `ClassCastException` when it happens to get the HTML `PsiFile` back.
+
+Additionally, `PsiFile.getViewProvider()` on the Mako `PsiFile` and the HTML `PsiFile` will both return the SAME `TemplateLanguageFileViewProvider` instance. Code that does `file.viewProvider.psi` (which returns `viewProvider.getPsi(viewProvider.baseLanguage)`) — i.e., the Mako file — may or may not behave as expected depending on whether the HTML or Mako file was the entry point.
+
+**Why it happens:**
+The pattern `PsiManager.findFile(virtualFile) as? MakoFile` worked before because there was only one PSI file per virtual file. With `TemplateLanguageFileViewProvider`, `PsiManager.findFile` returns the base-language PSI file (Mako), so this particular cast should still work. But anywhere code accesses `file.viewProvider.allFiles` and iterates, it may encounter the HTML file unexpectedly.
+
+**How to avoid:**
+- Never cast `PsiFile` to `MakoFile` directly without a language guard: `(file as? MakoFile) ?: return`
+- When explicitly needing the Mako file, use: `viewProvider.getPsi(MakoLanguage)`
+- When explicitly needing the HTML file, use: `viewProvider.getPsi(HTMLLanguage.INSTANCE)`
+- Audit all existing usages of `context.containingFile` in annotators, completion contributors, and injectors to ensure they resolve to the expected language tree.
+
+**Warning signs:**
+- `ClassCastException: HtmlFileImpl cannot be cast to MakoFile` in IDE logs.
+- `MakoAnnotator` receives `HtmlFileImpl` as the file parameter and throws.
+- `MakoCompletionContributor` fires for HTML element positions it doesn't understand.
+
+**Phase to address:** Phase 1 (audit before adding FileViewProvider) + Phase 2 (regression testing).
+
+---
+
+### Pitfall 7: MakoAnnotator Fires on Both Mako and HTML PSI Trees
+
+**What goes wrong:**
+`MakoAnnotator` is registered for `language="Mako Template"` in `plugin.xml`. With `TemplateLanguageFileViewProvider`, the platform runs annotators for each language tree in the file. The Mako annotator fires correctly for the Mako tree. But if any element in the Mako tree contains an `OuterLanguageElementImpl` placeholder, and the annotator's visitor descends into it, it may encounter HTML PSI fragments and attempt to cast them to Mako PSI types — throwing `ClassCastException` or producing false-positive annotations.
+
+Conversely, the HTML annotator (built into the platform) fires for the HTML tree and may produce warnings about Mako syntax in `OuterLanguageElement` positions — e.g., reporting `<%def name="foo():">` as invalid HTML text content. These false-positive HTML errors are visible to users as red squiggles in Mako syntax.
+
+**Why it happens:**
+- The Mako annotator was written assuming a single-language PSI tree. `OuterLanguageElementImpl` nodes were not present before and have no corresponding Mako PSI interface.
+- The HTML annotator validates its own tree and encounters the Mako markers as `OuterLanguageElementImpl` stubs, which it correctly ignores for syntax. But some HTML inspections may not respect `OuterLanguageElementImpl` boundaries.
+
+**How to avoid:**
+- In `MakoAnnotator.annotate()`, add an early guard: `if (element is OuterLanguageElement) return`
+- The HTML false-positive errors: platform HTML annotation generally suppresses errors in `OuterLanguageElementImpl` regions. If it doesn't, implement a custom `HtmlUnknownTagInspectionSuppressor` or verify with the HTML plugin docs for the correct suppression mechanism.
+- Test with `runPluginVerifier` against PyCharm 2025.2 to ensure the HTML plugin version bundled in that build correctly suppresses errors in template regions.
+
+**Warning signs:**
+- `ClassCastException` in `MakoAnnotator` after adding HTML injection.
+- Red squiggles on Mako tags (`<%def`, `<%block`) that are reported as "invalid HTML element."
+- `MakoAnnotator` called with `element.language != MakoLanguage` — add an assertion to detect this early.
+
+**Phase to address:** Phase 1 (add guards before wiring up) + Phase 3 (HTML correctness verification).
+
+---
+
+### Pitfall 8: completion.contributor language="any" Causes Double-Firing in HTML Regions
+
+**What goes wrong:**
+`MakoCompletionContributor` is registered with `language="any"` — a deliberate v0.1.0 decision because TEMPLATE_TEXT tokens needed completion at `<%` positions in what was then the only language layer. After adding `TemplateLanguageFileViewProvider`, the HTML PSI tree is active for TEMPLATE_TEXT regions. When the user presses Ctrl+Space in a TEMPLATE_TEXT region, completion fires for both the HTML layer (HTML tag completion) and then `MakoCompletionContributor` fires again via the `language="any"` registration. The Mako contributor's internal language guard (`file.language.id` check) should prevent false completions — but the guard must be verified to correctly check the containing file language and not the element language.
+
+The deeper risk: the HTML completion contributor itself is order-sensitive. Registering `language="any"` without explicit ordering may cause `MakoCompletionContributor` to execute BEFORE the HTML contributor, and if `MakoCompletionContributor` calls `result.stopHere()` somewhere (even implicitly via returning early), HTML completion is suppressed.
+
+**Why it happens:**
+The `language="any"` registration was the correct fix for v0.1.0 — the alternative `language="Mako Template"` was documented to prevent completion from firing for TEMPLATE_TEXT positions. With `TemplateLanguageFileViewProvider`, those positions now belong to the HTML tree, not the Mako tree. The original problem that required `language="any"` may no longer apply, or may need a different solution.
+
+**How to avoid:**
+After adding `TemplateLanguageFileViewProvider`, revisit whether `language="any"` is still necessary:
+- If HTML completion fires correctly for TEMPLATE_TEXT regions via the HTML tree, then `language="Mako Template"` may be sufficient again for the Mako-specific completions (tag names after `<%`).
+- If `language="any"` is retained, add the guard inside the contributor:
+  ```kotlin
+  if (parameters.position.containingFile.viewProvider.baseLanguage != MakoLanguage) return
+  ```
+  This ensures the contributor only fires when the base language of the file is Mako, not when the element happens to be in an HTML injection context inside some other file type.
+
+**Warning signs:**
+- HTML tag completion (`<div`, `<span`, etc.) stops working in `.mako` files after adding HTML injection.
+- Double completion items appear — Mako items AND HTML items mixed.
+- Completion popup appears but clicking HTML items inserts the wrong text.
+
+**Phase to address:** Phase 3 (HTML feature verification) — requires comparing behavior before and after view provider addition.
+
+---
+
+### Pitfall 9: Python MultiHostInjector Receives HTML PsiFile Context
+
+**What goes wrong:**
+`MakoPythonInjector.getLanguagesToInject(registrar, context)` is invoked for each `context` element whose class is in `elementsToInjectIn()` — `MakoExpression`, `MakoCodeBlock`, `MakoModuleBlock`. These elements only exist in the Mako PSI tree. However, `collectCodeAndExpressionHosts(context.containingFile)` passes `context.containingFile` as the root for `PsiTreeUtil.findChildrenOfType`. If for any reason `context.containingFile` returns the HTML `PsiFile` (e.g., due to a view provider implementation bug or during index rebuilding), `findChildrenOfType` will return empty and the multi-host injection will fail silently — no Python is injected, all Python expressions turn red.
+
+Additionally, the multi-host injection strategy (one `startInjecting/doneInjecting` call for ALL `MakoCodeBlock` and `MakoExpression` hosts in the file) depends on `hosts.firstOrNull() == context` as the trigger. If the file-level search returns elements in a different order when the view provider is active (e.g., because the Mako tree is rebuilt or elements are cached differently), the "first host" test may fail and injection never starts.
+
+**Why it happens:**
+`MultiplePsiFilesPerDocumentFileViewProvider` caches PSI trees per language. The element's `containingFile` should reliably return the Mako `PsiFile` for elements of Mako types. But during early IDE startup, file indexing, or after a document invalidation, the PSI tree may be in a partial state.
+
+**How to avoid:**
+Defensively obtain the Mako PSI root from the view provider:
+```kotlin
+private fun collectCodeAndExpressionHosts(context: PsiElement): List<PsiLanguageInjectionHost> {
+    val makoFile = context.containingFile?.viewProvider?.getPsi(MakoLanguage) ?: return emptyList()
+    val codeBlocks = PsiTreeUtil.findChildrenOfType(makoFile, MakoCodeBlock::class.java)
+    val expressions = PsiTreeUtil.findChildrenOfType(makoFile, MakoExpression::class.java)
+    return (codeBlocks + expressions).sortedBy { it.textOffset }
+}
+```
+This guarantees the search root is always the Mako-language PSI tree regardless of how `context` was obtained.
+
+**Warning signs:**
+- Python injection works initially but stops after a `File → Invalidate Caches / Restart`.
+- `MakoPythonInjector` logs show `hosts.isEmpty()` via logger output (add logging to detect this during development).
+- Python completion inside `${...}` stops showing project symbols.
+
+**Phase to address:** Phase 1 (defensive coding in injector before adding view provider) — change the injector to use `viewProvider.getPsi(MakoLanguage)` defensively before any other HTML work begins.
+
+---
+
+### Pitfall 10: TemplateDataElementType Singleton Must Not Be Re-Instantiated Per File
+
+**What goes wrong:**
+`TemplateDataElementType` is an `IElementType` subclass. `IElementType` instances must be singletons — the platform uses object identity (not equality) to compare element types across the PSI tree. Creating a new `TemplateDataElementType` instance inside `createFile()` for each new file means each file gets a different `IElementType` object. The `contentElementType` set on the HTML `PsiFile` won't match the token type the platform is looking for in the Mako token stream — the HTML tree is never correctly built.
+
+**Why it happens:**
+Developers initialize `TemplateDataElementType` inside the `createFile` method:
+```kotlin
+// WRONG — creates new instance per file
+override fun createFile(lang: Language): PsiFile? {
+    val templateDataType = TemplateDataElementType("MAKO_HTML_TEMPLATE_DATA", ...)
+    val file = def.createFile(this)
+    (file as PsiFileImpl).contentElementType = templateDataType  // different object each call
+    file
+}
+```
+
+**How to avoid:**
+Declare `TemplateDataElementType` as a companion object singleton, initialized once:
+```kotlin
+companion object {
+    val MAKO_TEMPLATE_DATA_TYPE = TemplateDataElementType(
+        "MAKO_TEMPLATE_DATA",
+        HTMLLanguage.INSTANCE,
+        MakoTokenTypes.TEMPLATE_TEXT,
+        MakoElementType("OUTER_LANGUAGE_ELEMENT")
+    )
+}
+```
+Then reference `MAKO_TEMPLATE_DATA_TYPE` in `createFile`. The `IElementType` is registered globally on first instantiation and reused thereafter.
+
+**Warning signs:**
+- HTML tree appears empty or contains only whitespace nodes, even though TEMPLATE_TEXT spans exist.
+- `TemplateDataElementType` class shows multiple instances in a memory profiler.
+- HTML completion works on first file open but breaks after reloading the project.
+
+**Phase to address:** Phase 1 (FileViewProvider scaffolding) — design the singleton before writing any per-file code.
 
 ---
 
@@ -176,136 +350,109 @@ Shortcuts that seem reasonable but create long-term problems.
 
 | Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
 |----------|-------------------|----------------|-----------------|
-| Hand-written lexer instead of JFlex | Faster to start coding | Restart-state bugs; regex is error-prone; hard to maintain | Never — JFlex is mandatory for IntelliJ lexers at production quality |
-| Regex-based "parser" (no actual grammar) | Skips grammar learning curve | Cannot build PSI tree; no reference resolution; no refactoring ever | Only for throwaway proof-of-concept, never ship |
-| Single PSI node type for all Mako tags | Simpler grammar | Cannot implement per-element features; reference resolution impossible | MVP only for syntax highlighting; must be fixed before navigation |
-| Injecting Python via `InjectedLanguageManager` directly instead of `MultiHostInjector` | Fewer API surfaces to learn | Injection fragments don't merge across multiple ranges; Python analysis sees incomplete code | Never; always use the proper `MultiHostInjector`/`LanguageInjectionContributor` path |
-| `PsiFile.text.indexOf(...)` for reference resolution | Fast to implement | Breaks on renames, false positives, O(n) per reference | Never in a shipped plugin |
-| Skipping `getState()` implementation in lexer | Lexer works for full-file parse | Incremental re-lex produces wrong results everywhere | Never; `getState()` must be correct |
-| Hard-coding Mako file extensions without user configuration | Simpler initial setup | Users with non-standard extensions get no support; blocks future flexibility | Acceptable for MVP if extension settings are added before first public release |
+| Skip `templateDataLanguagePatterns` registration | Fewer extension points to learn | Users must manually configure HTML in Settings → Template Data Languages on every new project; bad UX for new users | Never — it is a 3-line `plugin.xml` addition |
+| Hardcode `HTMLLanguage.INSTANCE` instead of reading from `TemplateDataLanguageMappings` | Simpler implementation | Users cannot change the template data language (e.g., to Plain Text for testing); `ConfigurableTemplateLanguageFileViewProvider` pattern is the standard | Acceptable for MVP if configurability is added before public release |
+| Reuse `TEMPLATE_TEXT` as both the outerElementType and the `IFileElementType` content type | Fewer types to define | `TemplateDataElementType` uses identity comparison; sharing types across roles silently misroutes token-type decisions | Never |
+| Skip `OuterLanguageElement` guard in `MakoAnnotator` | No immediate visible bug in typical files | Crashes on files with complex interleaved Mako+HTML once `OuterLanguageElementImpl` nodes appear | Never — add the guard as part of adding the view provider |
+| Test HTML injection only in `runIde` (manual testing) | Faster verification | Automated tests don't catch regressions; view provider bugs silently break HTML on every lexer or parser change | Acceptable as a temporary measure; automated tests must be added within same milestone |
+| Pass `context.containingFile` directly to `PsiTreeUtil.findChildrenOfType` in the Python injector | Works in current codebase | Breaks when view provider is active; injector sees HTML file instead of Mako file, returns zero hosts | Never after adding view provider — fix before adding it |
 
 ---
 
 ## Integration Gotchas
 
-Common mistakes when connecting to external services or platform APIs.
+Common mistakes when connecting the HTML injection to the existing plugin systems.
 
 | Integration | Common Mistake | Correct Approach |
 |-------------|----------------|------------------|
-| Python plugin dependency | Declaring `<depends>com.intellij.modules.python</depends>` without making it optional for non-PyCharm IDEs | Use `<depends optional="true" config-file="python-support.xml">` for graceful degradation |
-| HTML language injection host | Using `HtmlFileImpl` as injection host directly | Implement `MultiHostInjector` with proper `InjectedLanguageManager.enumerate()` pattern |
-| Python language injection into `${}` | Injecting the full `${...}` including delimiters | Inject only the expression content between delimiters; the host ranges must not overlap |
-| File type detection | Registering `.mako` as both HTML and Mako file type | Register exactly one file type per extension; Mako must own `.mako`; HTML owns `.html` |
-| `TemplateDataLanguage` setup | Not registering `TemplateDataLanguagePatterns` for the Mako file type | Without this, HTML-specific features (CSS, JS injection) won't work inside Mako template content |
-| PSI reference completion | Contributing completions in `CompletionContributor.fillCompletionVariants` synchronously on EDT | Use `CompletionResultSet.runRemainingContributors` with proper threading |
-| Plugin XML dependency declaration | Forgetting to add `<depends>com.intellij.modules.python</depends>` for PyCharm targeting | Plugin loads on all IDEs but crashes when Python PSI types are unavailable |
+| `TemplateDataElementType` constructor | Passing `TEMPLATE_TEXT` as `templateElementType` (first position) instead of `outerElementType` (third position) | `TEMPLATE_TEXT` is the HTML content token; it goes in the `outerElementType` slot; Mako-syntax tokens go in `templateElementType` |
+| `fileType.fileViewProviderFactory` registration | Using `filetype="Mako"` instead of `filetype="Mako Template"` | Value must equal `MakoFileType.getName()` exactly — `"Mako Template"` |
+| `getTemplateDataLanguage()` null handling | Calling `TemplateDataLanguageMappings.getInstance(project)` when `project` is null | Check `manager.project ?: return HTMLLanguage.INSTANCE` before accessing mappings |
+| HTML `PsiFile` creation | Calling `createFile` for HTML without setting `contentElementType` | Must set `(htmlFile as PsiFileImpl).contentElementType = MAKO_TEMPLATE_DATA_TYPE` immediately after creating the HTML file |
+| Python injector root lookup | Using `context.containingFile` as search root in `PsiTreeUtil.findChildrenOfType` | Use `context.containingFile.viewProvider.getPsi(MakoLanguage)` to guarantee Mako tree root |
+| `MakoCompletionContributor` language guard | `file.language.id == "Mako Template"` where `file` is `parameters.position.containingFile` | After adding view provider, `containingFile` may return the HTML file in HTML regions; guard with `parameters.position.containingFile.viewProvider.baseLanguage == MakoLanguage` |
+| `MakoAnnotator` PSI traversal | No guard against `OuterLanguageElement` nodes in Mako tree | Add `if (element is OuterLanguageElement) return` at the top of `annotate()` |
+| `TemplateDataElementType` instantiation | Creating inside `createFile()` per-file | Must be a static singleton declared in companion object |
+| `configureByText` in tests | Using `configureByText("test.mako", content)` — creates in-memory file before MakoFileType registered | Continue using the existing `addFileToProject + configureFromExistingVirtualFile` pattern established in v0.1.0 tests |
 
 ---
 
 ## Performance Traps
 
-Patterns that work in development but fail as file sizes grow.
-
 | Trap | Symptoms | Prevention | When It Breaks |
 |------|----------|------------|----------------|
-| Annotator does expensive work synchronously | IDE freezes when annotating large `.mako` files; typing lag | Move slow analysis to `ExternalAnnotator`; return early from `Annotator.annotate()` if analysis > ~50ms | Files > ~500 lines |
-| PSI tree traversal on every keystroke | Completion is slow; UI thread blocks | Cache analysis results in `CachedValuesManager` keyed to PSI modification count | Files > ~200 lines or projects with many `.mako` files |
-| Lexer allocates objects per token | Profiler shows GC pressure during typing | Pre-allocate token type arrays; use `IElementType` flyweights (they already are singletons if registered correctly) | Projects with many open mako files |
-| Language injection re-injected on every PSI change | Python analysis triggers full re-analysis constantly | Use `MultiHostInjector` with stable range calculation; avoid injecting into ephemeral PSI nodes | Projects with > 10 open Mako files |
-| `FindUsagesProvider` walks entire project synchronously | Find usages hangs for large projects | Implement `WordsScanner` to let the platform pre-filter before calling your provider | Projects with > 100 `.mako` files |
-
----
-
-## Security Mistakes
-
-Domain-specific security issues for IDE plugins (not web security).
-
-| Mistake | Risk | Prevention |
-|---------|------|------------|
-| Executing Mako template content from the IDE | IDE can be used to execute arbitrary Python code without user awareness | Never evaluate/execute template content; plugin is for analysis only |
-| Storing absolute file paths in plugin settings | Settings break on machine migration or when project is shared | Store paths relative to project root; use `project.basePath` as anchor |
-| Logging PSI element text verbatim in plugin logs | Template source code (potentially containing secrets or PII) appears in IDE diagnostic logs | Log only structural information (element type, line number), never element text |
-| Depending on Marketplace plugins without version pinning | Transitive dependency on unstable plugins causes plugin to be pulled when they're deprecated | Prefer bundled platform modules; if depending on Marketplace plugins, pin version ranges |
-
----
-
-## UX Pitfalls
-
-Common user experience mistakes specific to language plugins.
-
-| Pitfall | User Impact | Better Approach |
-|---------|-------------|-----------------|
-| Error highlighting for every unrecognized construct during file load | Template appears full of red errors on first open; users distrust the plugin | Show errors only after PSI stabilizes (use `Annotator` with `holder.createErrorAnnotation` only for definitively invalid syntax, not unresolved references during indexing) |
-| Code completion triggers inside HTML text nodes with Mako suggestions | Mako completions appear where users are typing plain HTML prose | Scope completion to only trigger inside Mako constructs; check parent PSI element before contributing |
-| Navigation "go to definition" for `<%inherit>` opens file but positions cursor at line 1 | User expects cursor at the `<%def>` entry point, not top of file | Implement `OpenFileDescriptor` with the specific element offset, not just the file |
-| Folding collapses too aggressively | Users cannot see template structure at a glance | Default folding closed only for `<%doc>` comments and `<%!>` module blocks; leave defs/blocks expanded by default |
-| Plugin icon missing or using generic puzzle piece | Plugin is hard to identify in the plugin list | Create a proper SVG plugin icon; 40x40 for light theme, variant for dark theme |
+| HTML PSI tree rebuilt on every keystroke because `getTemplateDataLanguage()` returns a new Language instance | IDE lag on typing in `.mako` files; CPU spike from HTML re-parsing | Return a stable singleton language (e.g., `HTMLLanguage.INSTANCE`) — never create new Language instances in `getTemplateDataLanguage()` | Every keystroke |
+| `TemplateDataElementType` per-file construction causes new IElementType registration per file | Memory leak in `IElementType` registry; O(n) type lookups degrade | Make `TemplateDataElementType` a singleton | After 100+ file opens |
+| `PsiTreeUtil.findChildrenOfType` on both Mako and HTML trees | Double traversal per injection request | Ensure injector only traverses the Mako tree; HTML tree traversal is unnecessary | Files > 200 lines |
+| Language injection overlapping TemplateLanguageFileViewProvider regions | Python injection fragments computed redundantly against template-data regions that are now HTML-owned | Verify that Python injection `TextRange` offsets remain within Mako token boundaries (not TEMPLATE_TEXT regions) — they do by design, but confirm after adding view provider | Any file with both `${}` and surrounding HTML |
 
 ---
 
 ## "Looks Done But Isn't" Checklist
 
-Things that appear complete but are missing critical pieces.
+Things that appear complete but are missing critical pieces after adding HTML injection.
 
-- [ ] **Syntax highlighting:** Often missing — filter expression highlighting (`${x | h,trim}`). Verify that `|` and filter names after it are highlighted correctly, not treated as operators.
-- [ ] **Lexer:** Often missing — correct handling of `<%doc>` multi-line comments that span many lines without resetting to HTML state prematurely. Verify with files that have `<%doc>` near end of file.
-- [ ] **File type detection:** Often missing — association for `.html` files that contain Mako syntax (not just `.mako`). Verify that users can opt `.html` files into Mako mode.
-- [ ] **Template inheritance navigation:** Often missing — resolution of `<%inherit file="base.html"/>` when the path is relative and the project uses a Mako lookup path (not the file system root). Verify with non-trivial project layouts.
-- [ ] **Python injection:** Often missing — injected Python ranges that span multiple `${...}` expressions in the same logical Python context. Verify that the injected Python file visible to the Python plugin is coherent, not fragmented.
-- [ ] **Namespace imports:** Often missing — `<%namespace name="h" file="helpers.html"/>` creates a namespace; `${h.helper()}` calls into it. Navigation to `h.helper` must resolve across namespace boundaries. Verify this is on the roadmap even if deferred.
-- [ ] **Error recovery:** Often missing — parser must recover gracefully from malformed Mako so the rest of the file still parses. Test with intentionally broken `.mako` files; the whole file should not show as one big error.
-- [ ] **Plugin compatibility verification:** Often missing — `runPluginVerifier` against PyCharm Community, PyCharm Professional, and IntelliJ IDEA (with Python plugin installed) before each release.
+- [ ] **FileViewProvider registered:** `file.viewProvider.allFiles.size == 2` for any `.mako` file — verify in PSI Viewer or a test.
+- [ ] **HTML tree correct structure:** PSI Viewer shows HTML PSI nodes (e.g., `HtmlDocumentImpl`, `XmlTagImpl`) for TEMPLATE_TEXT regions, not raw Mako tokens.
+- [ ] **Mako tree intact:** PSI Viewer shows `MakoDefTag`, `MakoBlockTag`, `MakoExpression`, etc. in the Mako tree — none replaced by `OuterLanguageElementImpl` except at TEMPLATE_TEXT boundaries.
+- [ ] **Python injection still works:** After registering the view provider, `${someVar}` inside a `.mako` file still gets Python language injection (visible as "Injected Language Fragment" in PSI Viewer).
+- [ ] **Folding still works:** `<%def>` and `<%block>` regions still fold; no crash or empty fold region list in MakoFoldingBuilder.
+- [ ] **Structure View still works:** `<%def>` and `<%block>` declarations appear in the Structure View panel after adding the view provider.
+- [ ] **Mako completion still works:** Typing `<%` still triggers Mako tag name completions — not only HTML completions.
+- [ ] **No false HTML errors:** `<%def name="foo():">` lines do not show red "invalid HTML" squiggles from the HTML annotator.
+- [ ] **HTML completion fires in TEMPLATE_TEXT:** Typing `<di` in a TEMPLATE_TEXT region offers HTML completion (`<div>`, `<dialog>`, etc.).
+- [ ] **Default data language configured:** A fresh project shows HTML pre-configured for `.mako` files in `Settings → Template Data Languages`.
+- [ ] **All existing tests pass:** The full `./gradlew check` passes without modifications to existing test infrastructure.
 
 ---
 
 ## Recovery Strategies
 
-When pitfalls occur despite prevention, how to recover.
-
 | Pitfall | Recovery Cost | Recovery Steps |
 |---------|---------------|----------------|
-| Stateful lexer restart bugs discovered late | HIGH | Rewrite lexer state machine from scratch using JFlex; all lexer tests must be re-written; syntax highlighting tests will fail during transition |
-| Wrong multi-language strategy (injection instead of custom language) | VERY HIGH | Full rewrite of FileType, Language, Lexer, Parser, PSI tree; all extensions must be re-registered; treat as a new feature branch |
-| PSI node types too coarse for reference resolution | MEDIUM | Add new node types to grammar; regenerate parser; update all places that pattern-match on PSI types; existing annotators/completions still work but need updating |
-| Thread safety violations found in production | MEDIUM | Systematic audit of all PSI access points; wrap in `ReadAction`; add threading tests to CI |
-| Python plugin API breaks on IDE update | LOW-MEDIUM | Identify which API changed via changelogs; update to new API or fall back to injection-only approach; release patch update |
-| `sinceBuild`/`untilBuild` misconfiguration reported by users | LOW | Update `gradle.properties`; run `pluginVerifier`; push hotfix release to Marketplace |
+| Wrong extension point key for factory registration | LOW | Change `fileType.fileViewProviderFactory` attribute name in `plugin.xml`; no code change required |
+| `contentElementType` not set on HTML file | LOW-MEDIUM | Add the assignment in `createFile`; verify with PSI Viewer |
+| `TemplateDataElementType` arguments transposed | MEDIUM | Swap constructor arguments; all HTML PSI trees for all open files must be invalidated (File → Invalidate Caches / Restart); re-verify with PSI Viewer |
+| Python injection broken due to wrong file root | MEDIUM | Update `collectCodeAndExpressionHosts` to use `viewProvider.getPsi(MakoLanguage)`; re-run all injection tests |
+| Folding/structure view broken after view provider | MEDIUM | Add `OuterLanguageElement` guards in `MakoFoldingBuilder` and `MakoStructureViewElement`; re-run folding and structure tests |
+| `TemplateDataElementType` instantiated per-file | MEDIUM | Refactor to companion object singleton; File → Invalidate Caches / Restart required to clear corrupt PSI state |
+| HTML false-positive errors visible to users | LOW-MEDIUM | Implement annotation suppressor or verify `OuterLanguageElementImpl` handling in platform HTML annotator |
 
 ---
 
 ## Pitfall-to-Phase Mapping
 
-How roadmap phases should address these pitfalls.
-
 | Pitfall | Prevention Phase | Verification |
 |---------|------------------|--------------|
-| Stateful lexer restart bugs | Lexer implementation (earliest core phase) | `LexerTestCase` tests that restart from multiple mid-file offsets; must pass before phase closes |
-| Wrong multi-language strategy | Architecture / scaffolding phase (before lexer) | Decision documented in architecture doc; spike with minimal HTML + Mako + Python injection working end-to-end |
-| PSI tree too coarse for navigation | Parser/PSI design phase | Every Mako def/block/inherit/include has a dedicated PSI node class; navigation test exists even if it only passes a stub |
-| Thread safety violations | First feature phase (establish pattern) | Threading test in CI; enable `ide.slow.operations.assertion` in sandbox |
-| Python plugin internal API dependency | Python integration phase | All Python PSI access goes through injection boundary; no direct `com.jetbrains.python.psi.*` imports outside injection code |
-| `sinceBuild`/`untilBuild` misconfiguration | Build/release phase | `runPluginVerifier` as required CI check, not optional |
-| Annotator performance | Annotator/inspection phase | Benchmark annotator on a 1000-line `.mako` file; must complete < 100ms |
-| Injection fragmentation | Python injection phase | Injected Python file for a template with 5+ `${}` expressions must be a single coherent fragment, visible in "injected file" debug view |
-| Namespace/inheritance navigation missing | Navigation phase | Explicit test: `<%namespace name="h" file="helpers.html"/>` resolves to def in helpers.html |
+| Wrong extension point key | Phase 1: FileViewProvider registration | `file.viewProvider is TemplateLanguageFileViewProvider` assertion in a test |
+| `contentElementType` not set | Phase 1: FileViewProvider `createFile` | PSI Viewer shows HTML tree with structural HTML nodes |
+| `TemplateDataElementType` argument order | Phase 1: TemplateDataElementType construction | PSI Viewer shows Mako tree with `OuterLanguageElementImpl` only at TEMPLATE_TEXT positions |
+| Folding/structure breaks on `OuterLanguageElement` | Phase 1: Audit existing PSI consumers before wiring | All existing folding and structure view tests pass after Phase 1 |
+| Python injector wrong file root | Phase 1: Defensive injector fix | Existing Python injection tests pass after Phase 1 |
+| `getTemplateDataLanguage` null project | Phase 1: `createFile` null safety | No NPE during project open or file load in manual testing |
+| Default data language not configured | Phase 1: `templateDataLanguagePatterns` in plugin.xml | Fresh project shows HTML pre-configured in Settings → Template Data Languages |
+| `MakoFile`/`HtmlFileImpl` cast errors | Phase 1: Language guards in existing code | No ClassCastException in IDE logs during file operations |
+| `MakoAnnotator` `OuterLanguageElement` crash | Phase 1: Add `OuterLanguageElement` guard | `MakoAnnotator` tests pass; no ClassCastException during annotation pass |
+| Completion contributor double-firing | Phase 2: Post-view-provider regression testing | HTML and Mako completion each fire exactly once in appropriate regions |
+| `TemplateDataElementType` not a singleton | Phase 1: Singleton declaration | Memory profiler shows single `TemplateDataElementType` instance across multiple file opens |
 
 ---
 
 ## Sources
 
-- IntelliJ Platform Plugin SDK documentation (https://plugins.jetbrains.com/docs/intellij/) — training data; verify against current docs
-- IntelliJ Platform Plugin Template (https://github.com/JetBrains/intellij-platform-plugin-template) — observed in project scaffold
-- Training knowledge of JetBrains custom language support APIs: `LexerBase`, `ParserDefinition`, `MultiHostInjector`, `LanguageInjectionContributor`, `PsiReference`, `CachedValuesManager`, `ExternalAnnotator`, `TemplateDataLanguage`
-- Known patterns from Twig, Blade, Velocity, and Twirl IntelliJ plugins (open source references on GitHub) — training data
-- IntelliJ Platform source code patterns for template language plugins (e.g., `intellij-plugins` repo on GitHub) — training data
-- Project codebase analysis: `.planning/codebase/concerns.md`, `.planning/codebase/architecture.md`, `.planning/codebase/stack.md`
-
-> Confidence note: All findings are MEDIUM confidence. Core IntelliJ Platform plugin architecture (lexer
-> state management, PSI design, threading model, language injection) is stable and well-documented.
-> Version-specific API details (exact class names for 2025.x platform) should be verified against official
-> docs before coding. The pitfalls described here are drawn from patterns common across multiple plugin
-> projects and community knowledge; they are not speculative.
+- IntelliJ Platform Plugin SDK — File View Providers documentation: https://plugins.jetbrains.com/docs/intellij/file-view-providers.html (MEDIUM confidence — confirmed extension point registration syntax)
+- IntelliJ Platform API Changes 2025: https://plugins.jetbrains.com/docs/intellij/api-changes-list-2025.html (HIGH confidence — no breaking changes to template language APIs in 2025.2)
+- JetBrains Support Forum — Template language plugin tutorial: https://intellij-support.jetbrains.com/hc/en-us/community/posts/206765105-Tutorial-Custom-templating-language-plugin (MEDIUM confidence — community knowledge, not official docs)
+- JetBrains Support Forum — Example of custom template language plugin: https://intellij-support.jetbrains.com/hc/en-us/community/posts/206780275-Example-of-a-custom-language-plugin-for-a-templating-language (MEDIUM confidence)
+- JetBrains Support Forum — Code formatting for template languages: https://intellij-support.jetbrains.com/hc/en-us/community/posts/206757715-Code-formatting-for-template-languages (MEDIUM confidence)
+- JetBrains Support Forum — Custom template language insert outer language: https://intellij-support.jetbrains.com/hc/en-us/community/posts/115000572430-Custom-Template-Language-insert-outer-language-code-at-any-place-not-only-template-fragments- (MEDIUM confidence)
+- IntelliJ Community source — TemplateDataElementType.java at build 241: https://github.com/JetBrains/intellij-community/blob/idea/241.18034.62/platform/analysis-impl/src/com/intellij/psi/templateLanguages/TemplateDataElementType.java (HIGH confidence — source code)
+- templ-jetbrains reference implementation: https://github.com/templ-go/templ-jetbrains (MEDIUM confidence — open source plugin following same pattern)
+- Handlebars plugin plugin.xml: https://github.com/JetBrains/intellij-plugins/blob/master/handlebars/resources/META-INF/plugin.xml (MEDIUM confidence — reference implementation)
+- JetBrains blog — Determining template data language by file extension: https://blog.jetbrains.com/idea/2009/03/determining-template-data-language-by-a-file-extension/ (MEDIUM confidence — older post, core mechanism still applies)
+- Codebase analysis: MakoLanguage.kt, MakoFile.kt, MakoParserDefinition.kt, MakoPythonInjector.kt, plugin.xml, MakoFoldingBuilder.kt, MakoStructureViewElement.kt (HIGH confidence — direct source inspection)
 
 ---
-*Pitfalls research for: JetBrains Mako template language plugin (PyCharm)*
-*Researched: 2026-02-19*
+
+*Pitfalls research for: Adding HTML injection to existing JetBrains Mako template language plugin*
+*Researched: 2026-02-22*
