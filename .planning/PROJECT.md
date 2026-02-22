@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A PyCharm plugin providing first-class IDE support for Mako template files (`.mako`, `.html.mako`). Mako is a Python template engine used for generating HTML; this plugin brings syntax highlighting, code folding, structure navigation, tag completion, Python language injection, and error detection to Mako templates in PyCharm — filling a gap where no JetBrains plugin currently exists. Shipped as `com.schtilig.mako` v0.1.0 on JetBrains Marketplace.
+A PyCharm plugin providing first-class IDE support for Mako template files (`.mako`, `.html.mako`). Mako is a Python template engine used for generating HTML; this plugin brings syntax highlighting, code folding, structure navigation, tag completion, Python language injection, and error detection to Mako templates in PyCharm — filling a gap where no JetBrains plugin currently exists. Shipped as `com.schtilig.mako` v0.2.0.
 
 ## Core Value
 
@@ -27,41 +27,27 @@ Mako template files get the same rich editing experience as native Python and HT
 - ✓ Python language injection into `${...}`, `<% %>`, `<%! %>` via MultiHostInjector — v0.1.0
 - ✓ Tag name completion (7 directives after `<%`) and per-tag attribute completion — v0.1.0 (COMP-01, COMP-02)
 - ✓ Error annotations for unclosed tags and invalid directive names — v0.1.0 (COMP-03)
-- ✓ Plugin Verifier passing for PC-252/PY-253/PY-261; Marketplace-ready as `com.schtilig.mako` v0.1.0 — v0.1.0
-
-## Current Milestone: v0.2.0 Bug Fixing & Cleanup
-
-**Goal:** Fix all known bugs identified in the v0.1.0 code review and eliminate dead code/housekeeping gaps.
-
-**Target fixes:**
-- PSI correctness: `getName()` wrong attribute, `setName()` silent no-op
-- Code folding: nested doc/code/module blocks inside def/block skipped
-- Python injection: `updateText()` silent no-op, filter content injected as Python
-- Editor views: code content STRING color, structure view order/icons, MODULE_OPEN brace pair, DUMMY_BLOCK fragile check, braceDepth overflow silent
-- Completion: `<%doc` insert offset math, full-file text allocation per keystroke
-- Annotator: language ID string literal guards, missing regression test for directive detection
-- Cleanup: FILTER_NAME dead token, unused token sets, IncompleteCodeBlock missing fixture
+- ✓ Plugin Verifier passing for PC-252/PY-253/PY-261; Marketplace-ready as `com.schtilig.mako` v0.1.0 with plugin icon — v0.1.0
+- ✓ `getName()` in PSI mixins returns attribute paired with `name=` key via ASTNode walk — v0.2.0 (PSI-01)
+- ✓ `setName()` in PSI mixins throws `UnsupportedOperationException` — v0.2.0 (PSI-02)
+- ✓ `updateText()` in all three injection host mixins throws `UnsupportedOperationException` — v0.2.0 (INJECT-01)
+- ✓ Python injection range stops at first `FILTER_SEP` token — filter names excluded from injected fragment — v0.2.0 (INJECT-02)
+- ✓ Recursive fold descent via `walkAllNodes` — nested doc/code/module blocks inside def/block produce fold regions — v0.2.0 (FOLD-01)
+- ✓ `MAKO_CODE_CONTENT` default color changed from `STRING` to `IDENTIFIER` — v0.2.0 (VIEW-01)
+- ✓ Structure View interleaves defs and blocks in document order (`sortedBy { textOffset }`) — v0.2.0 (VIEW-02)
+- ✓ `MODULE_OPEN/CODE_CLOSE` brace pair registered in `MakoPairedBraceMatcher` — v0.2.0 (VIEW-03)
+- ✓ Structure View def/block nodes use `AllIcons.Nodes.Function` instead of file icon — v0.2.0 (VIEW-04)
+- ✓ `DUMMY_BLOCK` detection uses `element.language == Language.ANY` identity check — v0.2.0 (VIEW-05)
+- ✓ `braceDepth` overflow emits `Logger` warning before clamping to 0xF — v0.2.0 (VIEW-06)
+- ✓ `<%doc` insert handler uses captured `ltPos` for replacement range — v0.2.0 (COMP-01)
+- ✓ Completion uses `document.charsSequence` backward scan instead of full `file.text` copy — v0.2.0 (COMP-02)
+- ✓ Language guard uses `MakoLanguage` identity comparison, not string literal `"Mako Template"` — v0.2.0 (ANNOT-01)
+- ✓ Parser fixture test covers unknown directive `<%bogus>` to guard against future lexer regressions — v0.2.0 (ANNOT-02)
+- ✓ Dead `FILTER_NAME` token and unused `TEMPLATE_CONTENT`/`TAG_OPENS` sets removed — v0.2.0 (CLEAN-01, CLEAN-02, CLEAN-03)
 
 ### Active
 
-- [ ] PSI-01: `getName()` finds `name=` attribute by pairing TAG_ATTR_NAME/TAG_ATTR_VALUE, not first value
-- [ ] PSI-02: `setName()` throws `UnsupportedOperationException` instead of silent no-op
-- [ ] FOLD-01: Doc/code/module block folds use recursive descent inside def/block tags
-- [ ] INJECT-01: `updateText()` in all three injection host mixins throws `UnsupportedOperationException`
-- [ ] INJECT-02: Python injection range stops at first `FILTER_SEP` token
-- [ ] VIEW-01: `MAKO_CODE_CONTENT` default color changed from `STRING` to `IDENTIFIER`
-- [ ] VIEW-02: Structure view interleaves defs and blocks in document order
-- [ ] VIEW-03: `MODULE_OPEN` added to `PairedBraceMatcher`
-- [ ] VIEW-04: Structure view def/block nodes use function icon not file icon
-- [ ] VIEW-05: `DUMMY_BLOCK` detection uses language identity not class name string
-- [ ] VIEW-06: `braceDepth` clamping logs a warning before discarding overflow
-- [ ] COMP-01: `<%doc` insert handler replacement start accounts for partial text already typed
-- [ ] COMP-02: Completion uses `document.charsSequence` view instead of full text copy + substring
-- [ ] ANNOT-01: `MakoAnnotator` and `MakoCompletionContributor` use `MakoLanguage.INSTANCE` for language guard
-- [ ] ANNOT-02: Regression test covering unknown directive detection (e.g., `<%bogus>`)
-- [ ] CLEAN-01: `FILTER_NAME` removed from `MakoTokenTypes`; unreachable branch removed from `MakoSyntaxHighlighter`
-- [ ] CLEAN-02: Unused `TEMPLATE_CONTENT` and `TAG_OPENS` removed from `MakoTokenSets`
-- [ ] CLEAN-03: `IncompleteCodeBlock.mako` gets verified `.txt` companion committed (or fixture deleted)
+*(No active requirements — v0.2.0 complete. Next milestone requirements defined via `/gsd:new-milestone`.)*
 
 ### Out of Scope
 
@@ -69,28 +55,31 @@ Mako template files get the same rich editing experience as native Python and HT
 - Runtime template rendering/preview — IDE editing support only, not a template engine
 - Mako configuration file editing — focus is on template files themselves
 - Integration with web frameworks (Pyramid, TurboGears routing) — pure template language support
-- HTML language injection — Mako wraps HTML; the platform's default HTML handling covers non-Mako regions adequately for v0.1.0
+- HTML language injection — Mako wraps HTML; the platform's default HTML handling covers non-Mako regions adequately
+- Implement `updateText()` round-trip editing — high complexity; PSI write operations require platform expertise; deferred
+- Implement `setName()` rename refactoring — requires cross-file reference resolution; deferred
+- Filter-name tokenization in lexer — deferred; CLEAN-01 removes dead code instead
 
 ## Context
 
-**v0.1.0 shipped 2026-02-21.** Implemented across 9 phases in 3 days.
+**v0.2.0 shipped 2026-02-22.** Implemented across 8 phases (10–17) in 2 days.
 
 **Codebase state:**
-- ~1,276 hand-written Kotlin LOC, 2,302 generated Java LOC, 1,237 test Kotlin LOC
-- 22 token types, 12 PSI node types, 9 color attributes, 6 fold construct types
-- 68+ unit tests (lexer, parser, folding, structure view, completion, annotator)
-- Plugin ID: `com.schtilig.mako`, display name: `Mako`, version: `0.1.0`
+- ~1,382 hand-written Kotlin LOC (src/main/kotlin), generated Java LOC in src/main/gen/
+- 22 token types (with dead constants removed), 12 PSI node types, 9 color attributes, 6 fold construct types
+- ~75+ unit tests (lexer, parser, folding, structure view, completion, annotator, injection host, injection range)
+- testData/ contains exactly 15 actively-loaded fixture files (6 orphaned files deleted in Phase 17)
+- Plugin ID: `com.schtilig.mako`, display name: `Mako`, version: `0.2.0` (pending release)
 - Target: PyCharm Community 2025.2+ (build 252+)
 
 **Tech stack:** Kotlin, Gradle 9.3.1, IntelliJ Platform 2025.2.5, GrammarKit 2023.3.0.2, JFlex 1.9.1
 
-**Known tech debt from v0.1.0:**
-- `updateText()` no-op on injection host mixins — injection round-trip editing (typing in injected Python fragment syncing back) not implemented; deferred
-- `getNameIdentifier()` skipped in def/block mixins — rename refactoring silently absent; deferred by design
-- `FILTER_NAME` token defined but never emitted by lexer — dead constant, harmless
-- Orphaned test fixtures and unused token sets (see milestone audit for full list)
+**Known tech debt from v0.2.0:**
+- `TagAttrCompletionProvider` lacks explicit `language != MakoLanguage` guard — PSI pattern (`WHITE_SPACE`) provides implicit restriction; no functional risk; low priority
+- 7 runtime behaviors deferred to human verification requiring a running PyCharm instance (injection filter UI, fold gutter rendering, Structure View icon/order, brace match highlight, completion replacement, per-keystroke allocation)
+- `src/main/gen/com/schtilig/mako/lang/_MakoLexer.java~` editor backup file — not git-tracked; harmless but untidy
 
-**v2 requirements for future milestones:**
+**v3+ requirements for future milestones:**
 - NAVG-01–04: Go-to-definition for inherited templates, included files, namespace files, def navigation
 - MLNG-01–04: HTML injection for HTML regions, Python completion in `${...}`
 - ADVN-01–04: Cross-file def navigation, find usages, rename refactoring, undefined variable inspection
@@ -124,6 +113,13 @@ Mako template files get the same rich editing experience as native Python and HT
 | Plugin ID `com.schtilig.mako`, display name `Mako` | JetBrains Marketplace naming conventions — no generic terms (Support, Tool, Plugin) in display name | ✓ Good — passes Marketplace plugin ID validation and naming guidelines |
 | purgeOldFiles=false on generateMakoLexer | lang/ directory contains committed psi/ and parser/ subdirs; purgeOldFiles=true recursively deletes them on every clean build | ✓ Good — generated lexer regenerates safely without destroying parser files |
 | addFileToProject + configureFromExistingVirtualFile for completion tests | configureByText(FileType) creates in-memory file before MakoFileType registered; physical temp file ensures correct file type after registration | ✓ Good — completion tests reliably detect Mako file type |
+| ASTNode child walk for getName() in mixins | `findChildByType()` returns first match; name= attribute ordering is not guaranteed; explicit walk pairs TAG_ATTR_NAME with its TAG_ATTR_VALUE sibling | ✓ Good — PSI-01 correctly resolved; 7 tests cover edge cases |
+| setName()/updateText() throw UnsupportedOperationException | Silent no-op misleads callers; explicit exception gives actionable failure signal for callers attempting rename/round-trip edit | ✓ Good — consistent contract across PSI-02 and INJECT-01 |
+| walkAllNodes Boolean return from visitor controls child recursion | Prevents double-fold when composite element and its child token are both visited | ✓ Good — FOLD-01 correctly handles nested constructs |
+| Language.ANY identity check for DUMMY_BLOCK | `node.psi.language == Language.ANY` is stable against JetBrains type renames vs brittle `toString()` string comparison | ✓ Good — VIEW-05 resolved; stable across platform upgrades |
+| FILTER_SEP retained; FILTER_NAME removed | Lexer emits FILTER_SEP for `|` inside `${...}`; Python injector uses it for boundary; FILTER_NAME was never emitted | ✓ Good — CLEAN-01 removes dead constant; INJECT-02 boundary preserved |
+| IncompleteCodeBlock.mako deleted not completed | File was never git-tracked; MakoParsingTest had no `testIncompleteCodeBlock()` method; fixture was completely unreachable | ✓ Good — CLEAN-03 resolved cleanly without creating misleading test infrastructure |
+| Annotator/folding tests migrated to inline configureMakoFile() | Disk fixtures for error-annotation tests create confusion about what is exercised; inline strings co-locate test content with assertions | ✓ Good — 4 orphaned fixtures deleted; 1 disk fixture retained (WellFormedDefTag.mako needed for checkHighlighting negative assertion) |
 
 ---
-*Last updated: 2026-02-21 after v0.2.0 milestone start*
+*Last updated: 2026-02-22 after v0.2.0 milestone*

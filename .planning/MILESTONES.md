@@ -22,3 +22,30 @@
 
 ---
 
+
+## v0.2.0 Bug Fixing & Cleanup (Shipped: 2026-02-22)
+
+**Phases completed:** 8 phases (10–17), 10 plans
+**Timeline:** 2026-02-21 → 2026-02-22 (2 days)
+**Files changed:** 138 files, 5,449 insertions, 507 deletions
+**LOC:** ~1,382 hand-written Kotlin (src/main/kotlin)
+**Git range:** `v0.1.0` → `HEAD` (58 commits)
+
+**Key accomplishments:**
+- Fixed `getName()` ASTNode attribute-pairing bug in PSI mixins — `<%def name="foo" args="()">` now correctly returns "foo" instead of "()"
+- Fixed Python injection range to stop at first `FILTER_SEP` token — filter names (`h`, `trim` in `${x | h, trim}`) excluded from injected Python fragment
+- Fixed code folding to use recursive descent (`walkAllNodes`) — nested `<%doc>`/code/module blocks inside `<%def>`/`<%block>` now produce fold regions
+- Fixed Structure View: defs and blocks interleaved in document order (`sortedBy { textOffset }`), function icon (`AllIcons.Nodes.Function`) replaces file icon
+- Fixed editor behavior: `MAKO_CODE_CONTENT` color changed STRING→IDENTIFIER, `MODULE_OPEN` brace pair added, braceDepth overflow now emits Logger warning
+- Fixed `<%doc` insert handler to use captured `ltPos` instead of `ctx.startOffset - 2`; replaced full-file `file.text` allocation with `document.charsSequence` backward scan
+- Replaced string-literal language guards (`language.id != "Mako Template"`) with type-safe `MakoLanguage` identity comparison; added `UnknownDirective` parser fixture regression test
+- Removed dead `FILTER_NAME` token and unused `TEMPLATE_CONTENT`/`TAG_OPENS` token sets; deleted 5 orphaned test fixtures from `testData/`
+
+**Tech debt accepted:**
+- `TagAttrCompletionProvider` missing explicit language guard (PSI pattern provides implicit restriction — no functional risk)
+- 7 runtime behaviors deferred to human verification in running PyCharm instance
+
+**Archive:** `.planning/milestones/v0.2.0-ROADMAP.md`, `.planning/milestones/v0.2.0-REQUIREMENTS.md`
+
+---
+
