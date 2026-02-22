@@ -176,3 +176,11 @@ None — no external service configuration required.
 ---
 *Phase: 18-fileviewprovider-scaffolding*
 *Completed: 2026-02-22*
+
+## Self-Check: PASSED
+
+- FOUND: `.planning/phases/18-fileviewprovider-scaffolding/18-03-SUMMARY.md`
+- FOUND: `.planning/REQUIREMENTS.md` (HINJ-04 updated to PARTIAL)
+- FOUND: `.planning/STATE.md` (HINJ-04 added to Known Gaps)
+- FOUND: commit e03f596 (docs(18-03): complete gap closure plan)
+- FOUND: commit 94ba105 (docs(18-03): update ROADMAP.md and REQUIREMENTS.md)
