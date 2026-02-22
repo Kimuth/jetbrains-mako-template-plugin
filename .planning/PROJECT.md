@@ -45,9 +45,21 @@ Mako template files get the same rich editing experience as native Python and HT
 - ✓ Parser fixture test covers unknown directive `<%bogus>` to guard against future lexer regressions — v0.2.0 (ANNOT-02)
 - ✓ Dead `FILTER_NAME` token and unused `TEMPLATE_CONTENT`/`TAG_OPENS` sets removed — v0.2.0 (CLEAN-01, CLEAN-02, CLEAN-03)
 
+## Current Milestone: v0.3.0 HTML Language Injection
+
+**Goal:** Inject real HTML language into Mako template text regions so PyCharm delivers full HTML editing (coloring, tag/attr completion, Emmet, error detection) inside `.mako` files.
+
+**Target features:**
+- HTML language injection in TEMPLATE_TEXT regions (non-Mako portions of the file)
+- TemplateLanguageFileViewProvider to create multi-language PSI structure
+- Default template data language configured to HTML
+
 ### Active
 
-*(No active requirements — v0.2.0 complete. Next milestone requirements defined via `/gsd:new-milestone`.)*
+- [ ] Inject HTML language into TEMPLATE_TEXT regions via TemplateLanguageFileViewProvider
+- [ ] Configure default template data language mapping to HTML for .mako files
+- [ ] Verify HTML tag/attr completion and error detection work in template body
+- [ ] Ensure existing Mako PSI features (folding, structure view, injection) still work alongside HTML injection
 
 ### Out of Scope
 
@@ -122,4 +134,4 @@ Mako template files get the same rich editing experience as native Python and HT
 | Annotator/folding tests migrated to inline configureMakoFile() | Disk fixtures for error-annotation tests create confusion about what is exercised; inline strings co-locate test content with assertions | ✓ Good — 4 orphaned fixtures deleted; 1 disk fixture retained (WellFormedDefTag.mako needed for checkHighlighting negative assertion) |
 
 ---
-*Last updated: 2026-02-22 after v0.2.0 milestone*
+*Last updated: 2026-02-22 after v0.3.0 milestone started*
