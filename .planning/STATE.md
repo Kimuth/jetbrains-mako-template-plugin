@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-22 after v0.3.0 roadmap created)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 21 Plan 01 complete — MakoCssInjector implemented; HINJ-05 and HINJ-06 closed; 98 tests pass
+**Current focus:** Phase 21 Plan 02 in progress — IDE launched with MakoCssInjector loaded; awaiting human verification of HINJ-05 (CSS injection) and HINJ-06 (JS injection)
 
 ## Current Position
 
 Phase: 21 of 22 (CSS and JS Sub-Language Injection)
-Plan: 01 of 1 completed (MakoCssInjector via MultiHostInjector; HINJ-05 DONE; HINJ-06 via platform HtmlScriptLanguageInjector; 98 tests pass; see 21-01-SUMMARY.md)
-Status: Complete
-Last activity: 2026-02-22 — Phase 21 Plan 01 complete (MakoCssInjector + tests; ./gradlew check passes with 98 tests)
+Plan: 02 of 2 in progress — Task 1 complete (IDE launched via runIde, hinj05_hinj06_test.mako fixture created at project root); awaiting Task 2 human checkpoint (HINJ-05/HINJ-06 verification)
+Status: In Progress — awaiting human-verify checkpoint
+Last activity: 2026-02-22 — Phase 21 Plan 02 Task 1 complete (IDE running, verification fixture ready)
 
 Progress: [██████████] 100% (Phase 21 complete, all 1 plans executed)
 
@@ -114,5 +114,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 21-css-js-sub-language-injection/21-01-PLAN.md (MakoCssInjector implemented; HINJ-05/HINJ-06 closed; 98 tests pass)
-Resume with: Phase 21 complete — consider human IDE verification for CSS completions with CSS plugin, or plan next feature phase
+Stopped at: 21-css-js-sub-language-injection/21-02-PLAN.md Task 2 checkpoint — awaiting human verification of HINJ-05/HINJ-06 in running IDE
+Resume with: Provide HINJ-05/HINJ-06 verification outcome; continuation agent will create 21-02-SUMMARY.md and complete Phase 21
