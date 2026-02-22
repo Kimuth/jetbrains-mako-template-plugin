@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-22 after v0.3.0 roadmap created)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 18 — FileViewProvider Scaffolding
+**Current focus:** Phase 19 — Regression Hardening (Phase 18 complete)
 
 ## Current Position
 
 Phase: 18 of 20 (FileViewProvider Scaffolding)
-Plan: 02 of 2 completed (partial pass — 3 verification gaps; see 18-02-SUMMARY.md)
-Status: In Progress
-Last activity: 2026-02-22 — Phase 18 Plan 02 complete (human verification — 6/9 points passed)
+Plan: 03 of 3 completed (gap closure — HINJ-04 partial, HINJ-01/05/06 deferred; see 18-03-SUMMARY.md)
+Status: Complete
+Last activity: 2026-02-22 — Phase 18 Plan 03 complete (HINJ-04 partial verification; Phase 18 declared complete)
 
 Progress: [██░░░░░░░░] 20% (v0.3.0 — 2 of ~10 plans complete)
 
@@ -58,6 +58,8 @@ Recent decisions affecting Phase 18:
 - [Phase 18-fileviewprovider-scaffolding]: OUTER_ELEMENT_TYPE is 4th arg to TemplateDataElementType; TEMPLATE_TEXT is 3rd — transposing causes broken HTML PSI trees
 - [Phase 18-02 verification]: HINJ-01 (HTML coloring) gap — TemplateLanguageFileViewProvider builds the HTML PSI tree but syntax coloring is not visually applying; likely requires TemplateLanguageSyntaxHighlighter delegation or color scheme mapping
 - [Phase 18-02 verification]: HINJ-05/HINJ-06 gaps — CSS/JS sub-injection inside <style>/<script> does not fire automatically from HTML PSI tree alone; platform Emmet handler operates on outer HTML context; requires additional MultiHostInjector or LanguageInjectionContributor wiring (Phase 20 scope)
+- [Phase 18-03 verification]: HINJ-04 PARTIAL — HTML error squiggles work for inline elements (span) but not block/root elements (p, html); element-type-dependent annotator coverage; carry inconsistency investigation to Phase 20
+- [Phase 18-03]: Phase 18 complete — all 3 plans executed; HINJ-01/04/05/06 deferred to Phase 20 with recorded rationale; HINJ-02 and HINJ-03 verified working
 
 ### Pending Todos
 
@@ -68,9 +70,10 @@ Recent decisions affecting Phase 18:
 - `TagAttrCompletionProvider` lacks explicit `language != MakoLanguage` guard — PSI pattern provides implicit restriction; no functional risk
 - `src/main/gen/com/schtilig/mako/lang/_MakoLexer.java~` editor backup file — not git-tracked; harmless
 
-### Known Gaps from Phase 18-02 Verification
+### Known Gaps from Phase 18 Verification (carry to Phase 20)
 
 - **HINJ-01 (HTML coloring):** HTML tags in TEMPLATE_TEXT regions not visually colored; TemplateLanguageSyntaxHighlighter delegation likely needed
+- **HINJ-04 (HTML error squiggles) — PARTIAL:** Squiggles appear for `<span>` tags missing close tag, but NOT for `<p>` or `<html>` without closing tags; element-type-dependent behavior; inconsistent coverage requires investigation in Phase 20
 - **HINJ-05 (CSS in `<style>`):** Emmet fires HTML handler instead of CSS; CSS language sub-injection inside HTML PSI tree not activating automatically
 - **HINJ-06 (JS in `<script>`):** Emmet fires HTML handler instead of JS; JS language sub-injection inside HTML PSI tree not activating automatically
 
@@ -87,5 +90,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 18-fileviewprovider-scaffolding/18-02-PLAN.md (partial pass — 3 gaps: HINJ-01, HINJ-05, HINJ-06)
-Resume with: `/gsd:plan-phase 19` or `/gsd:plan-phase 20` (to plan CSS/JS injection follow-up)
+Stopped at: Completed 18-fileviewprovider-scaffolding/18-03-PLAN.md (gap closure — HINJ-04 partial; Phase 18 complete)
+Resume with: `/gsd:plan-phase 19` (Regression Hardening) or `/gsd:plan-phase 20` (HTML Feature Verification and False-Positive Audit)

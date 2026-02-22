@@ -12,7 +12,7 @@ Requirements for the HTML Language Injection milestone. Phases continue from Pha
 - [ ] **HINJ-01**: User sees HTML syntax coloring in template body regions of `.mako` files — FAILED verification (18-02); HTML tags not colored differently from Mako constructs
 - [x] **HINJ-02**: User gets HTML tag and attribute completion in template body regions — PASSED verification (18-02)
 - [x] **HINJ-03**: User gets Emmet abbreviation expansion in template body regions — PASSED verification (18-02)
-- [ ] **HINJ-04**: User sees HTML error squiggles for malformed markup in template body — not yet verified in running IDE
+- [ ] **HINJ-04**: User sees HTML error squiggles for malformed markup in template body — PARTIAL verification (18-03): squiggles appear on `<span>` without closing tag but NOT on `<p>` or `<html>` without closing tags; inconsistent by element type; carry to Phase 20
 - [ ] **HINJ-05**: CSS completion and validation are active inside `<style>` tags in `.mako` files — FAILED verification (18-02); Emmet fires in HTML context, not CSS
 - [ ] **HINJ-06**: JavaScript completion and validation are active inside `<script>` tags in `.mako` files — FAILED verification (18-02); Emmet fires in HTML context, not JS
 
@@ -69,7 +69,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HINJ-01 | Phase 18/20 | Verification failed — HTML coloring gap; carry to Phase 20 |
 | HINJ-02 | Phase 18 | Complete — verified 2026-02-22 |
 | HINJ-03 | Phase 18 | Complete — verified 2026-02-22 |
-| HINJ-04 | Phase 18/20 | Structurally enabled; runtime verification pending |
+| HINJ-04 | Phase 18/20 | PARTIAL verification (18-03) — squiggles on span tags but not p or html tags; inconsistent coverage; carry to Phase 20 |
 | HINJ-05 | Phase 18/20 | Verification failed — CSS sub-injection gap; carry to Phase 20 |
 | HINJ-06 | Phase 18/20 | Verification failed — JS sub-injection gap; carry to Phase 20 |
 | CRCT-01 | Phase 20 | Pending |
@@ -85,4 +85,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-22*
-*Last updated: 2026-02-22 after 18-02 verification — HINJ-01/05/06 downgraded from Complete to failed/pending*
+*Last updated: 2026-02-22 after 18-03 verification — HINJ-04 partial pass (span squiggles only); HINJ-01/05/06 deferred to Phase 20*
