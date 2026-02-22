@@ -4,6 +4,7 @@
 
 - ✅ **v0.1.0 Initial Release** — Phases 1–9 (shipped 2026-02-21)
 - ✅ **v0.2.0 Bug Fixing & Cleanup** — Phases 10–17 (shipped 2026-02-22)
+- 🚧 **v0.3.0 HTML Language Injection** — Phases 18–20 (in progress)
 
 ## Phases
 
@@ -40,6 +41,51 @@ Full details: `.planning/milestones/v0.2.0-ROADMAP.md`
 
 </details>
 
+### v0.3.0 HTML Language Injection (In Progress)
+
+**Milestone Goal:** Inject real HTML language into Mako TEMPLATE_TEXT regions so PyCharm delivers full HTML editing (coloring, tag/attribute completion, Emmet, error detection) inside `.mako` files — using `TemplateLanguageFileViewProvider` to create a parallel HTML PSI tree alongside the existing Mako PSI tree.
+
+- [ ] **Phase 18: FileViewProvider Scaffolding** - Create `MakoFileViewProvider`, `MakoFileViewProviderFactory`, and `OUTER_ELEMENT_TYPE`; register in `plugin.xml`; parallel HTML PSI tree exists and HTML features activate automatically
+- [ ] **Phase 19: Regression Hardening** - Guard `MakoPythonInjector` and `MakoAnnotator` against the dual-tree environment; verify all existing automated tests pass unchanged
+- [ ] **Phase 20: HTML Feature Verification and False-Positive Audit** - Verify HTML completions, Emmet, CSS/JS injection, and error detection work in TEMPLATE_TEXT; confirm `${...}` and Mako control lines produce no false-positive HTML errors
+
+## Phase Details
+
+### Phase 18: FileViewProvider Scaffolding
+**Goal**: A parallel HTML PSI tree exists for every `.mako` file, enabling the full suite of HTML IDE features in template body regions automatically
+**Depends on**: Phase 17 (v0.2.0 complete)
+**Requirements**: HINJ-01, HINJ-02, HINJ-03, HINJ-04, HINJ-05, HINJ-06
+**Success Criteria** (what must be TRUE):
+  1. `file.viewProvider.allFiles.size == 2` for any `.mako` file opened in a test or running IDE — both Mako and HTML PSI roots are present
+  2. The PSI Viewer shows a valid HTML PSI tree alongside the Mako PSI tree for a `.mako` file containing HTML markup
+  3. HTML syntax coloring is visible in TEMPLATE_TEXT regions of `.mako` files in the running IDE (`./gradlew runIde`)
+  4. HTML tag and attribute completion suggestions appear when typing `<div`, `class=`, or `href=` in a `.mako` template body region
+  5. Emmet abbreviation expansion fires in a TEMPLATE_TEXT region (e.g., `div.container` expands to `<div class="container"></div>`)
+**Plans**: TBD
+
+### Phase 19: Regression Hardening
+**Goal**: All existing plugin features — Python injection, code folding, structure view, tag completion, and error annotations — work correctly alongside the HTML PSI tree; the full automated test suite passes without modification
+**Depends on**: Phase 18
+**Requirements**: RGRN-01, RGRN-02, RGRN-03
+**Success Criteria** (what must be TRUE):
+  1. `./gradlew check` reports zero test failures after `MakoFileViewProvider` is active — all existing lexer, parser, folding, structure view, completion, annotator, injection host, and injection range tests pass unchanged
+  2. Python syntax highlighting and error detection are active inside `${...}`, `<% %>`, and `<%! %>` regions in the running IDE after the FileViewProvider is wired in
+  3. Code folding gutter icons appear for `<%def>`, `<%block>`, and `<%doc>` regions in a `.mako` file that also has HTML content
+  4. Structure View shows `<%def>` and `<%block>` nodes in document order for a `.mako` file open in the running IDE
+**Plans**: TBD
+
+### Phase 20: HTML Feature Verification and False-Positive Audit
+**Goal**: HTML features are confirmed working in TEMPLATE_TEXT regions and Mako syntax (expressions, control lines) produces zero false-positive HTML error squiggles; the milestone is shippable
+**Depends on**: Phase 19
+**Requirements**: CRCT-01, CRCT-02
+**Success Criteria** (what must be TRUE):
+  1. A `.mako` file containing `<div class="${cls}">` shows no red HTML error squiggle on the `${cls}` expression — `OuterLanguageElement` boundary suppresses the false positive
+  2. A `.mako` file containing `%for item in items:`, `%endfor`, `%if condition:`, and `%endif` lines shows no red HTML error squiggles on those Mako control lines
+  3. A test asserts that `viewProvider.getPsi(HTMLLanguage.INSTANCE)` returns a non-null `HtmlFile` for a `.mako` fixture containing HTML markup
+  4. CSS completion or validation is active inside a `<style>` tag in a `.mako` file in the running IDE (e.g., `color:` produces CSS property completions)
+  5. JavaScript completion or validation is active inside a `<script>` tag in a `.mako` file in the running IDE (e.g., `document.` produces member completions)
+**Plans**: TBD
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -61,3 +107,6 @@ Full details: `.planning/milestones/v0.2.0-ROADMAP.md`
 | 15. Annotator Fixes | v0.2.0 | 1/1 | Complete | 2026-02-21 |
 | 16. Dead Code Cleanup | v0.2.0 | 1/1 | Complete | 2026-02-22 |
 | 17. Clean Up Orphaned Test Fixtures | v0.2.0 | 1/1 | Complete | 2026-02-22 |
+| 18. FileViewProvider Scaffolding | v0.3.0 | 0/? | Not started | - |
+| 19. Regression Hardening | v0.3.0 | 0/? | Not started | - |
+| 20. HTML Feature Verification and False-Positive Audit | v0.3.0 | 0/? | Not started | - |

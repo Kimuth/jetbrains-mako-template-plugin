@@ -2,17 +2,17 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-22 after v0.2.0 milestone)
+See: .planning/PROJECT.md (updated 2026-02-22 after v0.3.0 roadmap created)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Planning next milestone
+**Current focus:** Phase 18 — FileViewProvider Scaffolding
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-02-22 — Milestone v0.3.0 started
+Phase: 18 of 20 (FileViewProvider Scaffolding)
+Plan: — (not yet planned)
+Status: Ready to plan
+Last activity: 2026-02-22 — v0.3.0 roadmap created; Phases 18–20 defined
 
 Progress: [░░░░░░░░░░] 0% (v0.3.0 not started)
 
@@ -27,20 +27,6 @@ Progress: [░░░░░░░░░░] 0% (v0.3.0 not started)
 - Total plans completed: 10
 - Timeline: 2 days (2026-02-21 → 2026-02-22)
 - Files changed: 138, 5,449 insertions, 507 deletions
-
-**By Phase (v0.1.0):**
-
-| Phase | Plans | Duration (min) | Avg/Plan |
-|-------|-------|----------------|----------|
-| 01-language-foundation | 2 | 11 | 5.5 |
-| 02-lexer | 3 | 7 | 2.3 |
-| 03-parser | 3 | 15 | 5 |
-| 04-syntax-highlighting | 2 | 3 | 1.5 |
-| 05-structural-features | 3 | 78 | 26 |
-| 06-python-language-injection | 2 | 33 | 16.5 |
-| 07-completion | 2 | 33 | 16.5 |
-| 08-error-annotations | 3 | 76 | 25.3 |
-| 09-marketplace-branding | 3 | 9 | 3 |
 
 **By Phase (v0.2.0):**
 
@@ -61,11 +47,11 @@ Progress: [░░░░░░░░░░] 0% (v0.3.0 not started)
 
 All key decisions logged in PROJECT.md Key Decisions table.
 
-### Roadmap Evolution
-
-- v0.1.0 complete: 9 phases, 23 plans, all requirements shipped
-- v0.2.0 complete: 8 phases (10–17), 10 plans, 18/18 requirements, all bugs fixed
-- v0.2.0 archived to .planning/milestones/
+Recent decisions affecting Phase 18:
+- Use `lang.fileViewProviderFactory` EP (language-keyed), NOT `fileType.fileViewProviderFactory` — confirmed from `LangExtensionPoints.xml`
+- `TemplateDataElementType` must be singleton per data-language ID (ConcurrentHashMap in companion object) — not per-file instance
+- `contentElementType` on HTML PSI file must be set immediately after `def.createFile(this)` in `createFile()` override
+- `OUTER_ELEMENT_TYPE` is 4th argument to `TemplateDataElementType`; `TEMPLATE_TEXT` is 3rd argument — transposing causes broken trees
 
 ### Pending Todos
 
@@ -73,9 +59,9 @@ All key decisions logged in PROJECT.md Key Decisions table.
 
 ### Known Tech Debt (carry-forward from v0.2.0)
 
-- `TagAttrCompletionProvider` lacks explicit `language != MakoLanguage` guard — PSI pattern provides implicit restriction; no functional risk; low priority
+- `TagAttrCompletionProvider` lacks explicit `language != MakoLanguage` guard — PSI pattern provides implicit restriction; no functional risk
 - 7 runtime behaviors deferred to human verification requiring a running PyCharm instance
-- `src/main/gen/com/schtilig/mako/lang/_MakoLexer.java~` editor backup file — not git-tracked; harmless but untidy
+- `src/main/gen/com/schtilig/mako/lang/_MakoLexer.java~` editor backup file — not git-tracked; harmless
 
 ### Blockers/Concerns
 
@@ -90,5 +76,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: quick-1 fix-false-positive-unresolved-reference complete
-Resume with: `/gsd:new-milestone` to plan next milestone
+Stopped at: v0.3.0 roadmap created (Phases 18–20)
+Resume with: `/gsd:plan-phase 18`
