@@ -18,8 +18,8 @@ Requirements for the HTML Language Injection milestone. Phases continue from Pha
 
 ### Correctness (CRCT)
 
-- [ ] **CRCT-01**: `${...}` expressions inside HTML attribute values (e.g., `<div class="${cls}">`) do not produce false-positive HTML errors
-- [ ] **CRCT-02**: Mako control lines (`%for`, `%if`, `%endif`) do not produce false-positive HTML errors
+- [x] **CRCT-01**: `${...}` expressions inside HTML attribute values (e.g., `<div class="${cls}">`) do not produce false-positive HTML errors
+- [x] **CRCT-02**: Mako control lines (`%for`, `%if`, `%endif`) do not produce false-positive HTML errors
 
 ### Regression (RGRN)
 
@@ -72,8 +72,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HINJ-04 | Phase 18/20 | PARTIAL verification (18-03) — squiggles on span tags but not p or html tags; inconsistent coverage; carry to Phase 20 |
 | HINJ-05 | Phase 18/20 | Verification failed — CSS sub-injection gap; carry to Phase 20 |
 | HINJ-06 | Phase 18/20 | Verification failed — JS sub-injection gap; carry to Phase 20 |
-| CRCT-01 | Phase 20 | Pending |
-| CRCT-02 | Phase 20 | Pending |
+| CRCT-01 | Phase 20 | Complete |
+| CRCT-02 | Phase 20 | Complete |
 | RGRN-01 | Phase 19 | Complete |
 | RGRN-02 | Phase 19 | Complete |
 | RGRN-03 | Phase 19 | Complete |

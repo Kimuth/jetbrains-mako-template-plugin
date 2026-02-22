@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-22 after v0.3.0 roadmap created)
 
 ## Current Position
 
-Phase: 19 of 20 (Regression Hardening)
-Plan: 01 of 1 completed (MakoStructureViewFactory dual-tree guard + RGRN-01/02/03 verified; see 19-01-SUMMARY.md)
-Status: Complete
-Last activity: 2026-02-22 — Phase 19 Plan 01 complete (all 4 RGRN IDE criteria verified by human; 2 known limitations carried to Phase 20)
+Phase: 20 of 20 (HTML Feature Verification and False-Positive Audit)
+Plan: 01 of 3 completed (MakoEditorHighlighter + MakoEditorHighlighterProvider + MakoErrorFilter; CRCT-01, CRCT-02 automated tests; see 20-01-SUMMARY.md)
+Status: In Progress
+Last activity: 2026-02-22 — Phase 20 Plan 01 complete (HTML coloring highlighter + false-positive filter + CRCT tests; awaiting human IDE verification in plan 20-03)
 
-Progress: [███░░░░░░░] 30% (v0.3.0 — 3 of ~10 plans complete)
+Progress: [████░░░░░░] 40% (v0.3.0 — 4 of ~10 plans complete)
 
 ## Performance Metrics
 
@@ -42,6 +42,7 @@ Progress: [███░░░░░░░] 30% (v0.3.0 — 3 of ~10 plans comple
 | 17-clean-up-orphaned-test-fixtures | 1 | 5 min |
 | Phase 18-fileviewprovider-scaffolding P01 | 18 | 3 tasks | 8 files |
 | Phase 19-regression-hardening P01 | 3 | 1 tasks | 2 files |
+| Phase 20-html-feature-verification P01 | 3 min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,9 @@ Recent decisions affecting Phase 18:
 - [Phase 19-regression-hardening]: requireNotNull(makoFile) after assertNotNull used in test to satisfy Kotlin null-safety without type mismatch from fail() return type
 - [Phase 19-regression-hardening]: Known limitation (carry to Phase 20): os from <%! %> module-level block is not in scope for ${...} expressions — cross-injection scoping gap, not a regression introduced by Phase 18/19
 - [Phase 19-regression-hardening]: Known limitation (carry to Phase 20): Single-line inline <%! import os %> triggers Unexpected indent from Python language service — workaround is multi-line syntax; pre-existing behavior, not a regression
+- [Phase 20-01 html-coloring-and-false-positive-suppression]: MakoEditorHighlighter null-guards project/file in init block — getEditorHighlighter() called with nulls during Settings color scheme previews and early IDE init
+- [Phase 20-01 html-coloring-and-false-positive-suppression]: MakoErrorFilter TokenSet contains EXPR_START, EXPR_END, CONTROL_LINE (not TEMPLATE_TEXT) — these are boundary tokens adjacent to OuterLanguageElement regions; TEMPLATE_TEXT is the HTML content token, not a boundary
+- [Phase 20-01 html-coloring-and-false-positive-suppression]: CRCT tests provide structural coverage but may trivially pass if HTML annotator is inactive in BasePlatformTestCase — definitive runtime check is human IDE verification in plan 20-03
 
 ### Pending Todos
 
@@ -100,5 +104,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 19-regression-hardening/19-01-PLAN.md (MakoStructureViewFactory dual-tree guard; all RGRN criteria verified; 2 known limitations carried to Phase 20)
-Resume with: `/gsd:execute-phase 20` (HTML Feature Verification and False-Positive Audit)
+Stopped at: Completed 20-html-feature-verification-and-false-positive-audit/20-01-PLAN.md (MakoEditorHighlighter + MakoErrorFilter + CRCT tests; plan 20-02 and 20-03 remain)
+Resume with: `/gsd:execute-phase 20` (continue with plan 20-02)
