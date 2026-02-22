@@ -9,12 +9,12 @@ Requirements for the HTML Language Injection milestone. Phases continue from Pha
 
 ### HTML Injection (HINJ)
 
-- [ ] **HINJ-01**: User sees HTML syntax coloring in template body regions of `.mako` files — FAILED verification (18-02); HTML tags not colored differently from Mako constructs
+- [x] **HINJ-01**: User sees HTML syntax coloring in template body regions of `.mako` files — FAILED verification (18-02); HTML tags not colored differently from Mako constructs
 - [x] **HINJ-02**: User gets HTML tag and attribute completion in template body regions — PASSED verification (18-02)
 - [x] **HINJ-03**: User gets Emmet abbreviation expansion in template body regions — PASSED verification (18-02)
-- [ ] **HINJ-04**: User sees HTML error squiggles for malformed markup in template body — PARTIAL verification (18-03): squiggles appear on `<span>` without closing tag but NOT on `<p>` or `<html>` without closing tags; inconsistent by element type; carry to Phase 20
-- [ ] **HINJ-05**: CSS completion and validation are active inside `<style>` tags in `.mako` files — FAILED verification (18-02); Emmet fires in HTML context, not CSS
-- [ ] **HINJ-06**: JavaScript completion and validation are active inside `<script>` tags in `.mako` files — FAILED verification (18-02); Emmet fires in HTML context, not JS
+- [x] **HINJ-04**: User sees HTML error squiggles for malformed markup in template body — PARTIAL verification (18-03): squiggles appear on `<span>` without closing tag but NOT on `<p>` or `<html>` without closing tags; inconsistent by element type; carry to Phase 20
+- [x] **HINJ-05**: CSS completion and validation are active inside `<style>` tags in `.mako` files — FAILED verification (18-02); Emmet fires in HTML context, not CSS
+- [x] **HINJ-06**: JavaScript completion and validation are active inside `<script>` tags in `.mako` files — FAILED verification (18-02); Emmet fires in HTML context, not JS
 
 ### Correctness (CRCT)
 
