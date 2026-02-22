@@ -46,6 +46,12 @@
         <multiHostInjector
             implementation="com.schtilig.mako.lang.injection.MakoPythonInjector"/>
 
+        <!-- Phase 21: CSS injection into <style> elements in the HTML PSI tree of .mako files (HINJ-05) -->
+        <!-- JavaScript injection into <script> elements is handled automatically by the platform's -->
+        <!-- HtmlScriptLanguageInjector (registered in PyCharmCorePlugin.xml) — no custom injector needed (HINJ-06) -->
+        <multiHostInjector
+            implementation="com.schtilig.mako.lang.injection.MakoCssInjector"/>
+
         <!-- Phase 7: Completion -->
         <!-- language="any" so the contributor fires for all element positions in Mako files,
              including TEMPLATE_TEXT positions where the caret is after "<%". The contributor's
