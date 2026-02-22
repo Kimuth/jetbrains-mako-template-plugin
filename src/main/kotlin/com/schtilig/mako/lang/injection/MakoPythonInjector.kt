@@ -1,5 +1,6 @@
 package com.schtilig.mako.lang.injection
 
+import com.schtilig.mako.MakoLanguage
 import com.schtilig.mako.lang.MakoTokenTypes
 import com.schtilig.mako.lang.psi.MakoCodeBlock
 import com.schtilig.mako.lang.psi.MakoExpression
@@ -9,7 +10,6 @@ import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiLanguageInjectionHost
 import com.intellij.psi.util.PsiTreeUtil
 
@@ -52,7 +52,7 @@ class MakoPythonInjector : MultiHostInjector {
 
         when (context) {
             is MakoCodeBlock, is MakoExpression -> {
-                val hosts = collectCodeAndExpressionHosts(context.containingFile ?: return)
+                val hosts = collectCodeAndExpressionHosts(context)
                 // Only the FIRST host in document order starts the multi-host injection.
                 // All other hosts return early — they are included via the first host's addPlace() loop.
                 if (hosts.firstOrNull() != context) return
@@ -125,15 +125,21 @@ class MakoPythonInjector : MultiHostInjector {
     }
 
     /**
-     * Collects all MakoCodeBlock and MakoExpression elements in the file, sorted by document order.
+     * Collects all MakoCodeBlock and MakoExpression elements in the Mako PSI root, sorted by
+     * document order.
+     *
+     * Uses viewProvider.getPsi(MakoLanguage) to obtain the Mako PSI root explicitly, rather than
+     * relying on containingFile. In the dual-tree environment created by MakoFileViewProvider,
+     * context.containingFile may return the HTML PSI file for some element positions; this method
+     * always searches the correct Mako PSI tree regardless of which PSI root the context belongs to.
      *
      * PsiTreeUtil.findChildrenOfType recurses into nested structures (including <%def> blocks),
      * so all code blocks and expressions at any nesting depth are included.
      */
-    private fun collectCodeAndExpressionHosts(file: PsiFile): List<PsiLanguageInjectionHost> {
-        val codeBlocks = PsiTreeUtil.findChildrenOfType(file, MakoCodeBlock::class.java)
-        val expressions = PsiTreeUtil.findChildrenOfType(file, MakoExpression::class.java)
-        return (codeBlocks + expressions)
-            .sortedBy { it.textOffset }
+    private fun collectCodeAndExpressionHosts(context: PsiElement): List<PsiLanguageInjectionHost> {
+        val makoFile = context.containingFile?.viewProvider?.getPsi(MakoLanguage) ?: return emptyList()
+        val codeBlocks = PsiTreeUtil.findChildrenOfType(makoFile, MakoCodeBlock::class.java)
+        val expressions = PsiTreeUtil.findChildrenOfType(makoFile, MakoExpression::class.java)
+        return (codeBlocks + expressions).sortedBy { it.textOffset }
     }
 }

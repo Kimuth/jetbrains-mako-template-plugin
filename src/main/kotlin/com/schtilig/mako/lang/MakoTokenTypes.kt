@@ -2,6 +2,7 @@ package com.schtilig.mako.lang
 
 import com.schtilig.mako.MakoLanguage
 import com.intellij.psi.tree.IElementType
+import com.intellij.psi.tree.OuterLanguageElementType
 
 object MakoTokenTypes {
     // Expression tokens
@@ -41,6 +42,10 @@ object MakoTokenTypes {
 
     // Template text (HTML/plain content between Mako constructs)
     @JvmField val TEMPLATE_TEXT  = IElementType("TEMPLATE_TEXT",  MakoLanguage)
+
+    // Template language support: placeholder token type used by TemplateDataElementType
+    // to represent Mako constructs (tags, expressions, code blocks) in the HTML PSI tree.
+    @JvmField val OUTER_ELEMENT_TYPE = OuterLanguageElementType("MAKO_OUTER_ELEMENT", MakoLanguage)
 
     // Whitespace and errors: reuse platform constants
     // TokenType.WHITE_SPACE and TokenType.BAD_CHARACTER — do NOT define custom equivalents
