@@ -81,8 +81,12 @@ All key decisions logged in PROJECT.md Key Decisions table.
 
 None.
 
+### Quick Tasks Completed
+
+- **quick-1** (2026-02-22): Fix false-positive Unresolved Reference — combined MakoCodeBlock+MakoExpression into multi-host injection per file; MakoModuleBlock stays isolated; 2 commits (412458c, cdeff29)
+
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: v0.2.0 milestone complete and archived
+Stopped at: quick-1 fix-false-positive-unresolved-reference complete
 Resume with: `/gsd:new-milestone` to plan next milestone
