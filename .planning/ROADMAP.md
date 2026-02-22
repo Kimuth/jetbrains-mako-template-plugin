@@ -114,5 +114,5 @@ Plans:
 | 16. Dead Code Cleanup | v0.2.0 | 1/1 | Complete | 2026-02-22 |
 | 17. Clean Up Orphaned Test Fixtures | v0.2.0 | 1/1 | Complete | 2026-02-22 |
 | 18. FileViewProvider Scaffolding | v0.3.0 | 3/3 | Complete | 2026-02-22 |
-| 19. Regression Hardening | 1/1 | Complete   | 2026-02-22 | - |
+| 19. Regression Hardening | 1/1 | Complete    | 2026-02-22 | - |
 | 20. HTML Feature Verification and False-Positive Audit | v0.3.0 | 0/? | Not started | - |
