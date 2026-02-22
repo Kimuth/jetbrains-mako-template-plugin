@@ -64,5 +64,14 @@
         <lang.fileViewProviderFactory
             language="Mako Template"
             implementationClass="com.schtilig.mako.lang.MakoFileViewProviderFactory"/>
+
+        <!-- Phase 20: Layered editor highlighter — HTML coloring in TEMPLATE_TEXT regions (HINJ-01) -->
+        <editorHighlighterProvider
+            filetype="Mako Template"
+            implementationClass="com.schtilig.mako.lang.highlighting.MakoEditorHighlighterProvider"/>
+
+        <!-- Phase 20: Suppress false-positive HTML errors near Mako expression/control line boundaries (CRCT-01, CRCT-02) -->
+        <highlightErrorFilter
+            implementation="com.schtilig.mako.lang.annotation.MakoErrorFilter"/>
     </extensions>
 </idea-plugin>
