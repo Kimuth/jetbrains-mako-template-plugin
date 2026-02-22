@@ -46,7 +46,7 @@ Full details: `.planning/milestones/v0.2.0-ROADMAP.md`
 **Milestone Goal:** Inject real HTML language into Mako TEMPLATE_TEXT regions so PyCharm delivers full HTML editing (coloring, tag/attribute completion, Emmet, error detection) inside `.mako` files — using `TemplateLanguageFileViewProvider` to create a parallel HTML PSI tree alongside the existing Mako PSI tree.
 
 - [x] **Phase 18: FileViewProvider Scaffolding** - Create `MakoFileViewProvider`, `MakoFileViewProviderFactory`, and `OUTER_ELEMENT_TYPE`; register in `plugin.xml`; parallel HTML PSI tree exists and HTML features activate automatically (completed 2026-02-22)
-- [ ] **Phase 19: Regression Hardening** - Guard `MakoPythonInjector` and `MakoAnnotator` against the dual-tree environment; verify all existing automated tests pass unchanged
+- [x] **Phase 19: Regression Hardening** - Guard `MakoPythonInjector` and `MakoAnnotator` against the dual-tree environment; verify all existing automated tests pass unchanged (completed 2026-02-22)
 - [ ] **Phase 20: HTML Feature Verification and False-Positive Audit** - Verify HTML completions, Emmet, CSS/JS injection, and error detection work in TEMPLATE_TEXT; confirm `${...}` and Mako control lines produce no false-positive HTML errors
 
 ## Phase Details
@@ -114,5 +114,5 @@ Plans:
 | 16. Dead Code Cleanup | v0.2.0 | 1/1 | Complete | 2026-02-22 |
 | 17. Clean Up Orphaned Test Fixtures | v0.2.0 | 1/1 | Complete | 2026-02-22 |
 | 18. FileViewProvider Scaffolding | v0.3.0 | 3/3 | Complete | 2026-02-22 |
-| 19. Regression Hardening | v0.3.0 | 0/1 | Not started | - |
+| 19. Regression Hardening | 1/1 | Complete   | 2026-02-22 | - |
 | 20. HTML Feature Verification and False-Positive Audit | v0.3.0 | 0/? | Not started | - |

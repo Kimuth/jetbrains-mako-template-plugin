@@ -41,6 +41,7 @@ Progress: [██░░░░░░░░] 20% (v0.3.0 — 2 of ~10 plans comple
 | 16-dead-code-cleanup | 1 | 15 min |
 | 17-clean-up-orphaned-test-fixtures | 1 | 5 min |
 | Phase 18-fileviewprovider-scaffolding P01 | 18 | 3 tasks | 8 files |
+| Phase 19-regression-hardening P01 | 3 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -60,6 +61,8 @@ Recent decisions affecting Phase 18:
 - [Phase 18-02 verification]: HINJ-05/HINJ-06 gaps — CSS/JS sub-injection inside <style>/<script> does not fire automatically from HTML PSI tree alone; platform Emmet handler operates on outer HTML context; requires additional MultiHostInjector or LanguageInjectionContributor wiring (Phase 20 scope)
 - [Phase 18-03 verification]: HINJ-04 PARTIAL — HTML error squiggles work for inline elements (span) but not block/root elements (p, html); element-type-dependent annotator coverage; carry inconsistency investigation to Phase 20
 - [Phase 18-03]: Phase 18 complete — all 3 plans executed; HINJ-01/04/05/06 deferred to Phase 20 with recorded rationale; HINJ-02 and HINJ-03 verified working
+- [Phase 19-regression-hardening]: Use viewProvider.getPsi(MakoLanguage) ?: psiFile (no cast needed) in MakoStructureViewFactory dual-tree guard
+- [Phase 19-regression-hardening]: requireNotNull(makoFile) after assertNotNull used in test to satisfy Kotlin null-safety without type mismatch from fail() return type
 
 ### Pending Todos
 

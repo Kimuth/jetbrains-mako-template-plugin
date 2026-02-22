@@ -23,9 +23,9 @@ Requirements for the HTML Language Injection milestone. Phases continue from Pha
 
 ### Regression (RGRN)
 
-- [ ] **RGRN-01**: Python injection continues to work in `${...}`, `<% %>`, and `<%! %>` regions after FileViewProvider is active
-- [ ] **RGRN-02**: Code folding, structure view, and tag completion work correctly alongside HTML injection
-- [ ] **RGRN-03**: All existing automated tests pass unchanged after FileViewProvider is added
+- [x] **RGRN-01**: Python injection continues to work in `${...}`, `<% %>`, and `<%! %>` regions after FileViewProvider is active
+- [x] **RGRN-02**: Code folding, structure view, and tag completion work correctly alongside HTML injection
+- [x] **RGRN-03**: All existing automated tests pass unchanged after FileViewProvider is added
 
 ## Future Requirements
 
@@ -74,9 +74,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HINJ-06 | Phase 18/20 | Verification failed — JS sub-injection gap; carry to Phase 20 |
 | CRCT-01 | Phase 20 | Pending |
 | CRCT-02 | Phase 20 | Pending |
-| RGRN-01 | Phase 19 | Pending |
-| RGRN-02 | Phase 19 | Pending |
-| RGRN-03 | Phase 19 | Pending |
+| RGRN-01 | Phase 19 | Complete |
+| RGRN-02 | Phase 19 | Complete |
+| RGRN-03 | Phase 19 | Complete |
 
 **Coverage:**
 - v0.3.0 requirements: 11 total
