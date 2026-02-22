@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-22 after v0.3.0 roadmap created)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 19 — Regression Hardening (Phase 18 complete)
+**Current focus:** Phase 20 — HTML Feature Verification and False-Positive Audit (Phase 19 complete)
 
 ## Current Position
 
-Phase: 18 of 20 (FileViewProvider Scaffolding)
-Plan: 03 of 3 completed (gap closure — HINJ-04 partial, HINJ-01/05/06 deferred; see 18-03-SUMMARY.md)
+Phase: 19 of 20 (Regression Hardening)
+Plan: 01 of 1 completed (MakoStructureViewFactory dual-tree guard + RGRN-01/02/03 verified; see 19-01-SUMMARY.md)
 Status: Complete
-Last activity: 2026-02-22 — Phase 18 Plan 03 complete (HINJ-04 partial verification; Phase 18 declared complete)
+Last activity: 2026-02-22 — Phase 19 Plan 01 complete (all 4 RGRN IDE criteria verified by human; 2 known limitations carried to Phase 20)
 
-Progress: [██░░░░░░░░] 20% (v0.3.0 — 2 of ~10 plans complete)
+Progress: [███░░░░░░░] 30% (v0.3.0 — 3 of ~10 plans complete)
 
 ## Performance Metrics
 
@@ -63,6 +63,8 @@ Recent decisions affecting Phase 18:
 - [Phase 18-03]: Phase 18 complete — all 3 plans executed; HINJ-01/04/05/06 deferred to Phase 20 with recorded rationale; HINJ-02 and HINJ-03 verified working
 - [Phase 19-regression-hardening]: Use viewProvider.getPsi(MakoLanguage) ?: psiFile (no cast needed) in MakoStructureViewFactory dual-tree guard
 - [Phase 19-regression-hardening]: requireNotNull(makoFile) after assertNotNull used in test to satisfy Kotlin null-safety without type mismatch from fail() return type
+- [Phase 19-regression-hardening]: Known limitation (carry to Phase 20): os from <%! %> module-level block is not in scope for ${...} expressions — cross-injection scoping gap, not a regression introduced by Phase 18/19
+- [Phase 19-regression-hardening]: Known limitation (carry to Phase 20): Single-line inline <%! import os %> triggers Unexpected indent from Python language service — workaround is multi-line syntax; pre-existing behavior, not a regression
 
 ### Pending Todos
 
@@ -72,6 +74,11 @@ Recent decisions affecting Phase 18:
 
 - `TagAttrCompletionProvider` lacks explicit `language != MakoLanguage` guard — PSI pattern provides implicit restriction; no functional risk
 - `src/main/gen/com/schtilig/mako/lang/_MakoLexer.java~` editor backup file — not git-tracked; harmless
+
+### Known Gaps from Phase 19 Verification (carry to Phase 20)
+
+- **Cross-injection scoping:** `os` imported in `<%! import os %>` module-level block is not in scope for `${os.getcwd()}` expressions; Python injection is active (unresolved reference squiggles fire for unknown names) but cross-block variable sharing is not wired up
+- **Single-line inline blocks:** `<%! import os %>` on one line triggers "Unexpected indent" from Python language service; multi-line syntax `<%!\nimport os\n%>` is the workaround; pre-existing behavior, not a Phase 18/19 regression
 
 ### Known Gaps from Phase 18 Verification (carry to Phase 20)
 
@@ -93,5 +100,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 18-fileviewprovider-scaffolding/18-03-PLAN.md (gap closure — HINJ-04 partial; Phase 18 complete)
-Resume with: `/gsd:plan-phase 19` (Regression Hardening) or `/gsd:plan-phase 20` (HTML Feature Verification and False-Positive Audit)
+Stopped at: Completed 19-regression-hardening/19-01-PLAN.md (MakoStructureViewFactory dual-tree guard; all RGRN criteria verified; 2 known limitations carried to Phase 20)
+Resume with: `/gsd:execute-phase 20` (HTML Feature Verification and False-Positive Audit)
