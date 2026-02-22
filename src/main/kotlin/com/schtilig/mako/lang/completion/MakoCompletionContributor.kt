@@ -101,8 +101,12 @@ class MakoCompletionContributor : CompletionContributor() {
         ) {
             val file = parameters.originalFile
 
-            // Language guard: only fire in Mako Template files
-            if (file.language != MakoLanguage) return
+            // Language guard: only fire in Mako Template files.
+            // Check viewProvider.baseLanguage (not file.language) because with
+            // MakoFileViewProvider active, parameters.originalFile may be the HTML PSI root
+            // (for caret positions in TEMPLATE_TEXT regions), whose language is HTMLLanguage.
+            // viewProvider.baseLanguage is always MakoLanguage for .mako files.
+            if (file.viewProvider.baseLanguage != MakoLanguage) return
 
             val offset = parameters.offset
             if (offset < 2) return

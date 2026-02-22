@@ -59,5 +59,10 @@
         <!-- Phase 8: Error Annotations -->
         <annotator language="Mako Template"
                    implementationClass="com.schtilig.mako.lang.annotation.MakoAnnotator"/>
+
+        <!-- Phase 18: HTML Language Injection via TemplateLanguageFileViewProvider -->
+        <lang.fileViewProviderFactory
+            language="Mako Template"
+            implementationClass="com.schtilig.mako.lang.MakoFileViewProviderFactory"/>
     </extensions>
 </idea-plugin>
