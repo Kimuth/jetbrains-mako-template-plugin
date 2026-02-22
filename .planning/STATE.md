@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-22 after v0.3.0 roadmap created)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 20 complete — v0.3.0 milestone achieved; CRCT-01/CRCT-02 verified at runtime
+**Current focus:** Phase 21 Plan 01 complete — MakoCssInjector implemented; HINJ-05 and HINJ-06 closed; 98 tests pass
 
 ## Current Position
 
-Phase: 20 of 20 (HTML Feature Verification and False-Positive Audit)
-Plan: 03 of 3 completed (Human IDE verification — CRCT-01 PASS, CRCT-02 PASS, HINJ-01 PASS, HINJ-04 PASS, HINJ-05/HINJ-06 gaps documented; see 20-03-SUMMARY.md)
+Phase: 21 of 22 (CSS and JS Sub-Language Injection)
+Plan: 01 of 1 completed (MakoCssInjector via MultiHostInjector; HINJ-05 DONE; HINJ-06 via platform HtmlScriptLanguageInjector; 98 tests pass; see 21-01-SUMMARY.md)
 Status: Complete
-Last activity: 2026-02-22 — Phase 20 Plan 03 complete (human IDE verification; all required criteria PASS; CSS/JS injection gaps documented for future phase)
+Last activity: 2026-02-22 — Phase 21 Plan 01 complete (MakoCssInjector + tests; ./gradlew check passes with 98 tests)
 
-Progress: [██████████] 100% (v0.3.0 — Phase 20 complete, all 3 plans executed)
+Progress: [██████████] 100% (Phase 21 complete, all 1 plans executed)
 
 ## Performance Metrics
 
@@ -45,6 +45,7 @@ Progress: [██████████] 100% (v0.3.0 — Phase 20 complete, a
 | Phase 20-html-feature-verification P01 | 3 min | 3 tasks | 5 files |
 | Phase 20-html-feature-verification P02 | 1 min | 1 task | 0 files |
 | Phase 20-html-feature-verification P03 | 15 min | 2 tasks | 0 files |
+| Phase 21-css-js-sub-language-injection P01 | 2 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,9 @@ Recent decisions affecting Phase 18:
 - [Phase 20-02 test-suite-verification]: All 95 tests across 11 suites pass including CRCT-01 and CRCT-02; no compilation errors in Phase 20-01 code additions
 - [Phase 20]: CRCT-01 and CRCT-02 confirmed PASS at runtime in human IDE verification; Python Unresolved reference warnings on ${cls}/${item} are expected Python-layer validation, not HTML errors
 - [Phase 20]: HINJ-05/HINJ-06 confirmed GAP at runtime: CSS/JS sub-language injection requires MultiHostInjector or LanguageInjectionContributor EP registrations beyond editorHighlighterProvider; carry to future phase
+- [Phase 21-css-js-sub-language-injection]: Use Language.findLanguageByID('CSS') null guard — not CssLanguage.INSTANCE — to avoid ClassNotFoundException when CSS plugin absent
+- [Phase 21-css-js-sub-language-injection]: Use localName.lowercase() != 'style' string comparison instead of HtmlUtil.isStyleTag — isStyleTag not confirmed via javap (safe fallback)
+- [Phase 21-css-js-sub-language-injection]: No MakoJsInjector written — platform HtmlScriptLanguageInjector already handles <script> XmlText in HTML PSI tree (HINJ-06 closed)
 
 ### Pending Todos
 
@@ -94,8 +98,8 @@ Recent decisions affecting Phase 18:
 
 - **HINJ-01 (HTML coloring):** RESOLVED in Phase 20 — MakoEditorHighlighter confirmed WORKING at runtime; HTML tags visually colored in TEMPLATE_TEXT regions
 - **HINJ-04 (HTML error squiggles):** RESOLVED in Phase 20 — behavior confirmed CORRECT per HTML5 spec: span without close gets squiggle; p without close does not (optional-close element)
-- **HINJ-05 (CSS in `<style>`):** CONFIRMED GAP — CSS sub-language injection not active; requires MultiHostInjector or LanguageInjectionContributor EP; carry to future phase
-- **HINJ-06 (JS in `<script>`):** CONFIRMED GAP — JS sub-language injection not active; same root cause as HINJ-05; carry to future phase
+- **HINJ-05 (CSS in `<style>`):** RESOLVED in Phase 21 — MakoCssInjector implemented and registered; CSS completions active when CSS plugin installed
+- **HINJ-06 (JS in `<script>`):** RESOLVED in Phase 21 — platform HtmlScriptLanguageInjector handles `<script>` XmlText automatically; no custom injector needed; JS completions active when JavaScript plugin installed
 
 ### Blockers/Concerns
 
@@ -110,5 +114,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 20-html-feature-verification-and-false-positive-audit/20-03-PLAN.md (human IDE verification complete; CRCT-01/CRCT-02 PASS; Phase 20 done)
-Resume with: Phase 20 complete — plan next phase (CSS/JS injection or new feature)
+Stopped at: Completed 21-css-js-sub-language-injection/21-01-PLAN.md (MakoCssInjector implemented; HINJ-05/HINJ-06 closed; 98 tests pass)
+Resume with: Phase 21 complete — consider human IDE verification for CSS completions with CSS plugin, or plan next feature phase
