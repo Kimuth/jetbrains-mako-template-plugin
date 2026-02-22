@@ -65,7 +65,7 @@ Full details: `.planning/milestones/v0.2.0-ROADMAP.md`
 Plans:
 - [x] 18-01-PLAN.md — Wire TemplateLanguageFileViewProvider: add OUTER_ELEMENT_TYPE, defensive guards, MakoFileViewProvider, MakoFileViewProviderFactory, plugin.xml registration
 - [x] 18-02-PLAN.md — Human verification of HTML features and regression check in running IDE (6/9 points passed)
-- [ ] 18-03-PLAN.md — Gap closure: verify HINJ-04 (HTML error squiggles) in running IDE; explicitly defer HINJ-01/05/06 to Phase 20
+- [x] 18-03-PLAN.md — Gap closure: verify HINJ-04 (HTML error squiggles) in running IDE; explicitly defer HINJ-01/05/06 to Phase 20
 
 ### Phase 19: Regression Hardening
 **Goal**: All existing plugin features — Python injection, code folding, structure view, tag completion, and error annotations — work correctly alongside the HTML PSI tree; the full automated test suite passes without modification
@@ -76,7 +76,9 @@ Plans:
   2. Python syntax highlighting and error detection are active inside `${...}`, `<% %>`, and `<%! %>` regions in the running IDE after the FileViewProvider is wired in
   3. Code folding gutter icons appear for `<%def>`, `<%block>`, and `<%doc>` regions in a `.mako` file that also has HTML content
   4. Structure View shows `<%def>` and `<%block>` nodes in document order for a `.mako` file open in the running IDE
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 19-01-PLAN.md — Apply MakoStructureViewFactory dual-tree guard, add regression test, run ./gradlew check, verify IDE success criteria
 
 ### Phase 20: HTML Feature Verification and False-Positive Audit
 **Goal**: HTML features are confirmed working in TEMPLATE_TEXT regions and Mako syntax (expressions, control lines) produces zero false-positive HTML error squiggles; the milestone is shippable
@@ -111,6 +113,6 @@ Plans:
 | 15. Annotator Fixes | v0.2.0 | 1/1 | Complete | 2026-02-21 |
 | 16. Dead Code Cleanup | v0.2.0 | 1/1 | Complete | 2026-02-22 |
 | 17. Clean Up Orphaned Test Fixtures | v0.2.0 | 1/1 | Complete | 2026-02-22 |
-| 18. FileViewProvider Scaffolding | 3/3 | Complete    | 2026-02-22 | 2026-02-22 |
-| 19. Regression Hardening | v0.3.0 | 0/? | Not started | - |
+| 18. FileViewProvider Scaffolding | v0.3.0 | 3/3 | Complete | 2026-02-22 |
+| 19. Regression Hardening | v0.3.0 | 0/1 | Not started | - |
 | 20. HTML Feature Verification and False-Positive Audit | v0.3.0 | 0/? | Not started | - |
