@@ -1,6 +1,8 @@
 package com.schtilig.mako.lang
 
 import com.schtilig.mako.MakoLanguage
+import com.schtilig.mako.lang.structure.MakoStructureViewModel
+import com.schtilig.mako.lang.structure.MakoStructureViewElement
 import com.intellij.lang.html.HTMLLanguage
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.psi.templateLanguages.TemplateLanguageFileViewProvider
@@ -95,6 +97,44 @@ class MakoFileViewProviderTest : BasePlatformTestCase() {
             "Mako PSI root language must be MakoLanguage",
             MakoLanguage,
             makoPsi!!.language
+        )
+    }
+
+    /**
+     * RGRN-02 / RGRN-03: Structure view must find <%def> and <%block> nodes in dual-tree
+     * environment. Uses addFileToProject (physical VFS) so MakoFileViewProviderFactory returns
+     * a full MakoFileViewProvider (not the LightVirtualFile fallback), making dual-tree active.
+     * Constructs MakoStructureViewModel directly with the Mako PSI root to assert the model
+     * produces the correct children independently of what the platform passes to
+     * MakoStructureViewFactory.getStructureViewBuilder at runtime.
+     */
+    fun testStructureViewWorksInDualTree() {
+        val file = myFixture.addFileToProject(
+            "structure_dual_tree_test.mako",
+            "<%def name=\"greet\"></%def>\n<%block name=\"header\"></%block>"
+        )
+        myFixture.configureFromExistingVirtualFile(file.virtualFile)
+
+        // Precondition: dual-tree must be active
+        val viewProvider = myFixture.file.viewProvider
+        assertTrue(
+            "viewProvider must be a TemplateLanguageFileViewProvider for dual-tree test to be meaningful",
+            viewProvider is TemplateLanguageFileViewProvider
+        )
+
+        // Resolve Mako PSI root (same resolution the guard applies at runtime)
+        val makoFile = viewProvider.getPsi(MakoLanguage)
+        assertNotNull("viewProvider.getPsi(MakoLanguage) must not be null", makoFile)
+        requireNotNull(makoFile)
+
+        val model = MakoStructureViewModel(null, makoFile)
+        val root = model.root as MakoStructureViewElement
+        val children = root.children
+
+        assertEquals(
+            "Structure view must find 2 children (greet def + header block) when dual-tree is active",
+            2,
+            children.size
         )
     }
 }
