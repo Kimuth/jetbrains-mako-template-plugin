@@ -90,7 +90,11 @@ Plans:
   3. A test asserts that `viewProvider.getPsi(HTMLLanguage.INSTANCE)` returns a non-null `HtmlFile` for a `.mako` fixture containing HTML markup
   4. CSS completion or validation is active inside a `<style>` tag in a `.mako` file in the running IDE (e.g., `color:` produces CSS property completions)
   5. JavaScript completion or validation is active inside a `<script>` tag in a `.mako` file in the running IDE (e.g., `document.` produces member completions)
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 20-01-PLAN.md — Implement MakoEditorHighlighter, MakoEditorHighlighterProvider, MakoErrorFilter + plugin.xml registration + CRCT automated tests
+- [ ] 20-02-PLAN.md — Run ./gradlew check; verify all tests pass including two new CRCT tests
+- [ ] 20-03-PLAN.md — Human IDE verification of CRCT-01/02 false-positive suppression and HINJ-01/04/05/06 feature behavior
 
 ## Progress
 
