@@ -9,12 +9,12 @@ Requirements for the HTML Language Injection milestone. Phases continue from Pha
 
 ### HTML Injection (HINJ)
 
-- [ ] **HINJ-01**: User sees HTML syntax coloring in template body regions of `.mako` files
-- [ ] **HINJ-02**: User gets HTML tag and attribute completion in template body regions
-- [ ] **HINJ-03**: User gets Emmet abbreviation expansion in template body regions
-- [ ] **HINJ-04**: User sees HTML error squiggles for malformed markup in template body
-- [ ] **HINJ-05**: CSS completion and validation are active inside `<style>` tags in `.mako` files
-- [ ] **HINJ-06**: JavaScript completion and validation are active inside `<script>` tags in `.mako` files
+- [x] **HINJ-01**: User sees HTML syntax coloring in template body regions of `.mako` files
+- [x] **HINJ-02**: User gets HTML tag and attribute completion in template body regions
+- [x] **HINJ-03**: User gets Emmet abbreviation expansion in template body regions
+- [x] **HINJ-04**: User sees HTML error squiggles for malformed markup in template body
+- [x] **HINJ-05**: CSS completion and validation are active inside `<style>` tags in `.mako` files
+- [x] **HINJ-06**: JavaScript completion and validation are active inside `<script>` tags in `.mako` files
 
 ### Correctness (CRCT)
 
@@ -66,12 +66,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| HINJ-01 | Phase 18 | Pending |
-| HINJ-02 | Phase 18 | Pending |
-| HINJ-03 | Phase 18 | Pending |
-| HINJ-04 | Phase 18 | Pending |
-| HINJ-05 | Phase 18 | Pending |
-| HINJ-06 | Phase 18 | Pending |
+| HINJ-01 | Phase 18 | Complete |
+| HINJ-02 | Phase 18 | Complete |
+| HINJ-03 | Phase 18 | Complete |
+| HINJ-04 | Phase 18 | Complete |
+| HINJ-05 | Phase 18 | Complete |
+| HINJ-06 | Phase 18 | Complete |
 | CRCT-01 | Phase 20 | Pending |
 | CRCT-02 | Phase 20 | Pending |
 | RGRN-01 | Phase 19 | Pending |

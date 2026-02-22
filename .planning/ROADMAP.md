@@ -110,6 +110,6 @@ Plans:
 | 15. Annotator Fixes | v0.2.0 | 1/1 | Complete | 2026-02-21 |
 | 16. Dead Code Cleanup | v0.2.0 | 1/1 | Complete | 2026-02-22 |
 | 17. Clean Up Orphaned Test Fixtures | v0.2.0 | 1/1 | Complete | 2026-02-22 |
-| 18. FileViewProvider Scaffolding | v0.3.0 | 0/2 | Not started | - |
+| 18. FileViewProvider Scaffolding | 1/2 | In Progress|  | - |
 | 19. Regression Hardening | v0.3.0 | 0/? | Not started | - |
 | 20. HTML Feature Verification and False-Positive Audit | v0.3.0 | 0/? | Not started | - |

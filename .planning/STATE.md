@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-22 after v0.3.0 roadmap created)
 ## Current Position
 
 Phase: 18 of 20 (FileViewProvider Scaffolding)
-Plan: — (not yet planned)
-Status: Ready to plan
-Last activity: 2026-02-22 — v0.3.0 roadmap created; Phases 18–20 defined
+Plan: 01 of 2 completed
+Status: In Progress
+Last activity: 2026-02-22 — Phase 18 Plan 01 complete (TemplateLanguageFileViewProvider)
 
-Progress: [░░░░░░░░░░] 0% (v0.3.0 not started)
+Progress: [█░░░░░░░░░] 10% (v0.3.0 — 1 of ~10 plans complete)
 
 ## Performance Metrics
 
@@ -40,6 +40,7 @@ Progress: [░░░░░░░░░░] 0% (v0.3.0 not started)
 | 15-annotator-fixes | 1 | ~5 min |
 | 16-dead-code-cleanup | 1 | 15 min |
 | 17-clean-up-orphaned-test-fixtures | 1 | 5 min |
+| Phase 18-fileviewprovider-scaffolding P01 | 18 | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -52,6 +53,9 @@ Recent decisions affecting Phase 18:
 - `TemplateDataElementType` must be singleton per data-language ID (ConcurrentHashMap in companion object) — not per-file instance
 - `contentElementType` on HTML PSI file must be set immediately after `def.createFile(this)` in `createFile()` override
 - `OUTER_ELEMENT_TYPE` is 4th argument to `TemplateDataElementType`; `TEMPLATE_TEXT` is 3rd argument — transposing causes broken trees
+- [Phase 18-fileviewprovider-scaffolding]: LightVirtualFile guard in MakoFileViewProviderFactory: return SingleRootFileViewProvider for in-memory files to prevent ParsingTestCase fixture file explosion
+- [Phase 18-fileviewprovider-scaffolding]: viewProvider.baseLanguage check in MakoCompletionContributor instead of file.language: in dual-tree, file.language returns HTMLLanguage for TEMPLATE_TEXT positions
+- [Phase 18-fileviewprovider-scaffolding]: OUTER_ELEMENT_TYPE is 4th arg to TemplateDataElementType; TEMPLATE_TEXT is 3rd — transposing causes broken HTML PSI trees
 
 ### Pending Todos
 
@@ -76,5 +80,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: v0.3.0 roadmap created (Phases 18–20)
-Resume with: `/gsd:plan-phase 18`
+Stopped at: Completed 18-fileviewprovider-scaffolding/18-01-PLAN.md
+Resume with: `/gsd:execute-phase 18` (for plan 02) or `/gsd:plan-phase 19`
