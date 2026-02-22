@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-22 after v0.2.0 milestone)
 Phase: v0.2.0 complete (Phases 10–17 of 17)
 Plan: All plans complete
 Status: v0.2.0 milestone archived — ready to plan next milestone
-Last activity: 2026-02-22 — v0.2.0 milestone complete (8 phases, 10 plans, 18/18 requirements, all bugs from v0.1.0 code review fixed)
+Last activity: 2026-02-22 - Completed quick task 1: Fix false-positive Unresolved Reference across mako code blocks
 
 Progress: [██████████] 100% (v0.2.0 complete)
 
@@ -83,7 +83,9 @@ None.
 
 ### Quick Tasks Completed
 
-- **quick-1** (2026-02-22): Fix false-positive Unresolved Reference — combined MakoCodeBlock+MakoExpression into multi-host injection per file; MakoModuleBlock stays isolated; 2 commits (412458c, cdeff29)
+| # | Description | Date | Commit | Status | Directory |
+|---|-------------|------|--------|--------|-----------|
+| 1 | Fix false-positive Unresolved Reference across mako code blocks | 2026-02-22 | 72a400c | Verified | [1-fix-false-positive-unresolved-reference-](./quick/1-fix-false-positive-unresolved-reference-/) |
 
 ## Session Continuity
 
