@@ -69,4 +69,29 @@ class MakoInjectionHostTest : ParsingTestCase("injection", "mako", MakoParserDef
             // Expected — test passes
         }
     }
+
+    /**
+     * Verifies that PsiTreeUtil.findChildrenOfType recurses into nested <%def> blocks,
+     * so collectCodeAndExpressionHosts() will find code blocks at all nesting levels.
+     * This is the prerequisite for cross-block variable resolution working correctly.
+     */
+    fun testCollectedHostsIncludesDefLevelBlock() {
+        val src = """
+            <%
+            my_list = [1, 2, 3]
+            %>
+            <%def name="my_func()">
+            <%
+            for i in my_list:
+                pass
+            %>
+            </%def>
+        """.trimIndent()
+        val file = parseFile("collectHosts", src)
+        val codeBlocks = PsiTreeUtil.findChildrenOfType(file, MakoCodeBlock::class.java)
+        assertEquals(
+            "Should find both the top-level and the def-level <% %> blocks",
+            2, codeBlocks.size
+        )
+    }
 }
