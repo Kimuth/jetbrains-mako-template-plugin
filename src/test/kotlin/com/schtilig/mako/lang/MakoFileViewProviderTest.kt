@@ -3,6 +3,7 @@ package com.schtilig.mako.lang
 import com.schtilig.mako.MakoLanguage
 import com.schtilig.mako.lang.structure.MakoStructureViewModel
 import com.schtilig.mako.lang.structure.MakoStructureViewElement
+import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.lang.html.HTMLLanguage
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.psi.templateLanguages.TemplateLanguageFileViewProvider
@@ -135,6 +136,58 @@ class MakoFileViewProviderTest : BasePlatformTestCase() {
             "Structure view must find 2 children (greet def + header block) when dual-tree is active",
             2,
             children.size
+        )
+    }
+
+    /**
+     * CRCT-01: ${...} expressions inside HTML attribute values must not produce
+     * false-positive HTML error squiggles. MakoErrorFilter suppresses HTML errors
+     * adjacent to OuterLanguageElement boundaries.
+     *
+     * Note: If the HTML annotator is inactive in BasePlatformTestCase.doHighlighting()
+     * the test trivially passes (zero highlights) — this provides structural coverage;
+     * the definitive check is the human IDE verification in plan 20-03.
+     */
+    fun testNoFalsePositiveHtmlErrorOnMakoExpression() {
+        val file = myFixture.addFileToProject(
+            "crct_expression_test.mako",
+            "<div class=\"\${cls}\">Hello</div>"
+        )
+        myFixture.configureFromExistingVirtualFile(file.virtualFile)
+        val highlights = myFixture.doHighlighting()
+        val htmlErrors = highlights.filter { info ->
+            info.severity == HighlightSeverity.ERROR &&
+            info.description?.let { desc ->
+                !desc.startsWith("Unclosed") && !desc.startsWith("Unknown Mako")
+            } ?: true
+        }
+        assertTrue(
+            "Expected no false-positive HTML errors for '\${cls}' in attribute value, got: $htmlErrors",
+            htmlErrors.isEmpty()
+        )
+    }
+
+    /**
+     * CRCT-02: Mako control lines (%for, %if, %endif) must not produce false-positive
+     * HTML error squiggles. MakoErrorFilter suppresses HTML errors adjacent to
+     * CONTROL_LINE OuterLanguageElement boundaries.
+     */
+    fun testNoFalsePositiveHtmlErrorOnMakoControlLines() {
+        val file = myFixture.addFileToProject(
+            "crct_control_line_test.mako",
+            "%for item in items:\n<li>\${item}</li>\n%endfor\n"
+        )
+        myFixture.configureFromExistingVirtualFile(file.virtualFile)
+        val highlights = myFixture.doHighlighting()
+        val htmlErrors = highlights.filter { info ->
+            info.severity == HighlightSeverity.ERROR &&
+            info.description?.let { desc ->
+                !desc.startsWith("Unclosed") && !desc.startsWith("Unknown Mako")
+            } ?: true
+        }
+        assertTrue(
+            "Expected no false-positive HTML errors for %for/%endfor control lines, got: $htmlErrors",
+            htmlErrors.isEmpty()
         )
     }
 }
