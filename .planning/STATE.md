@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-22 after v0.3.0 roadmap created)
 ## Current Position
 
 Phase: 18 of 20 (FileViewProvider Scaffolding)
-Plan: 01 of 2 completed
+Plan: 02 of 2 completed (partial pass — 3 verification gaps; see 18-02-SUMMARY.md)
 Status: In Progress
-Last activity: 2026-02-22 — Phase 18 Plan 01 complete (TemplateLanguageFileViewProvider)
+Last activity: 2026-02-22 — Phase 18 Plan 02 complete (human verification — 6/9 points passed)
 
-Progress: [█░░░░░░░░░] 10% (v0.3.0 — 1 of ~10 plans complete)
+Progress: [██░░░░░░░░] 20% (v0.3.0 — 2 of ~10 plans complete)
 
 ## Performance Metrics
 
@@ -56,6 +56,8 @@ Recent decisions affecting Phase 18:
 - [Phase 18-fileviewprovider-scaffolding]: LightVirtualFile guard in MakoFileViewProviderFactory: return SingleRootFileViewProvider for in-memory files to prevent ParsingTestCase fixture file explosion
 - [Phase 18-fileviewprovider-scaffolding]: viewProvider.baseLanguage check in MakoCompletionContributor instead of file.language: in dual-tree, file.language returns HTMLLanguage for TEMPLATE_TEXT positions
 - [Phase 18-fileviewprovider-scaffolding]: OUTER_ELEMENT_TYPE is 4th arg to TemplateDataElementType; TEMPLATE_TEXT is 3rd — transposing causes broken HTML PSI trees
+- [Phase 18-02 verification]: HINJ-01 (HTML coloring) gap — TemplateLanguageFileViewProvider builds the HTML PSI tree but syntax coloring is not visually applying; likely requires TemplateLanguageSyntaxHighlighter delegation or color scheme mapping
+- [Phase 18-02 verification]: HINJ-05/HINJ-06 gaps — CSS/JS sub-injection inside <style>/<script> does not fire automatically from HTML PSI tree alone; platform Emmet handler operates on outer HTML context; requires additional MultiHostInjector or LanguageInjectionContributor wiring (Phase 20 scope)
 
 ### Pending Todos
 
@@ -64,8 +66,13 @@ Recent decisions affecting Phase 18:
 ### Known Tech Debt (carry-forward from v0.2.0)
 
 - `TagAttrCompletionProvider` lacks explicit `language != MakoLanguage` guard — PSI pattern provides implicit restriction; no functional risk
-- 7 runtime behaviors deferred to human verification requiring a running PyCharm instance
 - `src/main/gen/com/schtilig/mako/lang/_MakoLexer.java~` editor backup file — not git-tracked; harmless
+
+### Known Gaps from Phase 18-02 Verification
+
+- **HINJ-01 (HTML coloring):** HTML tags in TEMPLATE_TEXT regions not visually colored; TemplateLanguageSyntaxHighlighter delegation likely needed
+- **HINJ-05 (CSS in `<style>`):** Emmet fires HTML handler instead of CSS; CSS language sub-injection inside HTML PSI tree not activating automatically
+- **HINJ-06 (JS in `<script>`):** Emmet fires HTML handler instead of JS; JS language sub-injection inside HTML PSI tree not activating automatically
 
 ### Blockers/Concerns
 
@@ -80,5 +87,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 18-fileviewprovider-scaffolding/18-01-PLAN.md
-Resume with: `/gsd:execute-phase 18` (for plan 02) or `/gsd:plan-phase 19`
+Stopped at: Completed 18-fileviewprovider-scaffolding/18-02-PLAN.md (partial pass — 3 gaps: HINJ-01, HINJ-05, HINJ-06)
+Resume with: `/gsd:plan-phase 19` or `/gsd:plan-phase 20` (to plan CSS/JS injection follow-up)

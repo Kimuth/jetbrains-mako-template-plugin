@@ -45,7 +45,7 @@ Full details: `.planning/milestones/v0.2.0-ROADMAP.md`
 
 **Milestone Goal:** Inject real HTML language into Mako TEMPLATE_TEXT regions so PyCharm delivers full HTML editing (coloring, tag/attribute completion, Emmet, error detection) inside `.mako` files — using `TemplateLanguageFileViewProvider` to create a parallel HTML PSI tree alongside the existing Mako PSI tree.
 
-- [ ] **Phase 18: FileViewProvider Scaffolding** - Create `MakoFileViewProvider`, `MakoFileViewProviderFactory`, and `OUTER_ELEMENT_TYPE`; register in `plugin.xml`; parallel HTML PSI tree exists and HTML features activate automatically
+- [x] **Phase 18: FileViewProvider Scaffolding** - Create `MakoFileViewProvider`, `MakoFileViewProviderFactory`, and `OUTER_ELEMENT_TYPE`; register in `plugin.xml`; parallel HTML PSI tree exists and HTML features activate automatically (completed 2026-02-22)
 - [ ] **Phase 19: Regression Hardening** - Guard `MakoPythonInjector` and `MakoAnnotator` against the dual-tree environment; verify all existing automated tests pass unchanged
 - [ ] **Phase 20: HTML Feature Verification and False-Positive Audit** - Verify HTML completions, Emmet, CSS/JS injection, and error detection work in TEMPLATE_TEXT; confirm `${...}` and Mako control lines produce no false-positive HTML errors
 
@@ -110,6 +110,6 @@ Plans:
 | 15. Annotator Fixes | v0.2.0 | 1/1 | Complete | 2026-02-21 |
 | 16. Dead Code Cleanup | v0.2.0 | 1/1 | Complete | 2026-02-22 |
 | 17. Clean Up Orphaned Test Fixtures | v0.2.0 | 1/1 | Complete | 2026-02-22 |
-| 18. FileViewProvider Scaffolding | 1/2 | In Progress|  | - |
+| 18. FileViewProvider Scaffolding | v0.3.0 | 2/2 | Complete (partial — 3 verification gaps) | 2026-02-22 |
 | 19. Regression Hardening | v0.3.0 | 0/? | Not started | - |
 | 20. HTML Feature Verification and False-Positive Audit | v0.3.0 | 0/? | Not started | - |
