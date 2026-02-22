@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-22 after v0.3.0 roadmap created)
 ## Current Position
 
 Phase: 20 of 20 (HTML Feature Verification and False-Positive Audit)
-Plan: 01 of 3 completed (MakoEditorHighlighter + MakoEditorHighlighterProvider + MakoErrorFilter; CRCT-01, CRCT-02 automated tests; see 20-01-SUMMARY.md)
+Plan: 02 of 3 completed (./gradlew check BUILD SUCCESSFUL — 95 tests pass, 0 failures; CRCT-01/CRCT-02 verified in MakoFileViewProviderTest; see 20-02-SUMMARY.md)
 Status: In Progress
-Last activity: 2026-02-22 — Phase 20 Plan 01 complete (HTML coloring highlighter + false-positive filter + CRCT tests; awaiting human IDE verification in plan 20-03)
+Last activity: 2026-02-22 — Phase 20 Plan 02 complete (full test suite verification; all 11 test suites pass; plan 20-03 human IDE verification remains)
 
-Progress: [████░░░░░░] 40% (v0.3.0 — 4 of ~10 plans complete)
+Progress: [█████░░░░░] 50% (v0.3.0 — 5 of ~10 plans complete)
 
 ## Performance Metrics
 
@@ -43,6 +43,7 @@ Progress: [████░░░░░░] 40% (v0.3.0 — 4 of ~10 plans comple
 | Phase 18-fileviewprovider-scaffolding P01 | 18 | 3 tasks | 8 files |
 | Phase 19-regression-hardening P01 | 3 | 1 tasks | 2 files |
 | Phase 20-html-feature-verification P01 | 3 min | 3 tasks | 5 files |
+| Phase 20-html-feature-verification P02 | 1 min | 1 task | 0 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,8 @@ Recent decisions affecting Phase 18:
 - [Phase 20-01 html-coloring-and-false-positive-suppression]: MakoEditorHighlighter null-guards project/file in init block — getEditorHighlighter() called with nulls during Settings color scheme previews and early IDE init
 - [Phase 20-01 html-coloring-and-false-positive-suppression]: MakoErrorFilter TokenSet contains EXPR_START, EXPR_END, CONTROL_LINE (not TEMPLATE_TEXT) — these are boundary tokens adjacent to OuterLanguageElement regions; TEMPLATE_TEXT is the HTML content token, not a boundary
 - [Phase 20-01 html-coloring-and-false-positive-suppression]: CRCT tests provide structural coverage but may trivially pass if HTML annotator is inactive in BasePlatformTestCase — definitive runtime check is human IDE verification in plan 20-03
+- [Phase 20-02 test-suite-verification]: Gradle test caching caused :test UP-TO-DATE on initial ./gradlew check; use --rerun flag to force actual test execution when confirming new tests after code-only plans
+- [Phase 20-02 test-suite-verification]: All 95 tests across 11 suites pass including CRCT-01 and CRCT-02; no compilation errors in Phase 20-01 code additions
 
 ### Pending Todos
 
@@ -104,5 +107,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 20-html-feature-verification-and-false-positive-audit/20-01-PLAN.md (MakoEditorHighlighter + MakoErrorFilter + CRCT tests; plan 20-02 and 20-03 remain)
-Resume with: `/gsd:execute-phase 20` (continue with plan 20-02)
+Stopped at: Completed 20-html-feature-verification-and-false-positive-audit/20-02-PLAN.md (./gradlew check BUILD SUCCESSFUL; 95 tests pass; plan 20-03 remains)
+Resume with: `/gsd:execute-phase 20` (continue with plan 20-03)
