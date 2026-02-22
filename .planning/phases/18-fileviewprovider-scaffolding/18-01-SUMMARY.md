@@ -92,7 +92,7 @@ Each task was committed atomically:
 2. **Task 2: Create MakoFileViewProvider and MakoFileViewProviderFactory, register in plugin.xml** - `8b4a395` (feat)
 3. **Task 3: Write MakoFileViewProviderTest** - `5ecbd48` (test)
 
-**Plan metadata:** TBD (docs: complete plan)
+**Plan metadata:** `f01e15e` (docs: complete plan)
 
 ## Files Created/Modified
 - `src/main/kotlin/com/schtilig/mako/lang/MakoFileViewProvider.kt` — TemplateLanguageFileViewProvider with ConcurrentHashMap singleton, contentElementType set immediately after createFile(), supportsIncrementalReparse=false
