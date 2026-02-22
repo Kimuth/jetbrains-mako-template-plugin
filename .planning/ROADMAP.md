@@ -48,7 +48,7 @@ Full details: `.planning/milestones/v0.2.0-ROADMAP.md`
 - [x] **Phase 18: FileViewProvider Scaffolding** - Create `MakoFileViewProvider`, `MakoFileViewProviderFactory`, and `OUTER_ELEMENT_TYPE`; register in `plugin.xml`; parallel HTML PSI tree exists and HTML features activate automatically (completed 2026-02-22)
 - [x] **Phase 19: Regression Hardening** - Guard `MakoPythonInjector` and `MakoAnnotator` against the dual-tree environment; verify all existing automated tests pass unchanged (completed 2026-02-22)
 - [x] **Phase 20: HTML Feature Verification and False-Positive Audit** - Verify HTML completions, Emmet, CSS/JS injection, and error detection work in TEMPLATE_TEXT; confirm `${...}` and Mako control lines produce no false-positive HTML errors (completed 2026-02-22)
-- [ ] **Phase 21: CSS and JS Sub-Language Injection** - Implement `MakoCssInjector` (MultiHostInjector) to inject `CSSLanguage` into `<style>` element XmlText nodes in the HTML PSI tree; JavaScript injection handled by platform's `HtmlScriptLanguageInjector`; close HINJ-05 and HINJ-06
+- [x] **Phase 21: CSS and JS Sub-Language Injection** - Implement `MakoCssInjector` (MultiHostInjector) to inject `CSSLanguage` into `<style>` element XmlText nodes in the HTML PSI tree; JavaScript injection handled by platform's `HtmlScriptLanguageInjector`; close HINJ-05 and HINJ-06 (completed 2026-02-22)
 - [ ] **Phase 22: Documentation Hygiene** - Fix stale traceability descriptions for HINJ-01/HINJ-04 (still say "Verification failed"/"PARTIAL" after Phase 20 confirmed PASS); correct misleading `[x]` requirement-list checkboxes for HINJ-05/HINJ-06; fix cosmetic unchecked plan checkboxes in ROADMAP.md for 18-03 and 19-01
 
 ## Phase Details
@@ -149,5 +149,5 @@ Plans:
 | 18. FileViewProvider Scaffolding | v0.3.0 | 3/3 | Complete | 2026-02-22 |
 | 19. Regression Hardening | 1/1 | Complete    | 2026-02-22 | - |
 | 20. HTML Feature Verification and False-Positive Audit | 3/3 | Complete    | 2026-02-22 | - |
-| 21. CSS and JS Sub-Language Injection | 1/2 | In Progress|  | - |
+| 21. CSS and JS Sub-Language Injection | 2/2 | Complete   | 2026-02-22 | - |
 | 22. Documentation Hygiene | v0.3.0 | 0/? | Pending | - |

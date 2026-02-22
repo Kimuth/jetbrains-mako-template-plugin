@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-22 after v0.3.0 roadmap created)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 21 Plan 02 in progress — IDE launched with MakoCssInjector loaded; awaiting human verification of HINJ-05 (CSS injection) and HINJ-06 (JS injection)
+**Current focus:** Phase 21 complete — HINJ-05 and HINJ-06 verified PASS at runtime; all injection gaps from v0.3.0 roadmap closed
 
 ## Current Position
 
-Phase: 21 of 22 (CSS and JS Sub-Language Injection)
-Plan: 02 of 2 in progress — Task 1 complete (IDE launched via runIde, hinj05_hinj06_test.mako fixture created at project root); awaiting Task 2 human checkpoint (HINJ-05/HINJ-06 verification)
-Status: In Progress — awaiting human-verify checkpoint
-Last activity: 2026-02-22 — Phase 21 Plan 02 Task 1 complete (IDE running, verification fixture ready)
+Phase: 21 of 22 (CSS and JS Sub-Language Injection) — COMPLETE
+Plan: 02 of 2 complete — HINJ-05 PASS, HINJ-06 PASS, CRCT-01 intact
+Status: Complete
+Last activity: 2026-02-22 — Phase 21 Plan 02 complete (HINJ-05/HINJ-06 verified PASS in running IDE)
 
 Progress: [██████████] 100% (Phase 21 complete, all 1 plans executed)
 
@@ -46,6 +46,7 @@ Progress: [██████████] 100% (Phase 21 complete, all 1 plans 
 | Phase 20-html-feature-verification P02 | 1 min | 1 task | 0 files |
 | Phase 20-html-feature-verification P03 | 15 min | 2 tasks | 0 files |
 | Phase 21-css-js-sub-language-injection P01 | 2 | 2 tasks | 3 files |
+| Phase 21 P02 | 1 | 1 tasks | 0 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,13 @@ Recent decisions affecting Phase 18:
 - [Phase 21-css-js-sub-language-injection]: Use Language.findLanguageByID('CSS') null guard — not CssLanguage.INSTANCE — to avoid ClassNotFoundException when CSS plugin absent
 - [Phase 21-css-js-sub-language-injection]: Use localName.lowercase() != 'style' string comparison instead of HtmlUtil.isStyleTag — isStyleTag not confirmed via javap (safe fallback)
 - [Phase 21-css-js-sub-language-injection]: No MakoJsInjector written — platform HtmlScriptLanguageInjector already handles <script> XmlText in HTML PSI tree (HINJ-06 closed)
+- [Phase 21-02 human-verification]: HINJ-05 VERIFIED PASS at runtime — CSS completions active in <style> blocks when CSS plugin installed
+- [Phase 21-02 human-verification]: HINJ-06 VERIFIED PASS at runtime — JavaScript completions active in <script> blocks when JavaScript plugin installed
+- [Phase 21-02 human-verification]: PyCharm Community vs Pro Python injection difference is expected behavior, not a regression — Community shows 'Unresolved reference' on ${greeting} (correct Python validation via injection); Pro shows no squiggle (different Pro Python plugin behavior); plugin targets Community where behavior is correct
+- [Phase 21-02 human-verification]: CRCT-01 INTACT — No HTML error squiggle on ${...} expressions confirmed in both Community and Pro
+- [Phase 21]: HINJ-05 VERIFIED PASS at runtime: CSS completions active in <style> blocks when CSS plugin installed
+- [Phase 21]: HINJ-06 VERIFIED PASS at runtime: JavaScript completions active in <script> blocks when JavaScript plugin installed
+- [Phase 21]: PyCharm Community vs Pro Python injection difference is expected behavior, not a regression: Community shows Unresolved reference on ${greeting} (correct); Pro shows no squiggle (Pro plugin behavior). Plugin targets Community where behavior is correct.
 
 ### Pending Todos
 
@@ -98,8 +106,8 @@ Recent decisions affecting Phase 18:
 
 - **HINJ-01 (HTML coloring):** RESOLVED in Phase 20 — MakoEditorHighlighter confirmed WORKING at runtime; HTML tags visually colored in TEMPLATE_TEXT regions
 - **HINJ-04 (HTML error squiggles):** RESOLVED in Phase 20 — behavior confirmed CORRECT per HTML5 spec: span without close gets squiggle; p without close does not (optional-close element)
-- **HINJ-05 (CSS in `<style>`):** RESOLVED in Phase 21 — MakoCssInjector implemented and registered; CSS completions active when CSS plugin installed
-- **HINJ-06 (JS in `<script>`):** RESOLVED in Phase 21 — platform HtmlScriptLanguageInjector handles `<script>` XmlText automatically; no custom injector needed; JS completions active when JavaScript plugin installed
+- **HINJ-05 (CSS in `<style>`):** RESOLVED in Phase 21, VERIFIED in Phase 21-02 — MakoCssInjector implemented and registered; CSS completions confirmed PASS at runtime when CSS plugin installed
+- **HINJ-06 (JS in `<script>`):** RESOLVED in Phase 21, VERIFIED in Phase 21-02 — platform HtmlScriptLanguageInjector handles `<script>` XmlText automatically; JS completions confirmed PASS at runtime when JavaScript plugin installed
 
 ### Blockers/Concerns
 
@@ -114,5 +122,4 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: 21-css-js-sub-language-injection/21-02-PLAN.md Task 2 checkpoint — awaiting human verification of HINJ-05/HINJ-06 in running IDE
-Resume with: Provide HINJ-05/HINJ-06 verification outcome; continuation agent will create 21-02-SUMMARY.md and complete Phase 21
+Stopped at: Completed 21-css-js-sub-language-injection/21-02-PLAN.md — Phase 21 complete
