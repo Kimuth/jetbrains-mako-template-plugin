@@ -4,7 +4,7 @@
 
 - ✅ **v0.1.0 Initial Release** — Phases 1–9 (shipped 2026-02-21)
 - ✅ **v0.2.0 Bug Fixing & Cleanup** — Phases 10–17 (shipped 2026-02-22)
-- 🚧 **v0.3.0 HTML Language Injection** — Phases 18–20 (in progress)
+- 🚧 **v0.3.0 HTML Language Injection** — Phases 18–22 (in progress)
 
 ## Phases
 
@@ -48,6 +48,8 @@ Full details: `.planning/milestones/v0.2.0-ROADMAP.md`
 - [x] **Phase 18: FileViewProvider Scaffolding** - Create `MakoFileViewProvider`, `MakoFileViewProviderFactory`, and `OUTER_ELEMENT_TYPE`; register in `plugin.xml`; parallel HTML PSI tree exists and HTML features activate automatically (completed 2026-02-22)
 - [x] **Phase 19: Regression Hardening** - Guard `MakoPythonInjector` and `MakoAnnotator` against the dual-tree environment; verify all existing automated tests pass unchanged (completed 2026-02-22)
 - [x] **Phase 20: HTML Feature Verification and False-Positive Audit** - Verify HTML completions, Emmet, CSS/JS injection, and error detection work in TEMPLATE_TEXT; confirm `${...}` and Mako control lines produce no false-positive HTML errors (completed 2026-02-22)
+- [ ] **Phase 21: CSS and JS Sub-Language Injection** - Implement `LanguageInjectionContributor` EP to inject `CSSLanguage` into `<style>` element content ranges and `JavaScriptLanguage` into `<script>` element content ranges within the HTML PSI tree of `.mako` files; close HINJ-05 and HINJ-06
+- [ ] **Phase 22: Documentation Hygiene** - Fix stale traceability descriptions for HINJ-01/HINJ-04 (still say "Verification failed"/"PARTIAL" after Phase 20 confirmed PASS); correct misleading `[x]` requirement-list checkboxes for HINJ-05/HINJ-06; fix cosmetic unchecked plan checkboxes in ROADMAP.md for 18-03 and 19-01
 
 ## Phase Details
 
@@ -96,6 +98,30 @@ Plans:
 - [ ] 20-02-PLAN.md — Run ./gradlew check; verify all tests pass including two new CRCT tests
 - [ ] 20-03-PLAN.md — Human IDE verification of CRCT-01/02 false-positive suppression and HINJ-01/04/05/06 feature behavior
 
+### Phase 21: CSS and JS Sub-Language Injection
+**Goal**: CSS completion and validation are active inside `<style>` elements and JavaScript completion and validation are active inside `<script>` elements in `.mako` files in the running IDE
+**Depends on**: Phase 20
+**Requirements**: HINJ-05, HINJ-06
+**Gap Closure**: Closes gaps from v0.3.0 milestone audit
+**Success Criteria** (what must be TRUE):
+  1. Typing `color:` inside `<style>...</style>` in a `.mako` file and pressing Ctrl+Space produces CSS property/value completions (not plain-text word completion)
+  2. Typing `document.` inside `<script>...</script>` in a `.mako` file and pressing Ctrl+Space produces JavaScript member completions (e.g., `getElementById`, `querySelector`)
+  3. CSS syntax errors inside `<style>` are highlighted with error squiggles
+  4. JavaScript syntax errors inside `<script>` are highlighted with error squiggles
+**Plans**: TBD
+
+### Phase 22: Documentation Hygiene
+**Goal**: All REQUIREMENTS.md traceability descriptions and checkboxes accurately reflect the actual verification outcome from Phase 20; ROADMAP.md plan checklists are cosmetically correct
+**Depends on**: Phase 21
+**Requirements**: (documentation only — no new feature requirements)
+**Gap Closure**: Addresses tech debt items from v0.3.0 milestone audit
+**Success Criteria** (what must be TRUE):
+  1. REQUIREMENTS.md traceability description for HINJ-01 no longer says "Verification failed — carry to Phase 20"; reflects Phase 20 PASS
+  2. REQUIREMENTS.md traceability description for HINJ-04 no longer says "PARTIAL — carry to Phase 20"; reflects Phase 20 PASS
+  3. REQUIREMENTS.md requirement-list checkboxes for HINJ-05 and HINJ-06 are unchecked `[ ]` (not `[x]`) until Phase 21 delivers completion
+  4. ROADMAP.md plan checklist checkboxes for 18-03-PLAN.md and 19-01-PLAN.md are checked `[x]`
+**Plans**: TBD
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -120,3 +146,5 @@ Plans:
 | 18. FileViewProvider Scaffolding | v0.3.0 | 3/3 | Complete | 2026-02-22 |
 | 19. Regression Hardening | 1/1 | Complete    | 2026-02-22 | - |
 | 20. HTML Feature Verification and False-Positive Audit | 3/3 | Complete    | 2026-02-22 | - |
+| 21. CSS and JS Sub-Language Injection | v0.3.0 | 0/? | Pending | - |
+| 22. Documentation Hygiene | v0.3.0 | 0/? | Pending | - |

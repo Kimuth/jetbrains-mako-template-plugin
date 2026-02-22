@@ -13,8 +13,8 @@ Requirements for the HTML Language Injection milestone. Phases continue from Pha
 - [x] **HINJ-02**: User gets HTML tag and attribute completion in template body regions — PASSED verification (18-02)
 - [x] **HINJ-03**: User gets Emmet abbreviation expansion in template body regions — PASSED verification (18-02)
 - [x] **HINJ-04**: User sees HTML error squiggles for malformed markup in template body — PARTIAL verification (18-03): squiggles appear on `<span>` without closing tag but NOT on `<p>` or `<html>` without closing tags; inconsistent by element type; carry to Phase 20
-- [x] **HINJ-05**: CSS completion and validation are active inside `<style>` tags in `.mako` files — FAILED verification (18-02); Emmet fires in HTML context, not CSS
-- [x] **HINJ-06**: JavaScript completion and validation are active inside `<script>` tags in `.mako` files — FAILED verification (18-02); Emmet fires in HTML context, not JS
+- [ ] **HINJ-05**: CSS completion and validation are active inside `<style>` tags in `.mako` files — FAILED verification (18-02/20-03); MultiHostInjector/LanguageInjectionContributor for CSSLanguage not registered; gap closure Phase 21
+- [ ] **HINJ-06**: JavaScript completion and validation are active inside `<script>` tags in `.mako` files — FAILED verification (18-02/20-03); MultiHostInjector/LanguageInjectionContributor for JavaScriptLanguage not registered; gap closure Phase 21
 
 ### Correctness (CRCT)
 
@@ -70,8 +70,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HINJ-02 | Phase 18 | Complete — verified 2026-02-22 |
 | HINJ-03 | Phase 18 | Complete — verified 2026-02-22 |
 | HINJ-04 | Phase 18/20 | PARTIAL verification (18-03) — squiggles on span tags but not p or html tags; inconsistent coverage; carry to Phase 20 |
-| HINJ-05 | Phase 18/20 | Verification failed — CSS sub-injection gap; carry to Phase 20 |
-| HINJ-06 | Phase 18/20 | Verification failed — JS sub-injection gap; carry to Phase 20 |
+| HINJ-05 | Phase 18/20/21 | Pending — gap closure Phase 21 (LanguageInjectionContributor for CSSLanguage not registered) |
+| HINJ-06 | Phase 18/20/21 | Pending — gap closure Phase 21 (LanguageInjectionContributor for JavaScriptLanguage not registered) |
 | CRCT-01 | Phase 20 | Complete |
 | CRCT-02 | Phase 20 | Complete |
 | RGRN-01 | Phase 19 | Complete |
@@ -85,4 +85,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-22*
-*Last updated: 2026-02-22 after 18-03 verification — HINJ-04 partial pass (span squiggles only); HINJ-01/05/06 deferred to Phase 20*
+*Last updated: 2026-02-22 after v0.3.0 milestone audit — HINJ-05/06 reset to Pending; assigned to Phase 21 gap closure*
