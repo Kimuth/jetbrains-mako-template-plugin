@@ -80,7 +80,7 @@ Plans:
   4. Structure View shows `<%def>` and `<%block>` nodes in document order for a `.mako` file open in the running IDE
 **Plans**: 1 plan
 Plans:
-- [ ] 19-01-PLAN.md — Apply MakoStructureViewFactory dual-tree guard, add regression test, run ./gradlew check, verify IDE success criteria
+- [x] 19-01-PLAN.md — Apply MakoStructureViewFactory dual-tree guard, add regression test, run ./gradlew check, verify IDE success criteria
 
 ### Phase 20: HTML Feature Verification and False-Positive Audit
 **Goal**: HTML features are confirmed working in TEMPLATE_TEXT regions and Mako syntax (expressions, control lines) produces zero false-positive HTML error squiggles; the milestone is shippable
@@ -94,9 +94,9 @@ Plans:
   5. JavaScript completion or validation is active inside a `<script>` tag in a `.mako` file in the running IDE (e.g., `document.` produces member completions)
 **Plans**: 3 plans
 Plans:
-- [ ] 20-01-PLAN.md — Implement MakoEditorHighlighter, MakoEditorHighlighterProvider, MakoErrorFilter + plugin.xml registration + CRCT automated tests
-- [ ] 20-02-PLAN.md — Run ./gradlew check; verify all tests pass including two new CRCT tests
-- [ ] 20-03-PLAN.md — Human IDE verification of CRCT-01/02 false-positive suppression and HINJ-01/04/05/06 feature behavior
+- [x] 20-01-PLAN.md — Implement MakoEditorHighlighter, MakoEditorHighlighterProvider, MakoErrorFilter + plugin.xml registration + CRCT automated tests
+- [x] 20-02-PLAN.md — Run ./gradlew check; verify all tests pass including two new CRCT tests
+- [x] 20-03-PLAN.md — Human IDE verification of CRCT-01/02 false-positive suppression and HINJ-01/04/05/06 feature behavior
 
 ### Phase 21: CSS and JS Sub-Language Injection
 **Goal**: CSS completion and validation are active inside `<style>` elements and JavaScript completion and validation are active inside `<script>` elements in `.mako` files in the running IDE
@@ -110,8 +110,8 @@ Plans:
   4. JavaScript syntax errors inside `<script>` are highlighted with error squiggles
 **Plans**: 2 plans
 Plans:
-- [ ] 21-01-PLAN.md — Implement MakoCssInjector (MultiHostInjector for XmlText in <style>), register in plugin.xml, add MakoCssInjectorTest, run ./gradlew check
-- [ ] 21-02-PLAN.md — Human IDE verification of CSS completions (HINJ-05) and JavaScript completions (HINJ-06) in running IDE
+- [x] 21-01-PLAN.md — Implement MakoCssInjector (MultiHostInjector for XmlText in <style>), register in plugin.xml, add MakoCssInjectorTest, run ./gradlew check
+- [x] 21-02-PLAN.md — Human IDE verification of CSS completions (HINJ-05) and JavaScript completions (HINJ-06) in running IDE
 
 ### Phase 22: Documentation Hygiene
 **Goal**: All REQUIREMENTS.md traceability descriptions and checkboxes accurately reflect the actual verification outcome from Phase 20; ROADMAP.md plan checklists are cosmetically correct
@@ -123,7 +123,9 @@ Plans:
   2. REQUIREMENTS.md traceability description for HINJ-04 no longer says "PARTIAL — carry to Phase 20"; reflects Phase 20 PASS
   3. REQUIREMENTS.md requirement-list checkboxes for HINJ-05 and HINJ-06 are unchecked `[ ]` (not `[x]`) until Phase 21 delivers completion
   4. ROADMAP.md plan checklist checkboxes for 18-03-PLAN.md and 19-01-PLAN.md are checked `[x]`
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 22-01-PLAN.md — Apply all REQUIREMENTS.md and ROADMAP.md documentation corrections
 
 ## Progress
 
@@ -150,4 +152,4 @@ Plans:
 | 19. Regression Hardening | 1/1 | Complete    | 2026-02-22 | - |
 | 20. HTML Feature Verification and False-Positive Audit | 3/3 | Complete    | 2026-02-22 | - |
 | 21. CSS and JS Sub-Language Injection | 2/2 | Complete    | 2026-02-22 | - |
-| 22. Documentation Hygiene | v0.3.0 | 0/? | Pending | - |
+| 22. Documentation Hygiene | v0.3.0 | 0/1 | Pending | - |
