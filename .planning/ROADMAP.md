@@ -152,4 +152,4 @@ Plans:
 | 19. Regression Hardening | 1/1 | Complete    | 2026-02-22 | - |
 | 20. HTML Feature Verification and False-Positive Audit | 3/3 | Complete    | 2026-02-22 | - |
 | 21. CSS and JS Sub-Language Injection | 2/2 | Complete    | 2026-02-22 | - |
-| 22. Documentation Hygiene | v0.3.0 | 1/1 | Complete | 2026-02-23 |
+| 22. Documentation Hygiene | 1/1 | Complete   | 2026-02-23 | 2026-02-23 |

@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-22 after v0.3.0 roadmap created)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 21 complete — HINJ-05 and HINJ-06 verified PASS at runtime; all injection gaps from v0.3.0 roadmap closed
+**Current focus:** Phase 22 complete — HINJ-01/04/05/06 traceability corrected in REQUIREMENTS.md; ROADMAP.md checkboxes corrected; v0.3.0 documentation hygiene complete
 
 ## Current Position
 
-Phase: 21 of 22 (CSS and JS Sub-Language Injection) — COMPLETE
-Plan: 02 of 2 complete — HINJ-05 PASS, HINJ-06 PASS, CRCT-01 intact
+Phase: 22 of 22 (Documentation Hygiene) — COMPLETE
+Plan: 01 of 1 complete — REQUIREMENTS.md and ROADMAP.md documentation corrections applied
 Status: Complete
-Last activity: 2026-02-22 — Phase 21 Plan 02 complete (HINJ-05/HINJ-06 verified PASS in running IDE)
+Last activity: 2026-02-23 — Phase 22 Plan 01 complete (all HINJ traceability updated to PASS outcomes)
 
-Progress: [██████████] 100% (Phase 21 complete, all 1 plans executed)
+Progress: [██████████] 100% (Phase 22 complete, all 1 plans executed)
 
 ## Performance Metrics
 
@@ -47,6 +47,7 @@ Progress: [██████████] 100% (Phase 21 complete, all 1 plans 
 | Phase 20-html-feature-verification P03 | 15 min | 2 tasks | 0 files |
 | Phase 21-css-js-sub-language-injection P01 | 2 | 2 tasks | 3 files |
 | Phase 21 P02 | 1 | 1 tasks | 0 files |
+| Phase 22-documentation-hygiene P01 | 5 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,8 @@ Recent decisions affecting Phase 18:
 - [Phase 21]: HINJ-05 VERIFIED PASS at runtime: CSS completions active in <style> blocks when CSS plugin installed
 - [Phase 21]: HINJ-06 VERIFIED PASS at runtime: JavaScript completions active in <script> blocks when JavaScript plugin installed
 - [Phase 21]: PyCharm Community vs Pro Python injection difference is expected behavior, not a regression: Community shows Unresolved reference on ${greeting} (correct); Pro shows no squiggle (Pro plugin behavior). Plugin targets Community where behavior is correct.
+- [Phase 22]: All HINJ-01/04/05/06 entries updated in both requirement-list and traceability table — both locations must stay in sync
+- [Phase 22]: Phase 22 plan checkboxes and progress table updated; v0.3.0 documentation now accurate
 
 ### Pending Todos
 
@@ -121,5 +124,5 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-22
-Stopped at: Completed 21-css-js-sub-language-injection/21-02-PLAN.md — Phase 21 complete
+Last session: 2026-02-23
+Stopped at: Completed 22-documentation-hygiene/22-01-PLAN.md — Phase 22 complete
