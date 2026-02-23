@@ -49,3 +49,23 @@
 
 ---
 
+
+## v0.3.0 HTML Language Injection (Shipped: 2026-02-23)
+
+**Phases completed:** 5 phases (18–22), 10 plans
+**Timeline:** 2026-02-22 → 2026-02-23 (2 days)
+**Files changed:** 93 files, 9,619 insertions, 1,392 deletions
+**LOC:** ~1,773 hand-written Kotlin (src/main/kotlin)
+**Git range:** `35435f6` (feat(18-01): OUTER_ELEMENT_TYPE) → `d423bd4` (docs(phase-22): complete)
+
+**Key accomplishments:**
+- Implemented `TemplateLanguageFileViewProvider` — `.mako` files now have dual PSI trees (Mako + HTML), enabling full HTML IDE features (coloring, tag/attribute completion, Emmet, error detection) in TEMPLATE_TEXT regions
+- Added `MakoEditorHighlighter` (LayeredLexerEditorHighlighter) and `MakoErrorFilter` — HTML syntax coloring visible in template body; false-positive HTML error squiggles on `${...}` and `%for`/`%if` Mako control lines suppressed
+- Hardened all existing features against the dual-tree environment — Python injection, code folding, structure view, and all 98 automated tests pass unchanged alongside HTML PSI tree
+- Implemented `MakoCssInjector` (MultiHostInjector) — CSS completions and validation active inside `<style>` elements; JavaScript completions via platform `HtmlScriptLanguageInjector` inside `<script>` elements (closes HINJ-05 and HINJ-06)
+- Human-verified all HTML injection features at runtime: HTML coloring, tag/attribute completion, Emmet expansion, CSS and JavaScript completions each confirmed in running PyCharm IDE
+
+**Archive:** `.planning/milestones/v0.3-ROADMAP.md`, `.planning/milestones/v0.3-REQUIREMENTS.md`
+
+---
+

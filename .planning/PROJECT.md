@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A PyCharm plugin providing first-class IDE support for Mako template files (`.mako`, `.html.mako`). Mako is a Python template engine used for generating HTML; this plugin brings syntax highlighting, code folding, structure navigation, tag completion, Python language injection, and error detection to Mako templates in PyCharm — filling a gap where no JetBrains plugin currently exists. Shipped as `com.schtilig.mako` v0.2.0.
+A PyCharm plugin providing first-class IDE support for Mako template files (`.mako`, `.html.mako`). Mako is a Python template engine used for generating HTML; this plugin brings syntax highlighting, code folding, structure navigation, tag completion, Python and HTML language injection, CSS/JS sub-language injection, and error detection to Mako templates in PyCharm — filling a gap where no JetBrains plugin currently exists. Shipped as `com.schtilig.mako` v0.3.0.
 
 ## Core Value
 
@@ -44,22 +44,29 @@ Mako template files get the same rich editing experience as native Python and HT
 - ✓ Language guard uses `MakoLanguage` identity comparison, not string literal `"Mako Template"` — v0.2.0 (ANNOT-01)
 - ✓ Parser fixture test covers unknown directive `<%bogus>` to guard against future lexer regressions — v0.2.0 (ANNOT-02)
 - ✓ Dead `FILTER_NAME` token and unused `TEMPLATE_CONTENT`/`TAG_OPENS` sets removed — v0.2.0 (CLEAN-01, CLEAN-02, CLEAN-03)
-
-## Current Milestone: v0.3.0 HTML Language Injection
-
-**Goal:** Inject real HTML language into Mako template text regions so PyCharm delivers full HTML editing (coloring, tag/attr completion, Emmet, error detection) inside `.mako` files.
-
-**Target features:**
-- HTML language injection in TEMPLATE_TEXT regions (non-Mako portions of the file)
-- TemplateLanguageFileViewProvider to create multi-language PSI structure
-- Default template data language configured to HTML
+- ✓ HTML language injection in TEMPLATE_TEXT regions via TemplateLanguageFileViewProvider — v0.3.0 (HINJ-01)
+- ✓ HTML tag and attribute completion in template body regions — v0.3.0 (HINJ-02)
+- ✓ Emmet abbreviation expansion in template body regions — v0.3.0 (HINJ-03)
+- ✓ HTML error squiggles for malformed markup in template body — v0.3.0 (HINJ-04)
+- ✓ CSS completion and validation inside `<style>` tags — v0.3.0 (HINJ-05)
+- ✓ JavaScript completion and validation inside `<script>` tags — v0.3.0 (HINJ-06)
+- ✓ `${...}` expressions in HTML attribute values produce no false-positive HTML errors — v0.3.0 (CRCT-01)
+- ✓ Mako control lines (`%for`, `%if`, `%endif`) produce no false-positive HTML errors — v0.3.0 (CRCT-02)
+- ✓ Python injection continues to work alongside FileViewProvider — v0.3.0 (RGRN-01)
+- ✓ Code folding, structure view, and tag completion work alongside HTML injection — v0.3.0 (RGRN-02)
+- ✓ All 98 automated tests pass unchanged after FileViewProvider is active — v0.3.0 (RGRN-03)
 
 ### Active
 
-- [ ] Inject HTML language into TEMPLATE_TEXT regions via TemplateLanguageFileViewProvider
-- [ ] Configure default template data language mapping to HTML for .mako files
-- [ ] Verify HTML tag/attr completion and error detection work in template body
-- [ ] Ensure existing Mako PSI features (folding, structure view, injection) still work alongside HTML injection
+- [ ] **RFMT-01**: Ctrl+Alt+L applies HTML indentation rules without corrupting Mako control lines
+- [ ] **NAVG-01**: Go To Definition for `<%include file="...">` — navigate to referenced file
+- [ ] **NAVG-02**: Go To Definition for `<%inherit file="...">` — navigate to referenced file
+- [ ] **NAVG-03**: Go To Definition for `<%namespace file="...">` — navigate to referenced file
+- [ ] **NAVG-04**: Go To Definition from def call to `<%def>` definition
+- [ ] **PYTH-01**: Template-local variables from `<% %>` blocks appear in `${...}` completion
+- [ ] **PYTH-02**: Parameter hints for `<%def name="card(title, body)">` when def is invoked
+- [ ] **ADVN-01**: Find usages of `<%def>` or `<%block>` across `.mako` files
+- [ ] **ADVN-02**: Rename refactoring for `<%def>` or `<%block>` across files
 
 ### Out of Scope
 
@@ -67,35 +74,29 @@ Mako template files get the same rich editing experience as native Python and HT
 - Runtime template rendering/preview — IDE editing support only, not a template engine
 - Mako configuration file editing — focus is on template files themselves
 - Integration with web frameworks (Pyramid, TurboGears routing) — pure template language support
-- HTML language injection — Mako wraps HTML; the platform's default HTML handling covers non-Mako regions adequately
+- MultiHostInjector for HTML injection — produces fragmented HTML PSI; tag matching across Mako expression boundaries fails; TemplateLanguageFileViewProvider used instead
 - Implement `updateText()` round-trip editing — high complexity; PSI write operations require platform expertise; deferred
 - Implement `setName()` rename refactoring — requires cross-file reference resolution; deferred
 - Filter-name tokenization in lexer — deferred; CLEAN-01 removes dead code instead
 
 ## Context
 
-**v0.2.0 shipped 2026-02-22.** Implemented across 8 phases (10–17) in 2 days.
+**v0.3.0 shipped 2026-02-23.** Implemented across 5 phases (18–22) in 2 days.
 
 **Codebase state:**
-- ~1,382 hand-written Kotlin LOC (src/main/kotlin), generated Java LOC in src/main/gen/
-- 22 token types (with dead constants removed), 12 PSI node types, 9 color attributes, 6 fold construct types
-- ~75+ unit tests (lexer, parser, folding, structure view, completion, annotator, injection host, injection range)
-- testData/ contains exactly 15 actively-loaded fixture files (6 orphaned files deleted in Phase 17)
-- Plugin ID: `com.schtilig.mako`, display name: `Mako`, version: `0.2.0` (pending release)
+- ~1,773 hand-written Kotlin LOC (src/main/kotlin), generated Java LOC in src/main/gen/
+- 22 token types, 12 PSI node types, 9 color attributes, 6 fold construct types
+- 98 unit tests (lexer, parser, folding, structure view, completion, annotator, injection host, injection range, FileViewProvider, CSS injector)
+- testData/ contains 15 actively-loaded fixture files
+- Plugin ID: `com.schtilig.mako`, display name: `Mako`, version: `0.3.0`
 - Target: PyCharm Community 2025.2+ (build 252+)
 
-**Tech stack:** Kotlin, Gradle 9.3.1, IntelliJ Platform 2025.2.5, GrammarKit 2023.3.0.2, JFlex 1.9.1
+**Tech stack:** Kotlin, Gradle 9.3.1, IntelliJ Platform 2025.2.5, GrammarKit 2023.3.0.2, JFlex 1.9.1, TemplateLanguageFileViewProvider
 
-**Known tech debt from v0.2.0:**
+**Known tech debt from v0.3.0:**
 - `TagAttrCompletionProvider` lacks explicit `language != MakoLanguage` guard — PSI pattern (`WHITE_SPACE`) provides implicit restriction; no functional risk; low priority
-- 7 runtime behaviors deferred to human verification requiring a running PyCharm instance (injection filter UI, fold gutter rendering, Structure View icon/order, brace match highlight, completion replacement, per-keystroke allocation)
 - `src/main/gen/com/schtilig/mako/lang/_MakoLexer.java~` editor backup file — not git-tracked; harmless but untidy
-
-**v3+ requirements for future milestones:**
-- NAVG-01–04: Go-to-definition for inherited templates, included files, namespace files, def navigation
-- MLNG-01–04: HTML injection for HTML regions, Python completion in `${...}`
-- ADVN-01–04: Cross-file def navigation, find usages, rename refactoring, undefined variable inspection
-- PLSH-01–03: Live templates, breadcrumb navigation, settings panel for HTML-Mako detection
+- CSS injection via MakoCssInjector requires CSS plugin installed; JavaScript injection requires JavaScript plugin — degrades gracefully when absent but not tested in CI without plugins
 
 ## Constraints
 
@@ -132,6 +133,11 @@ Mako template files get the same rich editing experience as native Python and HT
 | FILTER_SEP retained; FILTER_NAME removed | Lexer emits FILTER_SEP for `|` inside `${...}`; Python injector uses it for boundary; FILTER_NAME was never emitted | ✓ Good — CLEAN-01 removes dead constant; INJECT-02 boundary preserved |
 | IncompleteCodeBlock.mako deleted not completed | File was never git-tracked; MakoParsingTest had no `testIncompleteCodeBlock()` method; fixture was completely unreachable | ✓ Good — CLEAN-03 resolved cleanly without creating misleading test infrastructure |
 | Annotator/folding tests migrated to inline configureMakoFile() | Disk fixtures for error-annotation tests create confusion about what is exercised; inline strings co-locate test content with assertions | ✓ Good — 4 orphaned fixtures deleted; 1 disk fixture retained (WellFormedDefTag.mako needed for checkHighlighting negative assertion) |
+| LightVirtualFile guard in MakoFileViewProviderFactory | Returns SingleRootFileViewProvider for in-memory/test files — prevents ParsingTestCase from generating per-language fixture files (.Mako Template.txt, .HTML.txt) which break parser fixture tests | ✓ Good — all 98 tests pass with dual-tree active |
+| OUTER_ELEMENT_TYPE as 4th arg, TEMPLATE_TEXT as 3rd arg to TemplateDataElementType | Field semantics from `javap`: `myOuterElementType` is the placeholder node in HTML PSI; `myTemplateElementType` is the Mako content type — transposing causes broken HTML PSI trees | ✓ Good — correct HTML PSI tree structure confirmed by MakoFileViewProviderTest |
+| viewProvider.baseLanguage for dual-tree language identity checks | In dual-tree environment, `file.language` returns the data language for TEMPLATE_TEXT positions; `baseLanguage` is always MakoLanguage for .mako files | ✓ Good — completion and injection guards use baseLanguage reliably |
+| Language.findLanguageByID("CSS") null guard instead of CssLanguage.INSTANCE | Avoids ClassNotFoundException when CSS plugin absent; gracefully degrades when CSS plugin not installed | ✓ Good — MakoCssInjector safe across PyCharm Community and Pro |
+| No MakoJsInjector written — platform HtmlScriptLanguageInjector handles JS | Platform's HtmlScriptLanguageInjector already targets `<script>` XmlText in HTML PSI tree; writing a duplicate injector would conflict | ✓ Good — HINJ-06 closed with zero implementation; JS completions confirmed in running IDE |
 
 ---
-*Last updated: 2026-02-22 after v0.3.0 milestone started*
+*Last updated: 2026-02-23 after v0.3.0 milestone*

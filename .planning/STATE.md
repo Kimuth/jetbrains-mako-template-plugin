@@ -2,19 +2,18 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-22 after v0.3.0 roadmap created)
+See: .planning/PROJECT.md (updated 2026-02-23 after v0.3.0 milestone)
 
 **Core value:** Mako template files get the same rich editing experience as native Python and HTML files in PyCharm
-**Current focus:** Phase 22 complete — HINJ-01/04/05/06 traceability corrected in REQUIREMENTS.md; ROADMAP.md checkboxes corrected; v0.3.0 documentation hygiene complete
+**Current focus:** v0.3.0 milestone complete — planning next milestone
 
 ## Current Position
 
-Phase: 22 of 22 (Documentation Hygiene) — COMPLETE
-Plan: 01 of 1 complete — REQUIREMENTS.md and ROADMAP.md documentation corrections applied
-Status: Complete
-Last activity: 2026-02-23 — Phase 22 Plan 01 complete (all HINJ traceability updated to PASS outcomes)
+Phase: — (between milestones)
+Status: v0.3.0 SHIPPED 2026-02-23 — HTML language injection, CSS/JS sub-injection, all 11 requirements delivered
+Last activity: 2026-02-23 — v0.3.0 milestone archived
 
-Progress: [██████████] 100% (Phase 22 complete, all 1 plans executed)
+Progress: [██████████] 100% (v0.3.0 complete — 5 phases, 10 plans)
 
 ## Performance Metrics
 
@@ -53,7 +52,7 @@ Progress: [██████████] 100% (Phase 22 complete, all 1 plans 
 
 ### Decisions
 
-All key decisions logged in PROJECT.md Key Decisions table.
+All key decisions from v0.3.0 logged in PROJECT.md Key Decisions table.
 
 Recent decisions affecting Phase 18:
 - Use `lang.fileViewProviderFactory` EP (language-keyed), NOT `fileType.fileViewProviderFactory` — confirmed from `LangExtensionPoints.xml`
