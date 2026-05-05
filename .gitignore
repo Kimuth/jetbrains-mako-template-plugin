@@ -8,3 +8,24 @@ build
 .claude/
 *.java~
 .docs/
+
+# IntelliJ Platform XML descriptors extracted into project root by runIde
+/intellij.*.xml
+/DefaultColorSchemesManager.xml
+/defaultFileTypes.xml
+/PageSizes.xml
+/PlatformProductivityFeatures.xml
+/ProductivityFeaturesRegistry.xml
+/colorSchemes/
+/themes/
+/idea/
+/META-INF/
+/com/
+/org/
+/groovy/
+/search/
+/keymaps/
+/liveTemplates/
+
+# Ad-hoc test files in project root
+/*.mako
