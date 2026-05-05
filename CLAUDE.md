@@ -18,11 +18,15 @@ A JetBrains IDE plugin providing language support for the [Mako template engine]
 ./gradlew test --tests MakoParsingTest
 ./gradlew test --tests MakoLexerTest
 
-# Regenerate lexer from MakoLexer.flex (run after grammar changes)
+# Regenerate lexer from MakoLexer.flex
+# (auto-runs on compileKotlin; only invoke manually for inspection)
 ./gradlew generateMakoLexer
 
-# Parser is generated from Mako.bnf via GrammarKit IDE plugin (not a Gradle task)
-# Generated parser files are committed to src/main/gen/
+# Parser regeneration: use Tools → Generate Parser Code in the IDE.
+# A `generateMakoParser` Gradle task exists, but DO NOT run it directly:
+# it has purgeOldFiles=true and will wipe hand-added token delegates in
+# src/main/gen/.../psi/MakoTypes.java (see "Known Constraints" below).
+# Generated parser files are committed to src/main/gen/.
 ```
 
 ## Architecture
@@ -35,10 +39,15 @@ plugin.xml (extension registration)
         ├── MakoLexerAdapter → _MakoLexer (generated from MakoLexer.flex)
         └── MakoParser       (generated from Mako.bnf)
               └── PSI tree → MakoFile, MakoDefTag, MakoBlockTag, MakoExpression, ...
-                    ├── MakoSyntaxHighlighter  (token coloring)
-                    ├── MakoFoldingBuilder     (code folding)
+                    ├── MakoSyntaxHighlighter    (token coloring)
+                    ├── MakoFoldingBuilder       (code folding)
                     ├── MakoStructureViewFactory (outline)
-                    └── MakoCommenter          (## comment toggling)
+                    ├── MakoCommenter            (## comment toggling)
+                    ├── MakoAnnotator            (error annotations)
+                    ├── MakoCompletionContributor (tag/attribute completion)
+                    ├── MakoPythonInjector       (Python language injection)
+                    ├── MakoCssInjector          (CSS language injection)
+                    └── MakoFileViewProvider     (multi-root view for HTML injection)
 ```
 
 ### Key Directories
@@ -50,7 +59,14 @@ plugin.xml (extension registration)
 | `src/main/gen/…/lang/`                   | Generated lexer + parser (committed)                           |
 | `src/main/gen/…/lang/psi/`               | Generated PSI interfaces + impls                               |
 | `src/main/kotlin/…/lang/`                | Hand-written plugin Kotlin code                                |
-| `src/main/kotlin/…/lang/psi/impl/`       | PSI mixins (MakoDefTagMixin, MakoBlockTagMixin)                |
+| `src/main/kotlin/…/lang/annotation/`     | MakoAnnotator (error annotations)                              |
+| `src/main/kotlin/…/lang/completion/`     | Tag/attribute completion contributors                          |
+| `src/main/kotlin/…/lang/editing/`        | Commenter, brace matcher                                       |
+| `src/main/kotlin/…/lang/folding/`        | MakoFoldingBuilder                                             |
+| `src/main/kotlin/…/lang/highlighting/`   | Syntax highlighter, color settings                             |
+| `src/main/kotlin/…/lang/injection/`      | Language injectors (MakoPythonInjector, MakoCssInjector)       |
+| `src/main/kotlin/…/lang/psi/impl/`       | PSI mixins (5 files: DefTag, BlockTag, CodeBlock, Expression, ModuleBlock) |
+| `src/main/kotlin/…/lang/structure/`      | MakoStructureViewFactory                                       |
 | `src/main/resources/META-INF/plugin.xml` | Extension point registrations                                  |
 | `src/main/resources/colorSchemes/`       | MakoDefault.xml, MakoDarcula.xml                               |
 | `src/test/testData/parser/`              | Parser fixture pairs: `.mako` input + `.txt` expected PSI tree |
@@ -59,7 +75,7 @@ plugin.xml (extension registration)
 
 - **Lexer** (`MakoLexer.flex`): Tracks nested brace depth for `${...}` expressions using lexer states (`IN_EXPRESSION`, `IN_CODE_BLOCK`, etc.). After editing, run `./gradlew generateMakoLexer` then verify `_MakoLexer.java` is updated.
 - **Parser** (`Mako.bnf`): GrammarKit BNF. Regenerate via **Tools → Generate Parser Code** in the IDE. Generated files go to `src/main/gen/`. Commit generated files.
-- **PSI Mixins**: Named elements (def tags, block tags) implement `PsiNamedElement` through mixins (`MakoDefTagMixin.kt`, `MakoBlockTagMixin.kt`). The `mixin` attribute in Mako.bnf wires them in.
+- **PSI Mixins**: Five mixins extend generated PSI nodes — `MakoDefTagMixin` and `MakoBlockTagMixin` provide `PsiNamedElement` (named elements); `MakoCodeBlockMixin`, `MakoExpressionMixin`, and `MakoModuleBlockMixin` are injection hosts (override `updateText` to throw). The `mixin` attribute in `Mako.bnf` wires them in.
 
 ### Parser Test Pattern
 
@@ -79,7 +95,7 @@ To add a parser test: create the `.mako` file, run the test once to generate the
 
 When completing a milestone (`/gsd:complete-milestone` or equivalent), always update `pluginVersion` in `gradle.properties` to match the new milestone version before committing:
 
-- Milestone `v0.3` → `pluginVersion = 0.3.0`
+- Milestone `v0.4` → `pluginVersion = 0.4.0`
 - Milestone `v1.0` → `pluginVersion = 1.0.0`
 
 The version follows SemVer. Strip the `v` prefix and append `.0` patch segment.
@@ -88,4 +104,5 @@ The version follows SemVer. Strip the `v` prefix and append `.0` patch segment.
 
 - Parser-generated files (`src/main/gen/`) are committed and must be regenerated via the GrammarKit IDE action, not Gradle.
 - The lexer generation task (`generateMakoLexer`) uses `purgeOldFiles=false` to avoid deleting parser/PSI gen files.
+- `MakoTypes.java` (committed under `src/main/gen/`) contains hand-added token-type delegates below the generated composite element types. They make tokens accessible to `MakoParser.java` (which uses `import static MakoTypes.*`). Running `generateMakoParser` (purgeOldFiles=true) would delete these and break compilation.
 - Platform target is PyCharm Community with `PythonCore` bundled plugin dependency.
