@@ -155,10 +155,7 @@ WhiteSpace     = [ \t]+
   // a combined DFA where a single non-% char at EOF is non-accepting.
   [^%]+                            { return CODE_CONTENT; }
 
-  // % followed by something other than > (lookahead keeps the > for CODE_CLOSE)
-  "%" / [^>]                       { return CODE_CONTENT; }
-
-  // Lone % at end of input
+  // Any other % is content (lookahead removed; %> above matches first)
   "%"                              { return CODE_CONTENT; }
 }
 
@@ -170,10 +167,7 @@ WhiteSpace     = [ \t]+
   // Split from the lookahead alternative (same JFlex combined-DFA fix as CODE_BLOCK).
   [^%]+                            { return MODULE_CONTENT; }
 
-  // % followed by something other than >
-  "%" / [^>]                       { return MODULE_CONTENT; }
-
-  // Lone % at end of input
+  // Any other % is content
   "%"                              { return MODULE_CONTENT; }
 }
 
@@ -185,15 +179,6 @@ WhiteSpace     = [ \t]+
   // Split from the lookahead alternative (same JFlex combined-DFA fix as CODE_BLOCK).
   [^<]+                            { return DOC_CONTENT; }
 
-  // < followed by something other than /
-  "<" / [^/]                       { return DOC_CONTENT; }
-
-  // Partial close </ that isn't </%
-  "</" / [^%]                     { return DOC_CONTENT; }
-
-  // Lone < at end
+  // Any other < is content (</%doc> above matches first)
   "<"                              { return DOC_CONTENT; }
-
-  // Fallback
-  [^]                              { return DOC_CONTENT; }
 }
